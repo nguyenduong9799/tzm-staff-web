@@ -11,7 +11,7 @@ import { getProduct, addCart, onGotoStep } from '../../redux/slices/product';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // @types
-import { CartItem } from '../../@types/product';
+import { CartItem } from '../../types/product';
 // hooks
 import useSettings from '../../hooks/useSettings';
 // components

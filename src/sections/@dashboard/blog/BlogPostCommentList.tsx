@@ -1,7 +1,7 @@
 // @mui
 import { Box, List } from '@mui/material';
 // @types
-import { Post } from '../../../@types/blog';
+import { Post } from '../../../types/blog';
 //
 import BlogPostCommentItem from './BlogPostCommentItem';
 

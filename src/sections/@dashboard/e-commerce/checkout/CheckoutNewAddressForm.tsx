@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // @types
-import { OnCreateBilling, BillingAddress } from '../../../../@types/product';
+import { OnCreateBilling, BillingAddress } from '../../../../types/product';
 // _mock
 import { countries } from '../../../../_mock';
 import {

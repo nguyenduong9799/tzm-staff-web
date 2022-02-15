@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import { Box, Tooltip, IconButton, DialogActions, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // @types
-import { Invoice } from '../../../../@types/product';
+import { Invoice } from '../../../../types/product';
 // components
 import Iconify from '../../../../components/Iconify';
 import { DialogAnimate } from '../../../../components/animate';

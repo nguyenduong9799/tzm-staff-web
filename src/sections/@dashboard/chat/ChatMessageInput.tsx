@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Stack, Input, Divider, IconButton, InputAdornment } from '@mui/material';
 // @types
-import { SendMessage } from '../../../@types/chat';
+import { SendMessage } from '../../../types/chat';
 // utils
 import uuidv4 from '../../../utils/uuidv4';
 // components

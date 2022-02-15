@@ -2,7 +2,7 @@
 import { styled } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
 // @types
-import { Profile } from '../../../../@types/user';
+import { Profile } from '../../../../types/user';
 // utils
 import cssStyles from '../../../../utils/cssStyles';
 // hooks

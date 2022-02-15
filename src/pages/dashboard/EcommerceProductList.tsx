@@ -28,7 +28,7 @@ import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
 import useSettings from '../../hooks/useSettings';
 // @types
-import { Product } from '../../@types/product';
+import { Product } from '../../types/product';
 // components
 import Page from '../../components/Page';
 import Label from '../../components/Label';

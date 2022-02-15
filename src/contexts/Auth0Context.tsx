@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useEffect, useReducer } from 'react';
 import { Auth0Client } from '@auth0/auth0-spa-js';
 // @types
-import { ActionMap, AuthState, AuthUser, Auth0ContextType } from '../@types/auth';
+import { ActionMap, AuthState, AuthUser, Auth0ContextType } from '../types/auth';
 //
 import { AUTH0_API } from '../config';
 

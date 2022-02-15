@@ -1,7 +1,7 @@
 // @mui
 import { Grid, Stack } from '@mui/material';
 // @types
-import { Profile as UserProfile, UserPost } from '../../../../@types/user';
+import { Profile as UserProfile, UserPost } from '../../../../types/user';
 //
 import ProfileAbout from './ProfileAbout';
 import ProfilePostCard from './ProfilePostCard';

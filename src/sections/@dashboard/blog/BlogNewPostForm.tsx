@@ -21,7 +21,7 @@ import {
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
-import { NewPostFormValues } from '../../../@types/blog';
+import { NewPostFormValues } from '../../../types/blog';
 //components
 import {
   RHFSwitch,

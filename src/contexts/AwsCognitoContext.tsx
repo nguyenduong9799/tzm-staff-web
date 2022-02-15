@@ -11,7 +11,7 @@ import axios from '../utils/axios';
 // routes
 import { PATH_AUTH } from '../routes/paths';
 // @types
-import { ActionMap, AuthState, AuthUser, AWSCognitoContextType } from '../@types/auth';
+import { ActionMap, AuthState, AuthUser, AWSCognitoContextType } from '../types/auth';
 //
 import { COGNITO_API } from '../config';
 

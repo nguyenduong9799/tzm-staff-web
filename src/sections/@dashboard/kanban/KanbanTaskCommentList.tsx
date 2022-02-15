@@ -4,7 +4,7 @@ import { Stack, Avatar, Typography } from '@mui/material';
 // utils
 import { fToNow } from '../../../utils/formatTime';
 // @types
-import { CardComment } from '../../../@types/kanban';
+import { CardComment } from '../../../types/kanban';
 // components
 import Image from '../../../components/Image';
 import LightboxModal from '../../../components/LightboxModal';

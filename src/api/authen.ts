@@ -1,5 +1,5 @@
-import { BeanUser } from 'src/@types/user';
-import request from 'src/utils/axios';
+import { BeanUser } from 'types/user';
+import request from 'utils/axios';
 
 export const loginByUsername = (username: string, password: string) =>
   request.post('/admin/login-by-username', { user_name: username, password });

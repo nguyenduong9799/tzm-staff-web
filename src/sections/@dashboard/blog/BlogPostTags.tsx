@@ -3,7 +3,7 @@ import { Box, Chip, Avatar, Checkbox, AvatarGroup, FormControlLabel } from '@mui
 // utils
 import { fShortenNumber } from '../../../utils/formatNumber';
 // @types
-import { Post } from '../../../@types/blog';
+import { Post } from '../../../types/blog';
 // components
 import Iconify from '../../../components/Iconify';
 

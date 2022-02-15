@@ -5,7 +5,7 @@ import { Grid, Rating, Button, Typography, LinearProgress, Stack, Link } from '@
 // utils
 import { fShortenNumber } from '../../../../utils/formatNumber';
 // @types
-import { Product } from '../../../../@types/product';
+import { Product } from '../../../../types/product';
 // components
 import Iconify from '../../../../components/Iconify';
 

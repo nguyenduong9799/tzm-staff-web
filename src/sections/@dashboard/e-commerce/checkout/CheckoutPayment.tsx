@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Grid, Button } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // @types
-import { CardOption, PaymentOption, DeliveryOption } from '../../../../@types/product';
+import { CardOption, PaymentOption, DeliveryOption } from '../../../../types/product';
 // redux
 import { useDispatch, useSelector } from '../../../../redux/store';
 import {

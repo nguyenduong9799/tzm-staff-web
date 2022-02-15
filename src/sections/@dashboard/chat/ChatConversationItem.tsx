@@ -3,7 +3,7 @@ import { formatDistanceToNowStrict } from 'date-fns';
 import { styled } from '@mui/material/styles';
 import { Box, Avatar, ListItemButton, ListItemText, ListItemAvatar } from '@mui/material';
 // @types
-import { Conversation } from '../../../@types/chat';
+import { Conversation } from '../../../types/chat';
 //
 import BadgeStatus from '../../../components/BadgeStatus';
 

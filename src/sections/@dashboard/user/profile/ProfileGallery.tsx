@@ -6,7 +6,7 @@ import { Box, Card, IconButton, Typography, CardContent } from '@mui/material';
 import { fDate } from '../../../../utils/formatTime';
 import cssStyles from '../../../../utils/cssStyles';
 // @types
-import { Gallery } from '../../../../@types/user';
+import { Gallery } from '../../../../types/user';
 // components
 import Image from '../../../../components/Image';
 import Iconify from '../../../../components/Iconify';

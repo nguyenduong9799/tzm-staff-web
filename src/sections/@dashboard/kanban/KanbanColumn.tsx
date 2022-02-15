@@ -8,7 +8,7 @@ import { Paper, Stack, Button } from '@mui/material';
 import { RootState, useDispatch } from '../../../redux/store';
 import { deleteColumn, updateColumn, addTask, deleteTask } from '../../../redux/slices/kanban';
 // @types
-import { KanbanColumn as Column } from '../../../@types/kanban';
+import { KanbanColumn as Column } from '../../../types/kanban';
 // components
 import Iconify from '../../../components/Iconify';
 //

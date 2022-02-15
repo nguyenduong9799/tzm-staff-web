@@ -11,7 +11,7 @@ import {
   ListItemButton,
 } from '@mui/material';
 // @types
-import { Participant as TParticipant } from '../../../@types/chat';
+import { Participant as TParticipant } from '../../../types/chat';
 // components
 import Iconify from '../../../components/Iconify';
 import Scrollbar from '../../../components/Scrollbar';

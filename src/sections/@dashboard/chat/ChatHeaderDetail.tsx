@@ -5,7 +5,7 @@ import { Box, Link, Avatar, Typography, AvatarGroup, IconButton } from '@mui/mat
 // utils
 import { fToNow } from '../../../utils/formatTime';
 // @types
-import { Participant } from '../../../@types/chat';
+import { Participant } from '../../../types/chat';
 // components
 import Iconify from '../../../components/Iconify';
 import BadgeStatus from '../../../components/BadgeStatus';

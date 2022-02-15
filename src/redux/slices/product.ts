@@ -3,7 +3,7 @@ import sum from 'lodash/sum';
 import uniqBy from 'lodash/uniqBy';
 // utils
 import axios from '../../utils/axios';
-import { CartItem, Product, ProductState } from '../../@types/product';
+import { CartItem, Product, ProductState } from '../../types/product';
 //
 import { dispatch } from '../store';
 

@@ -21,7 +21,7 @@ import {
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
-import { Product } from '../../../@types/product';
+import { Product } from '../../../types/product';
 // components
 import {
   FormProvider,

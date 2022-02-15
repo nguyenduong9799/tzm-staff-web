@@ -2,7 +2,7 @@ import { useState } from 'react';
 // @mui
 import { Box, Grid, Card, Button, Typography } from '@mui/material';
 // @types
-import { BillingAddress as Address, OnCreateBilling } from '../../../../@types/product';
+import { BillingAddress as Address, OnCreateBilling } from '../../../../types/product';
 // redux
 import { useDispatch, useSelector } from '../../../../redux/store';
 import { onBackStep, onNextStep, createBilling } from '../../../../redux/slices/product';

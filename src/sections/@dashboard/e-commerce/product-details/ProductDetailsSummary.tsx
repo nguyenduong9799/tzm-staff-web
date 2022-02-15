@@ -10,7 +10,7 @@ import { PATH_DASHBOARD } from '../../../../routes/paths';
 // utils
 import { fShortenNumber, fCurrency } from '../../../../utils/formatNumber';
 // @types
-import { Product, CartItem } from '../../../../@types/product';
+import { Product, CartItem } from '../../../../types/product';
 // components
 import Label from '../../../../components/Label';
 import Iconify from '../../../../components/Iconify';

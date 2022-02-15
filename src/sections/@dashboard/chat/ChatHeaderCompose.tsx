@@ -5,7 +5,7 @@ import match from 'autosuggest-highlight/match';
 import { alpha, styled } from '@mui/material/styles';
 import { Box, Avatar, TextField, Typography, Autocomplete, Chip } from '@mui/material';
 // @types
-import { Participant } from '../../../@types/chat';
+import { Participant } from '../../../types/chat';
 // components
 import Iconify from '../../../components/Iconify';
 import SearchNotFound from '../../../components/SearchNotFound';

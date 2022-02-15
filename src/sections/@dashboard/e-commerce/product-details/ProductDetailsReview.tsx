@@ -5,7 +5,7 @@ import { Divider, Collapse } from '@mui/material';
 import ProductDetailsReviewForm from './ProductDetailsReviewForm';
 import ProductDetailsReviewList from './ProductDetailsReviewList';
 import ProductDetailsReviewOverview from './ProductDetailsReviewOverview';
-import { Product } from '../../../../@types/product';
+import { Product } from '../../../../types/product';
 
 // ----------------------------------------------------------------------
 

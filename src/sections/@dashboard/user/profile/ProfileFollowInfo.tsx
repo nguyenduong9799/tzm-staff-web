@@ -3,7 +3,7 @@ import { Card, Stack, Typography, Divider } from '@mui/material';
 // utils
 import { fNumber } from '../../../../utils/formatNumber';
 // @types
-import { Profile } from '../../../../@types/user';
+import { Profile } from '../../../../types/user';
 
 // ----------------------------------------------------------------------
 

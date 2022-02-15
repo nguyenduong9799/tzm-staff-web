@@ -7,7 +7,7 @@ import { PATH_DASHBOARD } from '../../../../routes/paths';
 // utils
 import { fCurrency } from '../../../../utils/formatNumber';
 // @types
-import { Product } from '../../../../@types/product';
+import { Product } from '../../../../types/product';
 // components
 import Label from '../../../../components/Label';
 import Image from '../../../../components/Image';

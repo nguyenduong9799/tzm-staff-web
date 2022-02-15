@@ -11,7 +11,7 @@ import useResponsive from '../../../hooks/useResponsive';
 import { fDate } from '../../../utils/formatTime';
 import { fShortenNumber } from '../../../utils/formatNumber';
 // @types
-import { Post } from '../../../@types/blog';
+import { Post } from '../../../types/blog';
 // components
 import Image from '../../../components/Image';
 import Iconify from '../../../components/Iconify';

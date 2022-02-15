@@ -2,7 +2,7 @@
 import { styled } from '@mui/material/styles';
 import { Box, Avatar, Button, Divider, Collapse, Typography } from '@mui/material';
 // @types
-import { Participant } from '../../../@types/chat';
+import { Participant } from '../../../types/chat';
 // components
 import Iconify from '../../../components/Iconify';
 

@@ -5,7 +5,7 @@ import { Box, Typography, IconButton } from '@mui/material';
 import cssStyles from '../../../utils/cssStyles';
 import { getFileType, getFileName, getFileThumb } from '../../../utils/getFileFormat';
 // @types
-import { Mail } from '../../../@types/mail';
+import { Mail } from '../../../types/mail';
 // components
 import Iconify from '../../../components/Iconify';
 import Scrollbar from '../../../components/Scrollbar';

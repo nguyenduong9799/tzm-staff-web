@@ -1,7 +1,7 @@
 // @mui
 import { Avatar, Typography, ListItemButton } from '@mui/material';
 // @types
-import { Contact } from '../../../@types/chat';
+import { Contact } from '../../../types/chat';
 //
 import SearchNotFound from '../../../components/SearchNotFound';
 

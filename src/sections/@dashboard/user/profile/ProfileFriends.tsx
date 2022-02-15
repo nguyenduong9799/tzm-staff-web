@@ -10,7 +10,7 @@ import {
   InputAdornment,
 } from '@mui/material';
 // @types
-import { Friend } from '../../../../@types/user';
+import { Friend } from '../../../../types/user';
 // components
 import Iconify from '../../../../components/Iconify';
 import InputStyle from '../../../../components/InputStyle';

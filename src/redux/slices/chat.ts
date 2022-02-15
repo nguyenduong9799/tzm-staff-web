@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 // utils
 import axios from '../../utils/axios';
 // @types
-import { Conversation, Participant } from '../../@types/chat';
+import { Conversation, Participant } from '../../types/chat';
 //
 import { dispatch } from '../store';
 

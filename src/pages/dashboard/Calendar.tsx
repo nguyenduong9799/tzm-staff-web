@@ -24,7 +24,7 @@ import { PATH_DASHBOARD } from '../../routes/paths';
 import useSettings from '../../hooks/useSettings';
 import useResponsive from '../../hooks/useResponsive';
 // @types
-import { CalendarView } from '../../@types/calendar';
+import { CalendarView } from '../../types/calendar';
 // components
 import Page from '../../components/Page';
 import Iconify from '../../components/Iconify';

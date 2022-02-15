@@ -20,7 +20,7 @@ import {
 // hooks
 import useResponsive from '../../../../hooks/useResponsive';
 // @types
-import { CardOption, PaymentOption } from '../../../../@types/product';
+import { CardOption, PaymentOption } from '../../../../types/product';
 // components
 import Image from '../../../../components/Image';
 import Iconify from '../../../../components/Iconify';

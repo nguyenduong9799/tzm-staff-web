@@ -15,7 +15,7 @@ import {
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
-import { Conversation, Participant, SendMessage } from '../../../@types/chat';
+import { Conversation, Participant, SendMessage } from '../../../types/chat';
 //
 import ChatRoom from './ChatRoom';
 import ChatMessageList from './ChatMessageList';

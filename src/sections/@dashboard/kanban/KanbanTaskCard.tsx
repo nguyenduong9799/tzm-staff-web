@@ -3,7 +3,7 @@ import { Draggable } from 'react-beautiful-dnd';
 // @mui
 import { Paper, Typography, Box, Checkbox } from '@mui/material';
 // @types
-import { KanbanCard } from '../../../@types/kanban';
+import { KanbanCard } from '../../../types/kanban';
 // components
 import Image from '../../../components/Image';
 import Iconify from '../../../components/Iconify';

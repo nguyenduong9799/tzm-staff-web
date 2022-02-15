@@ -2,7 +2,7 @@
 import { styled } from '@mui/material/styles';
 import { Link, Card, Typography, CardHeader, Stack } from '@mui/material';
 // @types
-import { Profile } from '../../../../@types/user';
+import { Profile } from '../../../../types/user';
 // components
 import Iconify from '../../../../components/Iconify';
 

@@ -3,7 +3,7 @@ import { EventInput } from '@fullcalendar/common';
 // utils
 import axios from '../../utils/axios';
 // @types
-import { CalendarState } from '../../@types/calendar';
+import { CalendarState } from '../../types/calendar';
 //
 import { dispatch } from '../store';
 

@@ -13,7 +13,7 @@ import createAvatar from '../../../utils/createAvatar';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
-import { Mail } from '../../../@types/mail';
+import { Mail } from '../../../types/mail';
 // components
 import Label from '../../../components/Label';
 import Avatar from '../../../components/Avatar';

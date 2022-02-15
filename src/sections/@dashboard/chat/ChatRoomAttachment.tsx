@@ -7,7 +7,7 @@ import { Box, Button, Divider, Collapse, Typography } from '@mui/material';
 import { fDateTime } from '../../../utils/formatTime';
 import { getFileFullName, getFileThumb } from '../../../utils/getFileFormat';
 // @types
-import { Conversation, Message } from '../../../@types/chat';
+import { Conversation, Message } from '../../../types/chat';
 // components
 import Iconify from '../../../components/Iconify';
 import Scrollbar from '../../../components/Scrollbar';

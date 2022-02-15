@@ -2,7 +2,7 @@ import { useState } from 'react';
 // @mui
 import { Box, Grid, Card, Button, Typography, Stack } from '@mui/material';
 // @types
-import { CreditCard, UserAddressBook, UserInvoice } from '../../../../@types/user';
+import { CreditCard, UserAddressBook, UserInvoice } from '../../../../types/user';
 //
 import AccountBillingAddressBook from './AccountBillingAddressBook';
 import AccountBillingPaymentMethod from './AccountBillingPaymentMethod';

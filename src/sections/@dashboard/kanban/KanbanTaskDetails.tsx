@@ -18,7 +18,7 @@ import {
 // hooks
 import useResponsive from '../../../hooks/useResponsive';
 // /@types
-import { KanbanCard } from '../../../@types/kanban';
+import { KanbanCard } from '../../../types/kanban';
 // components
 import Iconify from '../../../components/Iconify';
 import Scrollbar from '../../../components/Scrollbar';

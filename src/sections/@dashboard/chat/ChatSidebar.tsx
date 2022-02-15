@@ -12,7 +12,7 @@ import axios from '../../../utils/axios';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
-import { Contact } from '../../../@types/chat';
+import { Contact } from '../../../types/chat';
 // components
 import Iconify from '../../../components/Iconify';
 import Scrollbar from '../../../components/Scrollbar';

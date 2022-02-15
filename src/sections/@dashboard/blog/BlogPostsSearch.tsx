@@ -13,7 +13,7 @@ import axios from '../../../utils/axios';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // @types
-import { Post } from '../../../@types/blog';
+import { Post } from '../../../types/blog';
 // components
 import Image from '../../../components/Image';
 import Iconify from '../../../components/Iconify';

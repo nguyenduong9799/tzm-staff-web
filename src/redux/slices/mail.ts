@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 // utils
 import axios from '../../utils/axios';
 // @types
-import { Mail, MailLabel } from '../../@types/mail';
+import { Mail, MailLabel } from '../../types/mail';
 //
 import { dispatch } from '../store';
 

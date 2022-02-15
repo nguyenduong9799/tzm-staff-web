@@ -4,7 +4,7 @@ import { Typography, ListItemText, ListItemButton } from '@mui/material';
 // @types
 import { ICON } from '../../../config';
 // @types
-import { MailLabel } from '../../../@types/mail';
+import { MailLabel } from '../../../types/mail';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // components

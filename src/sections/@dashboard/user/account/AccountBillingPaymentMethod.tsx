@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // @types
-import { CreditCard } from '../../../../@types/user';
+import { CreditCard } from '../../../../types/user';
 // components
 import Image from '../../../../components/Image';
 import Iconify from '../../../../components/Iconify';

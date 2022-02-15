@@ -11,7 +11,7 @@ import useIsMountedRef from '../../hooks/useIsMountedRef';
 // utils
 import axios from '../../utils/axios';
 // @types
-import { Post } from '../../@types/blog';
+import { Post } from '../../types/blog';
 // components
 import Page from '../../components/Page';
 import Markdown from '../../components/Markdown';

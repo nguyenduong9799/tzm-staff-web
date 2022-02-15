@@ -4,7 +4,7 @@ import { LoadingButton } from '@mui/lab';
 import { alpha } from '@mui/material/styles';
 import { Box, Button, Container, Typography, DialogActions } from '@mui/material';
 // @types
-import { NewPostFormValues } from '../../../@types/blog';
+import { NewPostFormValues } from '../../../types/blog';
 // components
 import Image from '../../../components/Image';
 import Markdown from '../../../components/Markdown';

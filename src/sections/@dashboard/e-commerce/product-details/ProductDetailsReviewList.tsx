@@ -5,7 +5,7 @@ import { Box, List, Button, Rating, Avatar, ListItem, Pagination, Typography } f
 import { fDate } from '../../../../utils/formatTime';
 import { fShortenNumber } from '../../../../utils/formatNumber';
 // @types
-import { Product, ProductReview } from '../../../../@types/product';
+import { Product, ProductReview } from '../../../../types/product';
 // components
 import Iconify from '../../../../components/Iconify';
 

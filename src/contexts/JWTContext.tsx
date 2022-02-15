@@ -3,8 +3,8 @@ import { createContext, ReactNode, useEffect, useReducer } from 'react';
 import axios from '../utils/axios';
 import { isValidToken, setSession } from '../utils/jwt';
 // @types
-import { ActionMap, AuthState, AuthUser, JWTContextType } from '../@types/auth';
-import authenApi from 'src/api/authen';
+import { ActionMap, AuthState, AuthUser, JWTContextType } from '../types/auth';
+import authenApi from 'api/authen';
 
 // ----------------------------------------------------------------------
 

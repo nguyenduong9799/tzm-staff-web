@@ -3,7 +3,7 @@ import { formatDistanceToNowStrict } from 'date-fns';
 import { styled } from '@mui/material/styles';
 import { Avatar, Box, Typography } from '@mui/material';
 // @types
-import { Conversation, Message } from '../../../@types/chat';
+import { Conversation, Message } from '../../../types/chat';
 // components
 import Image from '../../../components/Image';
 

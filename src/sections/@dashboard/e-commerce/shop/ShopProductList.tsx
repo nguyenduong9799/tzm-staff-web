@@ -1,7 +1,7 @@
 // @mui
 import { Box } from '@mui/material';
 // @type
-import { Product } from '../../../../@types/product';
+import { Product } from '../../../../types/product';
 // components
 import { SkeletonProductItem } from '../../../../components/skeleton';
 //

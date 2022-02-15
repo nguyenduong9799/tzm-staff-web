@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 // @types
-import { Conversation } from '../../../@types/chat';
+import { Conversation } from '../../../types/chat';
 //
 import Scrollbar from '../../../components/Scrollbar';
 import LightboxModal from '../../../components/LightboxModal';

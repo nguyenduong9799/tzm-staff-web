@@ -6,7 +6,7 @@ import { fDate } from '../../../utils/formatTime';
 // hooks
 import useResponsive from '../../../hooks/useResponsive';
 // @types
-import { CalendarView } from '../../../@types/calendar';
+import { CalendarView } from '../../../types/calendar';
 // components
 import Iconify from '../../../components/Iconify';
 

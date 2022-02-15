@@ -3,7 +3,7 @@ import { Page, View, Text, Image, Document } from '@react-pdf/renderer';
 // utils
 import { fCurrency } from '../../../../utils/formatNumber';
 // @types
-import { Invoice } from '../../../../@types/product';
+import { Invoice } from '../../../../types/product';
 //
 import styles from './InvoiceStyle';
 

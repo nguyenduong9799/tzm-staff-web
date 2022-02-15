@@ -6,7 +6,7 @@ import useResponsive from '../../../hooks/useResponsive';
 // utils
 import { fDate } from '../../../utils/formatTime';
 // @types
-import { Post } from '../../../@types/blog';
+import { Post } from '../../../types/blog';
 // components
 import Image from '../../../components/Image';
 import Iconify from '../../../components/Iconify';

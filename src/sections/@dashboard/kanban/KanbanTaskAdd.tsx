@@ -16,7 +16,7 @@ import { MobileDateRangePicker } from '@mui/lab';
 // utils
 import uuidv4 from '../../../utils/uuidv4';
 // @types
-import { KanbanCard } from '../../../@types/kanban';
+import { KanbanCard } from '../../../types/kanban';
 // components
 import Iconify from '../../../components/Iconify';
 

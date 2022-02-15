@@ -1,7 +1,7 @@
 // @mui
 import { Grid, Typography } from '@mui/material';
 // @types
-import { Post } from '../../../@types/blog';
+import { Post } from '../../../types/blog';
 //
 import BlogPostCard from './BlogPostCard';
 

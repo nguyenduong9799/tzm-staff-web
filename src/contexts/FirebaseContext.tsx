@@ -9,7 +9,7 @@ import {
 } from 'firebase/auth';
 import { getFirestore, collection, doc, getDoc, setDoc, DocumentData } from 'firebase/firestore';
 // @types
-import { ActionMap, AuthState, AuthUser, FirebaseContextType } from '../@types/auth';
+import { ActionMap, AuthState, AuthUser, FirebaseContextType } from '../types/auth';
 //
 import { FIREBASE_API } from '../config';
 

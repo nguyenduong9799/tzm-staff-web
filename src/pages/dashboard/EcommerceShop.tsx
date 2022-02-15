@@ -10,7 +10,7 @@ import { getProducts, filterProducts } from '../../redux/slices/product';
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // @types
-import { Product, ProductFilter } from '../../@types/product';
+import { Product, ProductFilter } from '../../types/product';
 // hooks
 import useSettings from '../../hooks/useSettings';
 // components

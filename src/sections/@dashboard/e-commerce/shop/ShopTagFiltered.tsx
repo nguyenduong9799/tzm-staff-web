@@ -5,7 +5,7 @@ import { Chip, Typography, Stack, Button } from '@mui/material';
 // utils
 import getColorName from '../../../../utils/getColorName';
 // @type
-import { ProductFilter } from '../../../../@types/product';
+import { ProductFilter } from '../../../../types/product';
 // components
 import Iconify from '../../../../components/Iconify';
 

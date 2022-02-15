@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { alpha, styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
 // @types
-import { Product } from '../../../../@types/product';
+import { Product } from '../../../../types/product';
 //
 import Image from '../../../../components/Image';
 import LightboxModal from '../../../../components/LightboxModal';

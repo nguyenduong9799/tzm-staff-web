@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { Stack, Card, InputAdornment } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // @types
-import { Profile } from '../../../../@types/user';
+import { Profile } from '../../../../types/user';
 // components
 import Iconify from '../../../../components/Iconify';
 import { FormProvider, RHFTextField } from '../../../../components/hook-form';

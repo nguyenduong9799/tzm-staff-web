@@ -16,7 +16,7 @@ import {
 import getColorName from '../../../../utils/getColorName';
 import { fCurrency } from '../../../../utils/formatNumber';
 // @types
-import { CartItem } from '../../../../@types/product';
+import { CartItem } from '../../../../types/product';
 // components
 import Image from '../../../../components/Image';
 import Iconify from '../../../../components/Iconify';

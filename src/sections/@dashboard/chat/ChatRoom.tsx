@@ -5,7 +5,7 @@ import { Box, Drawer, Divider, IconButton, IconButtonProps } from '@mui/material
 // hooks
 import useResponsive from '../../../hooks/useResponsive';
 // @types
-import { Conversation, Participant } from '../../../@types/chat';
+import { Conversation, Participant } from '../../../types/chat';
 // components
 import Iconify from '../../../components/Iconify';
 //

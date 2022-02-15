@@ -34,6 +34,11 @@ export const PATH_PAGE = {
 
 export const PATH_DASHBOARD = {
   root: ROOTS_DASHBOARD,
+  beaner: {
+    orders: {
+      root: path(ROOTS_DASHBOARD, '/beaner/orders'),
+    },
+  },
   general: {
     app: path(ROOTS_DASHBOARD, '/app'),
     ecommerce: path(ROOTS_DASHBOARD, '/ecommerce'),

@@ -14,7 +14,7 @@ import {
   FormControlLabel,
 } from '@mui/material';
 // @types
-import { DeliveryOption } from '../../../../@types/product';
+import { DeliveryOption } from '../../../../types/product';
 // components
 import Iconify from '../../../../components/Iconify';
 
