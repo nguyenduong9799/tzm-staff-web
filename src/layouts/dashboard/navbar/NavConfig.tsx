@@ -33,6 +33,7 @@ const navConfig = [
     items: [
       { title: 'app', path: PATH_DASHBOARD.general.app, icon: ICONS.dashboard },
       { title: 'Đơn hàng', path: PATH_DASHBOARD.beaner.orders.root, icon: ICONS.ecommerce },
+      { title: 'Cửa hàng', path: PATH_DASHBOARD.driver.suppliers.root, icon: ICONS.cart },
     ],
   },
 ];

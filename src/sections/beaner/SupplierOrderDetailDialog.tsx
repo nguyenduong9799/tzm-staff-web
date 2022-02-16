@@ -21,12 +21,13 @@ import { useQuery } from 'react-query';
 import { Order, OrderDetail, OrderItem, OrderStatus } from 'types/order';
 import request from 'utils/axios';
 import { fCurrency } from 'utils/formatNumber';
-import OrderItemSummary from './OrderItemSummary';
 
 type Props = {
   orderId?: number | null;
+  supplierId?: number | null;
   onClose: () => any;
-  onUpdate: () => any;
+  onNext: () => any;
+  onPrevious: () => any;
 };
 
 export const ORDER_STATUS_OPTONS = [
@@ -54,15 +55,17 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
+const SupplierOrderDetailDialog = ({ orderId, supplierId, onClose, onNext, onPrevious }: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
   const theme = useTheme();
   const { data, isLoading } = useQuery(
-    ['orders', orderId],
+    ['suppliers', supplierId, 'orders', orderId],
     () =>
-      request.get<{ data: OrderDetail }>(`/stores/150/orders/${orderId}`).then((res) => res.data),
+      request
+        .get<{ data: OrderDetail }>(`/stores/150/suppliers/${supplierId}/orders/${orderId}`)
+        .then((res) => res.data),
     {
-      enabled: Boolean(orderId),
+      enabled: Boolean(orderId) && Boolean(supplierId),
     }
   );
 
@@ -92,6 +95,33 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
       valueType: 'money',
     },
   ];
+
+  const renderOrderItem = (orderItem: OrderItem, isEndItem: boolean = false) => (
+    <Stack
+      mb={2}
+      pb={2}
+      direction="row"
+      spacing={1}
+      sx={{ borderBottom: !isEndItem ? '1px solid #ccc' : 'none' }}
+    >
+      <Box width="40px">
+        <Typography variant="caption">{orderItem.quantity}x</Typography>
+      </Box>
+      <Box flex={1}>
+        <Typography variant="body1">{orderItem.product_name}</Typography>
+        <Stack spacing={0.5}>
+          {orderItem.list_of_childs.map((childItem) => (
+            <Typography variant="body2" key={childItem.order_detail_id}>
+              {childItem.quantity} x {childItem.product_name}
+            </Typography>
+          ))}
+        </Stack>
+      </Box>
+      <Box width="90px" textAlign="right">
+        <Typography>{fCurrency(orderItem.final_cost)}</Typography>
+      </Box>
+    </Stack>
+  );
 
   return (
     <Dialog
@@ -133,13 +163,9 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
                 <Typography mb={2} variant="h5">
                   Đơn hàng
                 </Typography>
-                {data?.data.list_order_details.map((order, idx) => (
-                  <OrderItemSummary
-                    orderItem={order}
-                    key={order.order_detail_id}
-                    isEndItem={idx === data?.data.list_order_details.length - 1}
-                  />
-                ))}
+                {data?.data.list_order_details.map((order: OrderItem, idx) =>
+                  renderOrderItem(order, idx === data?.data.list_order_details.length - 1)
+                )}
               </Box>
             </DialogContentText>
           </DialogContent>
@@ -156,13 +182,14 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
             bgcolor: theme.palette.background.default,
           }}
         >
-          <Stack py={2} px={1} direction="row" spacing={2} justifyContent="flex-end">
-            <Button onClick={onClose} color="inherit">
-              Quay lại
+          <Stack py={2} px={1} direction="row" spacing={2} justifyContent="space-between">
+            <Button onClick={onPrevious} color="inherit">
+              Trước
             </Button>
-            {data?.data.order_status === OrderStatus.NEW && (
-              <Button onClick={onUpdate}>Cập nhật</Button>
-            )}
+
+            <Button onClick={onNext} color="inherit">
+              Tiếp theo
+            </Button>
           </Stack>
         </Box>
       </Box>
@@ -170,4 +197,4 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
   );
 };
 
-export default OrderDetailDialog;
+export default SupplierOrderDetailDialog;

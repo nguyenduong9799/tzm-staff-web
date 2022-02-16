@@ -15,6 +15,8 @@ import { PATH_AFTER_LOGIN } from '../config';
 // components
 import LoadingScreen from '../components/LoadingScreen';
 import BeanerOrderList from 'pages/beaner/orders';
+import SupplierList from 'pages/driver/supplier/list';
+import SupplierOrderList from 'pages/driver/supplier/[supplierId]';
 
 // ----------------------------------------------------------------------
 
@@ -74,6 +76,13 @@ export default function Router() {
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'app', element: <GeneralApp /> },
         { path: 'beaner/orders', element: <BeanerOrderList /> },
+        {
+          path: 'driver/suppliers',
+          children: [
+            { path: '', element: <SupplierList /> },
+            { path: ':supplierId/orders', element: <SupplierOrderList /> },
+          ],
+        },
       ],
     },
 

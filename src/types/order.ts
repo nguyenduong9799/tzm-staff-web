@@ -30,21 +30,6 @@ export enum OrderStatus {
   NEW = 1,
 }
 
-export interface ListOfChild {
-  order_detail_id: number;
-  product_name: string;
-  product_type: number;
-  quantity: number;
-  order_status: number;
-  discount: number;
-  final_amount: number;
-  description: string;
-  supplier_store_name: string;
-  supplier_store_id: number;
-  supplier_id: number;
-  list_of_childs: any[];
-}
-
 export interface OrderItem {
   order_detail_id: number;
   product_name: string;
@@ -56,8 +41,11 @@ export interface OrderItem {
   description: string;
   supplier_store_name: string;
   supplier_store_id: number;
+  unit_price: number;
+  unit_cost: number;
+  final_cost: number;
   supplier_id: number;
-  list_of_childs: ListOfChild[];
+  list_of_childs: OrderItem[];
   supplier_notes: any[];
 }
 

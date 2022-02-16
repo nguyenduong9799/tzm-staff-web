@@ -39,6 +39,13 @@ export const PATH_DASHBOARD = {
       root: path(ROOTS_DASHBOARD, '/beaner/orders'),
     },
   },
+  driver: {
+    suppliers: {
+      root: path(ROOTS_DASHBOARD, '/driver/suppliers'),
+      supplierOrder: (supplierId: number) =>
+        path(ROOTS_DASHBOARD, `/driver/suppliers/${supplierId}/orders`),
+    },
+  },
   general: {
     app: path(ROOTS_DASHBOARD, '/app'),
     ecommerce: path(ROOTS_DASHBOARD, '/ecommerce'),
