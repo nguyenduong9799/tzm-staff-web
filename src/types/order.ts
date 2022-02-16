@@ -46,7 +46,7 @@ export interface OrderItem {
   final_cost: number;
   supplier_id: number;
   list_of_childs: OrderItem[];
-  supplier_notes: any[];
+  supplier_notes?: { content: string; order_id: number; supplier_store_id: number }[];
 }
 
 export interface OtherAmount {
@@ -69,4 +69,5 @@ export interface OrderDetail {
   package_ids: any[];
   list_order_details: OrderItem[];
   other_amounts: OtherAmount[];
+  supplier_notes?: { content: string; order_id: number; supplier_store_id: number }[];
 }

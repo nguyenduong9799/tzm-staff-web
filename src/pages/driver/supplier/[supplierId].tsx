@@ -1,4 +1,4 @@
-import { OpenInFullOutlined } from '@mui/icons-material';
+import { ArrowBack, OpenInFullOutlined } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -16,7 +16,8 @@ import EmptyContent from 'components/EmptyContent';
 import Page from 'components/Page';
 import React, { useMemo, useState } from 'react';
 import { useQuery } from 'react-query';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import { PATH_DASHBOARD } from 'routes/paths';
 import SupplierOrderDetailDialog from 'sections/beaner/SupplierOrderDetailDialog';
 import { Order, OrderResponse } from 'types/order';
 import request from 'utils/axios';
@@ -26,6 +27,7 @@ type Props = {};
 
 const SupplierOrderList = (props: Props) => {
   const { supplierId } = useParams();
+  const navigate = useNavigate();
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
 
   const { data, isLoading } = useQuery(['suppliers', supplierId, 'orders'], () =>
@@ -80,8 +82,18 @@ const SupplierOrderList = (props: Props) => {
           </Stack>
         </Box>
         <Divider sx={{ my: 2 }} />
+        <Box sx={{ position: 'fixed', zIndex: 99, left: 24, bottom: 24 }}>
+          <Fab
+            onClick={() => navigate(PATH_DASHBOARD.driver.suppliers.root)}
+            size="medium"
+            aria-label="add"
+            color="secondary"
+          >
+            <ArrowBack />
+          </Fab>
+        </Box>
         {orders && totalOrder !== 0 && (
-          <Box sx={{ position: 'fixed', right: 24, bottom: 24 }}>
+          <Box sx={{ position: 'fixed', zIndex: 99, right: 24, bottom: 24 }}>
             <Fab
               onClick={() => setSelectedOrderId(orders[0].order_id)}
               size="medium"
@@ -116,7 +128,7 @@ const SupplierOrderList = (props: Props) => {
           )}
           {totalOrder === 0 && <EmptyContent title="Không có đơn hàng nào" />}
         </Box>
-        <Box>
+        <Box pb={6}>
           <Stack spacing={2}>{orders.map(renderOrder)}</Stack>
         </Box>
       </Container>

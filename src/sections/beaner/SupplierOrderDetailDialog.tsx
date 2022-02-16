@@ -83,7 +83,7 @@ const SupplierOrderDetailDialog = ({
     setOpen(Boolean(orderId));
   }, [orderId]);
 
-  const orderColumns: ResoDescriptionColumnType<Order>[] = [
+  const orderColumns: ResoDescriptionColumnType<OrderDetail>[] = [
     {
       title: 'Số sản phẩm',
       dataIndex: 'master_product_quantity',
@@ -103,6 +103,14 @@ const SupplierOrderDetailDialog = ({
       title: 'Tổng tiền',
       dataIndex: 'final_amount',
       valueType: 'money',
+    },
+    {
+      title: 'Ghi chú',
+      dataIndex: 'supplier_notes',
+      span: 2,
+      render: (_, { supplier_notes }) => (
+        <Typography>{supplier_notes?.length && supplier_notes[0].content}</Typography>
+      ),
     },
   ];
 
