@@ -28,6 +28,8 @@ type Props = {
   onClose: () => any;
   onNext: () => any;
   onPrevious: () => any;
+  total: number;
+  current: number;
 };
 
 export const ORDER_STATUS_OPTONS = [
@@ -55,7 +57,15 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const SupplierOrderDetailDialog = ({ orderId, supplierId, onClose, onNext, onPrevious }: Props) => {
+const SupplierOrderDetailDialog = ({
+  orderId,
+  supplierId,
+  onClose,
+  onNext,
+  onPrevious,
+  total,
+  current,
+}: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
   const theme = useTheme();
   const { data, isLoading } = useQuery(
@@ -182,11 +192,22 @@ const SupplierOrderDetailDialog = ({ orderId, supplierId, onClose, onNext, onPre
             bgcolor: theme.palette.background.default,
           }}
         >
-          <Stack py={2} px={1} direction="row" spacing={2} justifyContent="space-between">
+          <Stack
+            py={2}
+            px={1}
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            justifyContent="space-between"
+          >
             <Button onClick={onPrevious} color="inherit">
               Trước
             </Button>
-
+            <Box textAlign="center" mx="auto">
+              <Typography>
+                {current} / {total}
+              </Typography>
+            </Box>
             <Button onClick={onNext} color="inherit">
               Tiếp theo
             </Button>

@@ -7,6 +7,7 @@ import {
   CardActions,
   CircularProgress,
   Container,
+  Divider,
   Fab,
   Stack,
   Typography,
@@ -61,12 +62,24 @@ const SupplierOrderList = (props: Props) => {
 
   return (
     <Page title="Danh sách đơn hàng nhà cung cấp">
-      <Box textAlign="center" mb={4}>
-        <Typography variant="h4">Danh sách đơn hàng</Typography>
-        <Typography variant="body1">{totalOrder ?? 0} đơn hàng</Typography>
-        <Typography fontWeight="bold">Tổng tiền: {formatCurrency(totalFinalAmount)}</Typography>
-      </Box>
       <Container>
+        <Box textAlign="center">
+          <Typography variant="h4" mb={2}>
+            Danh sách đơn hàng
+          </Typography>
+
+          <Stack direction="row" spacing={1}>
+            <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
+              <Typography variant="body1">Tổng đơn:</Typography>
+              <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
+            </Card>
+            <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
+              <Typography>Tổng tiền: </Typography>
+              <Typography fontWeight="bold">{formatCurrency(totalFinalAmount)}</Typography>
+            </Card>
+          </Stack>
+        </Box>
+        <Divider sx={{ my: 2 }} />
         {orders && totalOrder !== 0 && (
           <Box sx={{ position: 'fixed', right: 24, bottom: 24 }}>
             <Fab
@@ -85,6 +98,8 @@ const SupplierOrderList = (props: Props) => {
             </Box>
           ) : (
             <SupplierOrderDetailDialog
+              current={currentIdx + 1}
+              total={totalOrder}
               supplierId={Number(supplierId)}
               onPrevious={() => {
                 console.log('orders[currentIdx - 1]', orders[currentIdx - 1]);

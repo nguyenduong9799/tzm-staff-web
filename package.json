@@ -110,7 +110,19 @@
     "stylis-plugin-rtl": "^2.1.1",
     "web-vitals": "^2.1.0",
     "worker-loader": "^3.0.8",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "workbox-background-sync": "^5.1.3",
+    "workbox-broadcast-update": "^5.1.3",
+    "workbox-cacheable-response": "^5.1.3",
+    "workbox-core": "^5.1.3",
+    "workbox-expiration": "^5.1.3",
+    "workbox-google-analytics": "^5.1.3",
+    "workbox-navigation-preload": "^5.1.3",
+    "workbox-precaching": "^5.1.3",
+    "workbox-range-requests": "^5.1.3",
+    "workbox-routing": "^5.1.3",
+    "workbox-strategies": "^5.1.3",
+    "workbox-streams": "^5.1.3"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",

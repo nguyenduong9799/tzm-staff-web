@@ -3,6 +3,7 @@ import {
   AppBar,
   Box,
   Button,
+  Chip,
   CircularProgress,
   Dialog,
   DialogContent,
@@ -16,6 +17,7 @@ import {
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import ResoDescriptions, { ResoDescriptionColumnType } from 'components/ResoDescriptions';
+import { sortBy, uniq } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { Order, OrderDetail, OrderItem, OrderStatus } from 'types/order';
@@ -92,6 +94,8 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
       valueType: 'money',
     },
   ];
+  const orders = sortBy(data?.data.list_order_details ?? [], (o) => o.supplier_id);
+  const suppliers = uniq(orders.map((order) => order.supplier_store_name));
 
   return (
     <Dialog
@@ -120,7 +124,7 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
           </Box>
         )}
         {!isLoading && (
-          <DialogContent sx={{ my: 4 }}>
+          <DialogContent sx={{ my: 4, pb: 4 }}>
             <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
               <ResoDescriptions
                 title="Thông tin"
@@ -129,15 +133,22 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
                 datasource={data?.data}
                 column={2}
               />
-              <Box py={4}>
+              <Box my={2}>
+                <Stack spacing={1} direction="row">
+                  {suppliers.map((s) => (
+                    <Chip key={s} label={s} />
+                  ))}
+                </Stack>
+              </Box>
+              <Box>
                 <Typography mb={2} variant="h5">
                   Đơn hàng
                 </Typography>
-                {data?.data.list_order_details.map((order, idx) => (
+                {orders.map((order, idx) => (
                   <OrderItemSummary
                     orderItem={order}
                     key={order.order_detail_id}
-                    isEndItem={idx === data?.data.list_order_details.length - 1}
+                    isEndItem={idx === orders.length - 1}
                   />
                 ))}
               </Box>
