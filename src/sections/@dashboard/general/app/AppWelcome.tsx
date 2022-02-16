@@ -1,7 +1,6 @@
-import { Link as RouterLink } from 'react-router-dom';
+import { Button, Card, CardContent, CardProps, Typography } from '@mui/material';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Typography, Button, Card, CardContent, CardProps } from '@mui/material';
 import { SeoIllustration } from '../../../../assets';
 
 // ----------------------------------------------------------------------
@@ -15,8 +14,8 @@ const RootStyle = styled(Card)(({ theme }) => ({
     display: 'flex',
     textAlign: 'left',
     alignItems: 'center',
-    justifyContent: 'space-between'
-  }
+    justifyContent: 'space-between',
+  },
 }));
 
 // ----------------------------------------------------------------------
@@ -32,20 +31,20 @@ export default function AppWelcome({ displayName }: AppWelcomeProps) {
         sx={{
           p: { md: 0 },
           pl: { md: 5 },
-          color: 'grey.800'
+          color: 'grey.800',
         }}
       >
-        <Typography gutterBottom variant="h4">
-          Welcome back,
+        <Typography gutterBottom variant="body1">
+          Chào mừng quay lại,
           <br /> {!displayName ? '...' : displayName}!
         </Typography>
 
-        <Typography variant="body2" sx={{ pb: { xs: 3, xl: 5 }, maxWidth: 480, mx: 'auto' }}>
-          If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything
+        <Typography variant="h4" sx={{ pb: { xs: 3, xl: 5 }, maxWidth: 480, mx: 'auto' }}>
+          Chất lượng đến từ sự tinh tế
         </Typography>
 
-        <Button variant="contained" to="#" component={RouterLink}>
-          Go Now
+        <Button variant="contained" href="tel:03943236351" component="a">
+          Hotline
         </Button>
       </CardContent>
 
@@ -53,7 +52,7 @@ export default function AppWelcome({ displayName }: AppWelcomeProps) {
         sx={{
           p: 3,
           width: 360,
-          margin: { xs: 'auto', md: 'inherit' }
+          margin: { xs: 'auto', md: 'inherit' },
         }}
       />
     </RootStyle>
