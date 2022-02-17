@@ -134,7 +134,7 @@ const BeanerOrderList = (props: Props) => {
           )}
         </Box>
         <Box>
-          <Stack spacing={2}>{data?.list_of_orders?.reverse().map(renderOrder)}</Stack>
+          <Stack spacing={2}>{data?.list_of_orders?.map(renderOrder)}</Stack>
         </Box>
       </Container>
     </Page>

@@ -26,6 +26,7 @@ const ConfirmDialog = ({ open, title, onClose, onOk, ...others }: Props) => {
     if (result) {
       onClose();
     }
+    setLoading(false);
   };
 
   if (!open) return <></>;

@@ -36,7 +36,7 @@ const SupplierOrderList = (props: Props) => {
       .then((res) => res.data.data[0])
   );
 
-  const orders = useMemo(() => data?.list_of_orders.reverse() ?? [], [data]);
+  const orders = useMemo(() => data?.list_of_orders ?? [], [data]);
   const totalOrder = orders.length;
   const currentIdx = selectedOrderId ? orders.findIndex((o) => o.order_id === selectedOrderId) : -1;
   const totalFinalAmount = orders.reduce((total, order) => total + order.final_amount, 0);
@@ -126,7 +126,7 @@ const SupplierOrderList = (props: Props) => {
               onClose={() => setSelectedOrderId(null)}
             />
           )}
-          {totalOrder === 0 && <EmptyContent title="Không có đơn hàng nào" />}
+          {!isLoading && totalOrder === 0 && <EmptyContent title="Không có đơn hàng nào" />}
         </Box>
         <Box pb={6}>
           <Stack spacing={2}>{orders.map(renderOrder)}</Stack>
