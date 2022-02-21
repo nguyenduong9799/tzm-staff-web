@@ -6,6 +6,7 @@ import {
   CardActions,
   Chip,
   Container,
+  IconButton,
   Stack,
   Typography,
 } from '@mui/material';
@@ -18,6 +19,8 @@ import Page from '../../../components/Page';
 import ConfirmDialog from 'components/confirm-dialog/ConfirmDialog';
 import { useSnackbar } from 'notistack';
 import { CircularProgress } from '@mui/material';
+import { formatCurrency } from 'utils/utils';
+import { Replay } from '@mui/icons-material';
 type Props = {};
 
 const TABLE_HEAD = [
@@ -31,18 +34,23 @@ const TABLE_HEAD = [
 const BeanerOrderList = (props: Props) => {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [confirmOrderId, setConfirmOrderId] = useState<number | null>(null);
-  const [filter, setFilter] = useState<any>({});
+  const [filter, setFilter] = useState<any>({
+    'order-status': OrderStatus.NEW,
+  });
   const { enqueueSnackbar } = useSnackbar();
 
   const {
     data,
     refetch: fetchOrders,
     isLoading,
+    isFetching,
   } = useQuery(['beaner-orders', filter], () =>
     request
       .get<{ data: OrderResponse[] }>('/stores/150/orders', { params: filter })
       .then((res) => res.data.data[0])
   );
+
+  console.log('isLoading', isLoading);
 
   const renderOrder = (order: Order) => (
     <Card key={order.order_id}>
@@ -82,7 +90,10 @@ const BeanerOrderList = (props: Props) => {
       });
 
   const totalOrder = data?.list_of_orders.length;
-
+  const totalFinalAmount = (data?.list_of_orders ?? []).reduce(
+    (total, order) => total + order.final_amount,
+    0
+  );
   const filterOrderStatus = (status?: OrderStatus) => {
     setFilter({ 'order-status': status ?? '' });
   };
@@ -92,7 +103,16 @@ const BeanerOrderList = (props: Props) => {
       <Container>
         <Box textAlign="center" mb={4}>
           <Typography variant="h4">Danh sách đơn hàng</Typography>
-          <Typography variant="body1">{totalOrder ?? 0} đơn hàng</Typography>
+          <Stack direction="row" spacing={1}>
+            <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
+              <Typography variant="body1">Tổng đơn:</Typography>
+              <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
+            </Card>
+            <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
+              <Typography>Tổng tiền: </Typography>
+              <Typography fontWeight="bold">{formatCurrency(totalFinalAmount)}</Typography>
+            </Card>
+          </Stack>
         </Box>
         <Box>
           <ConfirmDialog
@@ -104,34 +124,45 @@ const BeanerOrderList = (props: Props) => {
             onOk={handleUpdateOrder}
             open={Boolean(confirmOrderId)}
           />
-          <Stack direction="row" spacing={1} mb={2}>
-            <Chip
-              label="Tất cả"
-              variant={!filter['order-status'] ? 'filled' : 'outlined'}
-              onClick={() => filterOrderStatus()}
-            />
-            <Chip
-              label="Mới"
-              variant={filter['order-status'] === OrderStatus.NEW ? 'filled' : 'outlined'}
-              onClick={() => filterOrderStatus(OrderStatus.NEW)}
-            />
-            <Chip
-              label="Hoàn thành"
-              variant={filter['order-status'] === OrderStatus.DONE ? 'filled' : 'outlined'}
-              onClick={() => filterOrderStatus(OrderStatus.DONE)}
-            />
-          </Stack>
-          {isLoading ? (
-            <Box textAlign="center" p={4}>
-              <CircularProgress />
+          <Stack direction="row" spacing={1} mb={2} justifyContent="space-between">
+            <Stack direction="row" spacing={1}>
+              <Chip
+                label="Mới"
+                variant={filter['order-status'] === OrderStatus.NEW ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus(OrderStatus.NEW)}
+              />
+              <Chip
+                label="Hoàn thành"
+                variant={filter['order-status'] === OrderStatus.DONE ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus(OrderStatus.DONE)}
+              />
+              <Chip
+                label="Tất cả"
+                variant={!filter['order-status'] ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus()}
+              />
+            </Stack>
+            <Box>
+              {!isFetching && (
+                <Box>
+                  <IconButton onClick={() => fetchOrders()}>
+                    <Replay />
+                  </IconButton>
+                </Box>
+              )}
+              {isFetching ? (
+                <Box textAlign="center">
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <OrderDetailDialog
+                  onUpdate={() => setConfirmOrderId(selectedOrderId)}
+                  orderId={selectedOrderId}
+                  onClose={() => setSelectedOrderId(null)}
+                />
+              )}
             </Box>
-          ) : (
-            <OrderDetailDialog
-              onUpdate={() => setConfirmOrderId(selectedOrderId)}
-              orderId={selectedOrderId}
-              onClose={() => setSelectedOrderId(null)}
-            />
-          )}
+          </Stack>
         </Box>
         <Box>
           <Stack spacing={2}>{data?.list_of_orders?.map(renderOrder)}</Stack>

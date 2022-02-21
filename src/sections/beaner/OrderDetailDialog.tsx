@@ -94,6 +94,19 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
       valueType: 'money',
     },
   ];
+  const customerColumns: ResoDescriptionColumnType<Order>[] = [
+    {
+      title: 'Tên khách hàng',
+      dataIndex: ['customer', 'name'],
+      span: 2,
+    },
+    {
+      title: 'SDT',
+      dataIndex: ['customer', 'phone_number'],
+      render: (phone) => <a href={`tel: ${phone}`}>{phone}</a>,
+      span: 2,
+    },
+  ];
   const orders = sortBy(data?.data.list_order_details ?? [], (o) => o.supplier_id);
   const suppliers = uniq(orders.map((order) => order.supplier_store_name));
 
@@ -117,7 +130,7 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
           </Typography>
         </Toolbar>
       </AppBar>
-      <Box pt={4}>
+      <Box pt={2}>
         {isLoading && (
           <Box p={4} textAlign="center">
             <CircularProgress />
@@ -130,6 +143,13 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
                 title="Thông tin"
                 labelProps={{ fontWeight: 'bold' }}
                 columns={orderColumns as any}
+                datasource={data?.data}
+                column={2}
+              />
+              <ResoDescriptions
+                title="Khách hàng"
+                labelProps={{ fontWeight: 'bold' }}
+                columns={customerColumns as any}
                 datasource={data?.data}
                 column={2}
               />

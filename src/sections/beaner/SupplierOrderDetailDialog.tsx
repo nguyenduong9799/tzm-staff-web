@@ -114,6 +114,20 @@ const SupplierOrderDetailDialog = ({
     },
   ];
 
+  const customerColumns: ResoDescriptionColumnType<Order>[] = [
+    {
+      title: 'Tên khách hàng',
+      dataIndex: ['customer', 'name'],
+      span: 2,
+    },
+    {
+      title: 'SDT',
+      dataIndex: ['customer', 'phone_number'],
+      render: (phone) => <a href={`tel: ${phone}`}>{phone}</a>,
+      span: 2,
+    },
+  ];
+
   const renderOrderItem = (orderItem: OrderItem, isEndItem: boolean = false) => (
     <Stack
       mb={2}
@@ -174,6 +188,13 @@ const SupplierOrderDetailDialog = ({
                 title="Thông tin"
                 labelProps={{ fontWeight: 'bold' }}
                 columns={orderColumns as any}
+                datasource={data?.data}
+                column={2}
+              />
+              <ResoDescriptions
+                title="Khách hàng"
+                labelProps={{ fontWeight: 'bold' }}
+                columns={customerColumns as any}
                 datasource={data?.data}
                 column={2}
               />
