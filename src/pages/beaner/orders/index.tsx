@@ -52,26 +52,33 @@ const BeanerOrderList = (props: Props) => {
 
   console.log('isLoading', isLoading);
 
-  const renderOrder = (order: Order) => (
-    <Card key={order.order_id}>
-      <CardActionArea onClick={() => setSelectedOrderId(order.order_id)}>
-        <Box sx={{ px: 2, pt: 1 }}>
-          <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
-            <Box>
-              <Typography variant="h6">{order.invoice_id}</Typography>
-              <Typography>{order.customer.name}</Typography>
-            </Box>
-            <Box>{order.master_product_quantity} món</Box>
-          </Stack>
-        </Box>
-      </CardActionArea>
-      <CardActions>
-        <Button onClick={() => setSelectedOrderId(order.order_id)} size="small" color="primary">
-          Chi tiết
-        </Button>
-      </CardActions>
-    </Card>
-  );
+  const renderOrder = (order: Order) => {
+    const isCancled = order.order_status === OrderStatus.CANCLE;
+    return (
+      <Card
+        elevation={isCancled ? 0 : 1}
+        key={order.order_id}
+        sx={{ bgcolor: isCancled ? '#ccc' : 'white' }}
+      >
+        <CardActionArea disabled onClick={() => setSelectedOrderId(order.order_id)}>
+          <Box sx={{ px: 2, pt: 1 }}>
+            <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+              <Box>
+                <Typography variant="h6">{order.invoice_id}</Typography>
+                <Typography>{order.customer.name}</Typography>
+              </Box>
+              <Box>{order.master_product_quantity} món</Box>
+            </Stack>
+          </Box>
+        </CardActionArea>
+        <CardActions>
+          <Button onClick={() => setSelectedOrderId(order.order_id)} size="small" color="primary">
+            Chi tiết
+          </Button>
+        </CardActions>
+      </Card>
+    );
+  };
 
   const handleUpdateOrder = () =>
     request
@@ -94,6 +101,12 @@ const BeanerOrderList = (props: Props) => {
     (total, order) => total + order.final_amount,
     0
   );
+
+  const totalProduct = (data?.list_of_orders ?? []).reduce(
+    (total, order) => total + order.master_product_quantity,
+    0
+  );
+
   const filterOrderStatus = (status?: OrderStatus) => {
     setFilter({ 'order-status': status ?? '' });
   };
@@ -105,8 +118,16 @@ const BeanerOrderList = (props: Props) => {
           <Typography variant="h4">Danh sách đơn hàng</Typography>
           <Stack direction="row" spacing={1}>
             <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
-              <Typography variant="body1">Tổng đơn:</Typography>
-              <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
+              <Stack direction="row" spacing={1} justifyContent="space-between">
+                <Box>
+                  <Typography variant="body1">Tổng đơn:</Typography>
+                  <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body1">Tổng phần:</Typography>
+                  <Typography fontWeight="bold">{totalProduct ?? 0} </Typography>
+                </Box>
+              </Stack>
             </Card>
             <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
               <Typography>Tổng tiền: </Typography>
@@ -135,6 +156,11 @@ const BeanerOrderList = (props: Props) => {
                 label="Hoàn thành"
                 variant={filter['order-status'] === OrderStatus.DONE ? 'filled' : 'outlined'}
                 onClick={() => filterOrderStatus(OrderStatus.DONE)}
+              />
+              <Chip
+                label="Đã huỷ"
+                variant={filter['order-status'] === OrderStatus.CANCLE ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus(OrderStatus.CANCLE)}
               />
               <Chip
                 label="Tất cả"

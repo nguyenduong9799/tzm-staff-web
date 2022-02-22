@@ -28,6 +28,7 @@ export type Customer = {
 export enum OrderStatus {
   DONE = 3,
   NEW = 1,
+  CANCLE = 4,
 }
 
 export interface OrderItem {

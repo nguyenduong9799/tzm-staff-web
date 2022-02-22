@@ -41,6 +41,11 @@ const SupplierOrderList = (props: Props) => {
   const currentIdx = selectedOrderId ? orders.findIndex((o) => o.order_id === selectedOrderId) : -1;
   const totalFinalAmount = orders.reduce((total, order) => total + order.final_amount, 0);
 
+  const totalProduct = (data?.list_of_orders ?? []).reduce(
+    (total, order) => total + order.master_product_quantity,
+    0
+  );
+
   const renderOrder = (order: Order) => (
     <Card key={order.order_id}>
       <CardActionArea onClick={() => setSelectedOrderId(order.order_id)}>
@@ -72,8 +77,16 @@ const SupplierOrderList = (props: Props) => {
 
           <Stack direction="row" spacing={1}>
             <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
-              <Typography variant="body1">Tổng đơn:</Typography>
-              <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
+              <Stack direction="row" spacing={1} justifyContent="space-between">
+                <Box>
+                  <Typography variant="body1">Tổng đơn:</Typography>
+                  <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body1">Tổng phần:</Typography>
+                  <Typography fontWeight="bold">{totalProduct ?? 0} </Typography>
+                </Box>
+              </Stack>
             </Card>
             <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
               <Typography>Tổng tiền: </Typography>

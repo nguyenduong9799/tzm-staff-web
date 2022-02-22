@@ -46,6 +46,11 @@ export const ORDER_STATUS_OPTONS = [
     value: OrderStatus.DONE,
     color: 'success',
   },
+  {
+    label: 'Huỷ',
+    value: OrderStatus.CANCLE,
+    color: 'warning',
+  },
 ];
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
