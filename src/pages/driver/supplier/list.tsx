@@ -16,7 +16,6 @@ type Props = {};
 const SupplierList = (props: Props) => {
   const store: Store = getAreaCookie();
   const storeId = store.id;
-  console.log('storeid cua trang suplier', storeId);
   const { data: suppliers, isLoading } = useQuery([storeId, 'suppliers'], () =>
     request.get<{ data: Supplier[] }>(`/stores/${storeId}/suppliers`).then((res) => res.data.data)
   );

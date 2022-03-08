@@ -41,7 +41,6 @@ const BeanerOrderList = (props: Props) => {
   const { enqueueSnackbar } = useSnackbar();
   const store: Store = getAreaCookie();
   const storeId = store.id;
-  console.log('storeid cua trang order', storeId);
   const {
     data,
     refetch: fetchOrders,

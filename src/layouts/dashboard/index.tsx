@@ -81,7 +81,6 @@ export default function DashboardLayout() {
       })
       .then((res) => res.data.data)
   );
-  console.log(stores);
   const handleClick = () => {
     setStore(null);
     delete_cookie(AREA_COOKIE_KEY);
