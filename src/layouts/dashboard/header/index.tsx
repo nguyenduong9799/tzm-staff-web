@@ -1,6 +1,6 @@
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar } from '@mui/material';
+import { Box, Stack, AppBar, Toolbar, Button } from '@mui/material';
 // hooks
 import useOffSetTop from '../../../hooks/useOffSetTop';
 import useResponsive from '../../../hooks/useResponsive';
@@ -61,10 +61,12 @@ type Props = {
   onOpenSidebar: VoidFunction;
   isCollapse?: boolean;
   verticalLayout?: boolean;
+  handleClick: VoidFunction;
 };
 
 export default function DashboardHeader({
   onOpenSidebar,
+  handleClick,
   isCollapse = false,
   verticalLayout = false,
 }: Props) {
@@ -91,6 +93,9 @@ export default function DashboardHeader({
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
+          <Button onClick={handleClick} variant="outlined">
+            Chọn Khu Vực
+          </Button>
           <AccountPopover />
         </Stack>
       </Toolbar>

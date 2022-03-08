@@ -6,14 +6,19 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router';
 import { PATH_DASHBOARD } from 'routes/paths';
+import { Store } from 'types/store';
 import { Supplier } from 'types/supplier';
 import request from 'utils/axios';
+import { getAreaCookie } from 'utils/utils';
 
 type Props = {};
 
 const SupplierList = (props: Props) => {
-  const { data: suppliers, isLoading } = useQuery(['suppliers'], () =>
-    request.get<{ data: Supplier[] }>(`/stores/150/suppliers`).then((res) => res.data.data)
+  const store: Store = getAreaCookie();
+  const storeId = store.id;
+  console.log('storeid cua trang suplier', storeId);
+  const { data: suppliers, isLoading } = useQuery([storeId, 'suppliers'], () =>
+    request.get<{ data: Supplier[] }>(`/stores/${storeId}/suppliers`).then((res) => res.data.data)
   );
   const navigate = useNavigate();
 

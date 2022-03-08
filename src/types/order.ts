@@ -59,6 +59,7 @@ export interface OtherAmount {
 export interface OrderDetail {
   order_id: number;
   invoice_id: string;
+  address: string;
   master_product_quantity: number;
   total_amount: number;
   final_amount: number;

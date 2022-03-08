@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { createContext, useState } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box } from '@mui/material';
+import { Box, Card, CircularProgress, Container, Fab, Stack, Typography } from '@mui/material';
 // hooks
 import useSettings from '../../hooks/useSettings';
 import useResponsive from '../../hooks/useResponsive';
@@ -13,6 +14,14 @@ import { HEADER, NAVBAR } from '../../config';
 import DashboardHeader from './header';
 import NavbarVertical from './navbar/NavbarVertical';
 import NavbarHorizontal from './navbar/NavbarHorizontal';
+import { Store } from 'types/store';
+import { ArrowForward } from '@mui/icons-material';
+import { useQuery } from 'react-query';
+import { PATH_DASHBOARD } from 'routes/paths';
+import request from 'utils/axios';
+import Page from 'components/Page';
+import { delete_cookie, getCookie, setCookie } from 'utils/utils';
+import { AREA_COOKIE_KEY } from 'utils/constants';
 
 // ----------------------------------------------------------------------
 
@@ -51,13 +60,89 @@ export default function DashboardLayout() {
   const isDesktop = useResponsive('up', 'lg');
 
   const [open, setOpen] = useState(false);
-
+  const [store, setStore] = useState<Store | null>(() => {
+    try {
+      return JSON.parse(getCookie(AREA_COOKIE_KEY));
+    } catch (e) {
+      return null;
+    }
+  });
   const verticalLayout = themeLayout === 'vertical';
+  const { data: stores, isLoading } = useQuery(['stores'], () =>
+    request
+      .get<{
+        data: Store[];
+      }>(`/stores`, {
+        params: {
+          type: 8,
+          'main-store': false,
+          'has-menu': true,
+        },
+      })
+      .then((res) => res.data.data)
+  );
+  console.log(stores);
+  const handleClick = () => {
+    setStore(null);
+    delete_cookie(AREA_COOKIE_KEY);
+  };
+  const navigate = useNavigate();
+  const renderStore = (store: Store) => (
+    <Card key={store.id}>
+      <Box sx={{ px: 2, py: 1 }}>
+        <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+          <Box>
+            <Typography variant="h6">{store.name}</Typography>
+            <Typography>{store.address}</Typography>
+          </Box>
+          <Box>
+            <Fab
+              size="small"
+              onClick={() => {
+                setStore(store);
+                setCookie(AREA_COOKIE_KEY, JSON.stringify(store), 5);
+                navigate(PATH_DASHBOARD.root);
+              }}
+              color="primary"
+              aria-label="add"
+            >
+              <ArrowForward />
+            </Fab>
+          </Box>
+        </Stack>
+      </Box>
+    </Card>
+  );
 
-  if (verticalLayout) {
+  if (store == null) {
+    return (
+      <Page title="Danh sách các khu vực">
+        <Container>
+          <Box textAlign="center" mb={4}>
+            <Typography variant="h4">Danh sách các khu vực</Typography>
+          </Box>
+          <Box>
+            {isLoading ? (
+              <Box textAlign="center" p={4}>
+                <CircularProgress />
+              </Box>
+            ) : (
+              <Box>
+                <Stack spacing={2}>{stores?.map(renderStore)}</Stack>
+              </Box>
+            )}
+          </Box>
+        </Container>
+      </Page>
+    );
+  } else if (verticalLayout) {
     return (
       <>
-        <DashboardHeader onOpenSidebar={() => setOpen(true)} verticalLayout={verticalLayout} />
+        <DashboardHeader
+          handleClick={handleClick}
+          onOpenSidebar={() => setOpen(true)}
+          verticalLayout={verticalLayout}
+        />
 
         {isDesktop ? (
           <NavbarHorizontal />
@@ -86,19 +171,25 @@ export default function DashboardLayout() {
   }
 
   return (
-    <Box
-      sx={{
-        display: { lg: 'flex' },
-        minHeight: { lg: 1 },
-      }}
-    >
-      <DashboardHeader isCollapse={isCollapse} onOpenSidebar={() => setOpen(true)} />
+    <>
+      <Box
+        sx={{
+          display: { lg: 'flex' },
+          minHeight: { lg: 1 },
+        }}
+      >
+        <DashboardHeader
+          handleClick={handleClick}
+          isCollapse={isCollapse}
+          onOpenSidebar={() => setOpen(true)}
+        />
 
-      <NavbarVertical isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
+        <NavbarVertical isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
 
-      <MainStyle collapseClick={collapseClick}>
-        <Outlet />
-      </MainStyle>
-    </Box>
+        <MainStyle collapseClick={collapseClick}>
+          <Outlet />
+        </MainStyle>
+      </Box>
+    </>
   );
 }

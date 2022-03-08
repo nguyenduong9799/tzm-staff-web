@@ -2,6 +2,7 @@
 import { parse } from 'querystring';
 import moment from 'moment';
 import pathRegexp from 'path-to-regexp';
+import { AREA_COOKIE_KEY } from 'utils/constants';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
 const reg =
@@ -120,7 +121,7 @@ export const setCookie = (cname, cvalue, expireDay = 10) => {
   const d = new Date();
   d.setTime(d.getTime() + expireDay * 24 * 60 * 60 * 1000);
   const expires = `expires=${d.toUTCString()}`;
-  document.cookie = `${cname}=${cvalue};${expires};path=/`;
+  document.cookie = `STAFF_UNIBEAN_${cname}=${cvalue};${expires};path=/`;
 };
 
 export const getCurrentStore = () => localStorage.getItem('CURRENT_STORE');
@@ -128,7 +129,7 @@ export const getCurrentArticleType = () => localStorage.getItem('CURRENT_ARTICLE
 
 // set Cookie
 export const getCookie = (cname) => {
-  const name = `${cname}=`;
+  const name = `STAFF_UNIBEAN_${cname}=`;
   const ca = document.cookie.split(';');
   for (let i = 0; i < ca.length; i++) {
     let c = ca[i];
@@ -152,6 +153,18 @@ export const deleteAllCookie = () => {
   }
 };
 
+export function delete_cookie(cname) {
+  const name = `STAFF_UNIBEAN_${cname}=`;
+  document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+}
+
+export const getAreaCookie = () => {
+  try {
+    return JSON.parse(getCookie(AREA_COOKIE_KEY));
+  } catch (e) {
+    return null;
+  }
+};
 // set localstorage
 export const setLocalStorage = (name, value) => {
   localStorage.setItem(name, value);

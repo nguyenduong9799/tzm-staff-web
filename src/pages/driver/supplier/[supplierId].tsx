@@ -20,8 +20,9 @@ import { useNavigate, useParams } from 'react-router';
 import { PATH_DASHBOARD } from 'routes/paths';
 import SupplierOrderDetailDialog from 'sections/beaner/SupplierOrderDetailDialog';
 import { Order, OrderResponse } from 'types/order';
+import { Store } from 'types/store';
 import request from 'utils/axios';
-import { formatCurrency } from 'utils/utils';
+import { formatCurrency, getAreaCookie } from 'utils/utils';
 
 type Props = {};
 
@@ -29,10 +30,11 @@ const SupplierOrderList = (props: Props) => {
   const { supplierId } = useParams();
   const navigate = useNavigate();
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-
-  const { data, isLoading } = useQuery(['suppliers', supplierId, 'orders'], () =>
+  const store: Store = getAreaCookie();
+  const storeId = store.id;
+  const { data, isLoading } = useQuery([storeId, 'suppliers', supplierId, 'orders'], () =>
     request
-      .get<{ data: OrderResponse[] }>(`/stores/150/suppliers/${supplierId}/orders`)
+      .get<{ data: OrderResponse[] }>(`/stores/${storeId}/suppliers/${supplierId}/orders`)
       .then((res) => res.data.data[0])
   );
 

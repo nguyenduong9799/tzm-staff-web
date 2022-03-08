@@ -21,8 +21,11 @@ import { sortBy, uniq } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { Order, OrderDetail, OrderItem, OrderStatus } from 'types/order';
+import { Store } from 'types/store';
 import request from 'utils/axios';
+import { ProductType } from 'utils/constants';
 import { fCurrency } from 'utils/formatNumber';
+import { getAreaCookie } from 'utils/utils';
 import OrderItemSummary from './OrderItemSummary';
 
 type Props = {
@@ -64,10 +67,14 @@ const Transition = React.forwardRef(function Transition(
 const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
   const theme = useTheme();
+  const store: Store = getAreaCookie();
+  const storeId = store.id;
   const { data, isLoading } = useQuery(
-    ['orders', orderId],
+    [storeId, 'orders', orderId],
     () =>
-      request.get<{ data: OrderDetail }>(`/stores/150/orders/${orderId}`).then((res) => res.data),
+      request
+        .get<{ data: OrderDetail }>(`/stores/${storeId}/orders/${orderId}`)
+        .then((res) => res.data),
     {
       enabled: Boolean(orderId),
     }
@@ -97,6 +104,10 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
       title: 'Tổng tiền',
       dataIndex: 'final_amount',
       valueType: 'money',
+    },
+    {
+      title: 'Địa chỉ giao',
+      dataIndex: 'delivery_address',
     },
   ];
   const customerColumns: ResoDescriptionColumnType<Order>[] = [
@@ -169,14 +180,35 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
                 <Typography mb={2} variant="h5">
                   Đơn hàng
                 </Typography>
-                {orders.map((order, idx) => (
-                  <OrderItemSummary
-                    orderItem={order}
-                    key={order.order_detail_id}
-                    isEndItem={idx === orders.length - 1}
-                  />
-                ))}
+                {orders
+                  .filter((order) => order.product_type !== ProductType.GIFT_PRODUCT)
+                  .map((order, idx) => (
+                    <OrderItemSummary
+                      orderItem={order}
+                      key={order.order_detail_id}
+                      isEndItem={idx === orders.length - 1}
+                    />
+                  ))}
               </Box>
+              {orders.filter((order) => order.product_type === ProductType.GIFT_PRODUCT).length ===
+              0 ? (
+                <Box></Box>
+              ) : (
+                <Box>
+                  <Typography mb={2} variant="h5">
+                    Quà tặng
+                  </Typography>
+                  {orders
+                    .filter((order) => order.product_type === ProductType.GIFT_PRODUCT)
+                    .map((order, idx) => (
+                      <OrderItemSummary
+                        orderItem={order}
+                        key={order.order_detail_id}
+                        isEndItem={idx === orders.length - 1}
+                      />
+                    ))}
+                </Box>
+              )}
             </DialogContentText>
           </DialogContent>
         )}

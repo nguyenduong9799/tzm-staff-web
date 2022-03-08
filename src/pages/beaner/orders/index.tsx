@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Order, OrderResponse, OrderStatus } from 'types/order';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useQuery } from 'react-query';
 import OrderDetailDialog from 'sections/beaner/OrderDetailDialog';
 import request from 'utils/axios';
@@ -19,8 +19,9 @@ import Page from '../../../components/Page';
 import ConfirmDialog from 'components/confirm-dialog/ConfirmDialog';
 import { useSnackbar } from 'notistack';
 import { CircularProgress } from '@mui/material';
-import { formatCurrency } from 'utils/utils';
+import { formatCurrency, getAreaCookie } from 'utils/utils';
 import { Replay } from '@mui/icons-material';
+import { Store } from 'types/store';
 type Props = {};
 
 const TABLE_HEAD = [
@@ -38,15 +39,17 @@ const BeanerOrderList = (props: Props) => {
     'order-status': OrderStatus.NEW,
   });
   const { enqueueSnackbar } = useSnackbar();
-
+  const store: Store = getAreaCookie();
+  const storeId = store.id;
+  console.log('storeid cua trang order', storeId);
   const {
     data,
     refetch: fetchOrders,
     isLoading,
     isFetching,
-  } = useQuery(['beaner-orders', filter], () =>
+  } = useQuery([storeId, 'beaner-orders', filter], () =>
     request
-      .get<{ data: OrderResponse[] }>('/stores/150/orders', { params: filter })
+      .get<{ data: OrderResponse[] }>(`/stores/${storeId}/orders`, { params: filter })
       .then((res) => res.data.data[0])
   );
 
@@ -82,7 +85,7 @@ const BeanerOrderList = (props: Props) => {
 
   const handleUpdateOrder = () =>
     request
-      .put(`/stores/150/orders/${confirmOrderId}`, 3)
+      .put(`/stores/${storeId}/orders/${confirmOrderId}`, 3)
       .then(() => {
         setConfirmOrderId(null);
         setSelectedOrderId(null);
