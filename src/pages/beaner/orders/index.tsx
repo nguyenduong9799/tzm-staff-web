@@ -20,8 +20,10 @@ import ConfirmDialog from 'components/confirm-dialog/ConfirmDialog';
 import { useSnackbar } from 'notistack';
 import { CircularProgress } from '@mui/material';
 import { formatCurrency, getAreaCookie } from 'utils/utils';
-import { Replay } from '@mui/icons-material';
+import { FilterList, Replay } from '@mui/icons-material';
 import { Store } from 'types/store';
+import { FormProvider, useForm } from 'react-hook-form';
+import OrderFilter from 'components/filter';
 type Props = {};
 
 const TABLE_HEAD = [
@@ -35,24 +37,29 @@ const TABLE_HEAD = [
 const BeanerOrderList = (props: Props) => {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [confirmOrderId, setConfirmOrderId] = useState<number | null>(null);
-  const [filter, setFilter] = useState<any>({
-    'order-status': OrderStatus.NEW,
-  });
+
   const { enqueueSnackbar } = useSnackbar();
   const store: Store = getAreaCookie();
   const storeId = store.id;
+
+  const [openFilter, setOpenFilter] = useState(false);
+
+  const filterForm = useForm({
+    defaultValues: { 'destination-location-id': null, 'order-status': OrderStatus.NEW },
+  });
+
+  const filters = filterForm.watch();
+
   const {
     data,
     refetch: fetchOrders,
     isLoading,
     isFetching,
-  } = useQuery([storeId, 'beaner-orders', filter], () =>
+  } = useQuery([storeId, 'beaner-orders', filters], () =>
     request
-      .get<{ data: OrderResponse[] }>(`/stores/${storeId}/orders`, { params: filter })
+      .get<{ data: OrderResponse[] }>(`/stores/${storeId}/orders`, { params: filters })
       .then((res) => res.data.data[0])
   );
-
-  console.log('isLoading', isLoading);
 
   const renderOrder = (order: Order) => {
     const isCancled = order.order_status === OrderStatus.CANCLE;
@@ -62,11 +69,13 @@ const BeanerOrderList = (props: Props) => {
         key={order.order_id}
         sx={{ bgcolor: isCancled ? '#ccc' : 'white' }}
       >
-        <CardActionArea disabled onClick={() => setSelectedOrderId(order.order_id)}>
+        <CardActionArea onClick={() => setSelectedOrderId(order.order_id)}>
           <Box sx={{ px: 2, pt: 1 }}>
             <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
               <Box>
-                <Typography variant="h6">{order.invoice_id}</Typography>
+                <Typography variant="h6">
+                  {order.invoice_id} <Chip size="small" label={order.delivery_address} />
+                </Typography>
                 <Typography>{order.customer.name}</Typography>
               </Box>
               <Box>{order.master_product_quantity} món</Box>
@@ -110,7 +119,7 @@ const BeanerOrderList = (props: Props) => {
   );
 
   const filterOrderStatus = (status?: OrderStatus) => {
-    setFilter({ 'order-status': status ?? '' });
+    filterForm.setValue('order-status', status ?? OrderStatus.ALL);
   };
 
   return (
@@ -151,25 +160,47 @@ const BeanerOrderList = (props: Props) => {
             <Stack direction="row" spacing={1}>
               <Chip
                 label="Mới"
-                variant={filter['order-status'] === OrderStatus.NEW ? 'filled' : 'outlined'}
+                variant={filters['order-status'] === OrderStatus.NEW ? 'filled' : 'outlined'}
                 onClick={() => filterOrderStatus(OrderStatus.NEW)}
               />
               <Chip
                 label="Hoàn thành"
-                variant={filter['order-status'] === OrderStatus.DONE ? 'filled' : 'outlined'}
+                variant={filters['order-status'] === OrderStatus.DONE ? 'filled' : 'outlined'}
                 onClick={() => filterOrderStatus(OrderStatus.DONE)}
               />
               <Chip
                 label="Đã huỷ"
-                variant={filter['order-status'] === OrderStatus.CANCLE ? 'filled' : 'outlined'}
+                variant={filters['order-status'] === OrderStatus.CANCLE ? 'filled' : 'outlined'}
                 onClick={() => filterOrderStatus(OrderStatus.CANCLE)}
               />
               <Chip
                 label="Tất cả"
-                variant={!filter['order-status'] ? 'filled' : 'outlined'}
+                variant={!filters['order-status'] ? 'filled' : 'outlined'}
                 onClick={() => filterOrderStatus()}
               />
             </Stack>
+            <Stack direction="row" justifyContent="end">
+              <Button
+                color="inherit"
+                sx={{ mb: 2 }}
+                endIcon={<FilterList />}
+                onClick={() => setOpenFilter(true)}
+              >
+                Bộ lọc
+              </Button>
+            </Stack>
+            <FormProvider {...filterForm}>
+              <OrderFilter
+                onReset={() =>
+                  filterForm.reset({
+                    'destination-location-id': null,
+                    'order-status': OrderStatus.NEW,
+                  })
+                }
+                open={openFilter}
+                onClose={() => setOpenFilter(false)}
+              />
+            </FormProvider>
             <Box>
               {!isFetching && (
                 <Box>

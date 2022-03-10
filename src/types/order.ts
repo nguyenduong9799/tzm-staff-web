@@ -29,6 +29,7 @@ export enum OrderStatus {
   DONE = 3,
   NEW = 1,
   CANCLE = 4,
+  ALL = '',
 }
 
 export interface OrderItem {

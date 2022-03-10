@@ -1,20 +1,25 @@
-import { ArrowBack, OpenInFullOutlined } from '@mui/icons-material';
+import { ArrowBack, FilterList, OpenInFullOutlined } from '@mui/icons-material';
 import {
   Box,
   Button,
   Card,
   CardActionArea,
   CardActions,
+  Chip,
   CircularProgress,
   Container,
   Divider,
+  Drawer,
   Fab,
   Stack,
   Typography,
 } from '@mui/material';
 import EmptyContent from 'components/EmptyContent';
+import OrderFilter from 'components/filter';
 import Page from 'components/Page';
+import Scrollbar from 'components/Scrollbar';
 import React, { useMemo, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router';
 import { PATH_DASHBOARD } from 'routes/paths';
@@ -32,9 +37,20 @@ const SupplierOrderList = (props: Props) => {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const store: Store = getAreaCookie();
   const storeId = store.id;
-  const { data, isLoading } = useQuery([storeId, 'suppliers', supplierId, 'orders'], () =>
+
+  const [openFilter, setOpenFilter] = useState(false);
+
+  const filterForm = useForm({
+    defaultValues: { 'destination-location-id': null },
+  });
+
+  const filters = filterForm.watch();
+
+  const { data, isLoading } = useQuery([storeId, 'suppliers', supplierId, 'orders', filters], () =>
     request
-      .get<{ data: OrderResponse[] }>(`/stores/${storeId}/suppliers/${supplierId}/orders`)
+      .get<{ data: OrderResponse[] }>(`/stores/${storeId}/suppliers/${supplierId}/orders`, {
+        params: filters,
+      })
       .then((res) => res.data.data[0])
   );
 
@@ -54,7 +70,9 @@ const SupplierOrderList = (props: Props) => {
         <Box sx={{ px: 2, pt: 1 }}>
           <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
             <Box>
-              <Typography variant="h6">{order.invoice_id}</Typography>
+              <Typography variant="h6">
+                {order.invoice_id} <Chip size="small" label={order.delivery_address} />
+              </Typography>
               <Typography>{order.customer.name}</Typography>
             </Box>
             <Box>{order.master_product_quantity} món</Box>
@@ -97,6 +115,23 @@ const SupplierOrderList = (props: Props) => {
           </Stack>
         </Box>
         <Divider sx={{ my: 2 }} />
+        <Stack direction="row" justifyContent="end">
+          <Button
+            color="inherit"
+            sx={{ mb: 2 }}
+            endIcon={<FilterList />}
+            onClick={() => setOpenFilter(true)}
+          >
+            Bộ lọc
+          </Button>
+        </Stack>
+        <FormProvider {...filterForm}>
+          <OrderFilter
+            onReset={() => filterForm.reset({ 'destination-location-id': null })}
+            open={openFilter}
+            onClose={() => setOpenFilter(false)}
+          />
+        </FormProvider>
         <Box sx={{ position: 'fixed', zIndex: 99, left: 24, bottom: 24 }}>
           <Fab
             onClick={() => navigate(PATH_DASHBOARD.driver.suppliers.root)}
