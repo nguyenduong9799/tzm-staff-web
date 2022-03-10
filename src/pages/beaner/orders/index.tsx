@@ -121,6 +121,7 @@ const BeanerOrderList = (props: Props) => {
   const filterOrderStatus = (status?: OrderStatus) => {
     filterForm.setValue('order-status', status ?? OrderStatus.ALL);
   };
+  const countTotalFilter = Object.values(filters).filter((v) => v != null).length;
 
   return (
     <Page title="Danh sách đơn hàng">
@@ -187,6 +188,9 @@ const BeanerOrderList = (props: Props) => {
                 onClick={() => setOpenFilter(true)}
               >
                 Bộ lọc
+                {countTotalFilter !== 0 && (
+                  <Chip sx={{ height: 24, ml: 1 }} label={countTotalFilter} color="primary" />
+                )}
               </Button>
             </Stack>
             <FormProvider {...filterForm}>

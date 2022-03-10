@@ -64,6 +64,8 @@ const SupplierOrderList = (props: Props) => {
     0
   );
 
+  const countTotalFilter = Object.values(filters).filter((v) => v != null).length;
+
   const renderOrder = (order: Order) => (
     <Card key={order.order_id}>
       <CardActionArea onClick={() => setSelectedOrderId(order.order_id)}>
@@ -123,6 +125,9 @@ const SupplierOrderList = (props: Props) => {
             onClick={() => setOpenFilter(true)}
           >
             Bộ lọc
+            {countTotalFilter !== 0 && (
+              <Chip sx={{ height: 24, ml: 1 }} label={countTotalFilter} color="primary" />
+            )}
           </Button>
         </Stack>
         <FormProvider {...filterForm}>
