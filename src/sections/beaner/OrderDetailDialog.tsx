@@ -24,7 +24,7 @@ import { useQuery } from 'react-query';
 import { Order, OrderDetail, OrderStatus } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
-import { getAreaCookie } from 'utils/utils';
+import { formatCurrency, getAreaCookie } from 'utils/utils';
 import OrderListItem from './OrderListItem';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
@@ -91,18 +91,24 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
       dataIndex: 'master_product_quantity',
     },
     {
-      title: 'Trạng thái',
-      dataIndex: 'order_status',
-      valueEnum: ORDER_STATUS_OPTONS,
+      title: 'Tổng tiền',
+      dataIndex: 'final_amount',
+      valueType: 'money',
+      render: (_, { final_amount }) => (
+        <Typography variant="subtitle2" fontWeight="bold">
+          {formatCurrency(final_amount)}
+        </Typography>
+      ),
     },
+
     {
       title: 'Địa chỉ giao',
       dataIndex: 'delivery_address',
     },
     {
-      title: 'Tổng tiền',
-      dataIndex: 'final_amount',
-      valueType: 'money',
+      title: 'Trạng thái',
+      dataIndex: 'order_status',
+      valueEnum: ORDER_STATUS_OPTONS,
     },
     {
       title: 'Thời gian',
