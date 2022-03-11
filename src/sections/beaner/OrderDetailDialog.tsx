@@ -3,8 +3,9 @@ import {
   AppBar,
   Box,
   Button,
-  Chip,
+  Card,
   CircularProgress,
+  Collapse,
   Dialog,
   DialogContent,
   DialogContentText,
@@ -20,13 +21,12 @@ import ResoDescriptions, { ResoDescriptionColumnType } from 'components/ResoDesc
 import { sortBy, uniq } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import { Order, OrderDetail, OrderItem, OrderStatus } from 'types/order';
+import { Order, OrderDetail, OrderStatus } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
-import { ProductType } from 'utils/constants';
-import { fCurrency } from 'utils/formatNumber';
 import { getAreaCookie } from 'utils/utils';
-import OrderItemSummary from './OrderItemSummary';
+import OrderListItem from './OrderListItem';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 type Props = {
   orderId?: number | null;
@@ -66,6 +66,7 @@ const Transition = React.forwardRef(function Transition(
 
 const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
+
   const theme = useTheme();
   const store: Store = getAreaCookie();
   const storeId = store.id;
@@ -95,10 +96,8 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
       valueEnum: ORDER_STATUS_OPTONS,
     },
     {
-      title: 'Thời gian',
-      dataIndex: 'check_in_date',
-      valueType: 'datetime',
-      span: 2,
+      title: 'Địa chỉ giao',
+      dataIndex: 'delivery_address',
     },
     {
       title: 'Tổng tiền',
@@ -106,8 +105,10 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
       valueType: 'money',
     },
     {
-      title: 'Địa chỉ giao',
-      dataIndex: 'delivery_address',
+      title: 'Thời gian',
+      dataIndex: 'check_in_date',
+      valueType: 'datetime',
+      span: 2,
     },
   ];
   const customerColumns: ResoDescriptionColumnType<Order>[] = [
@@ -125,7 +126,24 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
   ];
   const orders = sortBy(data?.data.list_order_details ?? [], (o) => o.supplier_id);
   const suppliers = uniq(orders.map((order) => order.supplier_store_name));
+  const [openCollapse, setOpenCollapse] = useState<string[]>([]);
+  const getNoteOfSupplier = (storeName: string) => {
+    const values = orders.find((e) => e.supplier_store_name === storeName);
+    return values?.supplier_notes![0]?.content;
+  };
 
+  const getOrdersOfSupplier = (storeName: string) =>
+    orders.filter((e) => e.supplier_store_name === storeName);
+
+  const handlerExpand = (key: string) => {
+    let idx = openCollapse?.findIndex((e) => e === key);
+    if (idx != null && idx >= 0) {
+      let state = [...openCollapse];
+      state?.splice(idx, 1);
+      setOpenCollapse(state ?? []);
+    } else setOpenCollapse([...openCollapse, key]);
+  };
+  console.log(openCollapse);
   return (
     <Dialog
       maxWidth="lg"
@@ -169,46 +187,47 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
                 datasource={data?.data}
                 column={2}
               />
-              <Box my={2}>
-                <Stack spacing={1} direction="row">
+              <Box sx={{ pt: 2 }}>
+                <Stack spacing={1} direction="column">
                   {suppliers.map((s) => (
-                    <Chip key={s} label={s} />
+                    <Stack key={s}>
+                      <Card
+                        variant="elevation"
+                        onClick={() => handlerExpand(s)}
+                        aria-controls="example-collapse-text"
+                      >
+                        <Box sx={{ px: 2, pt: 1 }}>
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            justifyContent="space-between"
+                            alignItems="center"
+                          >
+                            <Typography mb={2} variant="h6">
+                              Đơn hàng cho {s}
+                            </Typography>
+                            <KeyboardArrowDownIcon
+                              style={{
+                                transform: Boolean(openCollapse?.find((e) => e === s))
+                                  ? 'rotate(00deg)'
+                                  : 'rotate(180deg)',
+                              }}
+                            />
+                          </Stack>
+                        </Box>
+                        <Collapse in={!Boolean(openCollapse?.find((e) => e === s))}>
+                          <Box sx={{ px: 2, pt: 1 }} id="example-collapse-text">
+                            <Typography mb={2} variant="subtitle2">
+                              Ghi chú : {getNoteOfSupplier(s)}
+                            </Typography>
+                            <OrderListItem orderList={getOrdersOfSupplier(s)} />
+                          </Box>
+                        </Collapse>
+                      </Card>
+                    </Stack>
                   ))}
                 </Stack>
               </Box>
-              <Box>
-                <Typography mb={2} variant="h5">
-                  Đơn hàng
-                </Typography>
-                {orders
-                  .filter((order) => order.product_type !== ProductType.GIFT_PRODUCT)
-                  .map((order, idx) => (
-                    <OrderItemSummary
-                      orderItem={order}
-                      key={order.order_detail_id}
-                      isEndItem={idx === orders.length - 1}
-                    />
-                  ))}
-              </Box>
-              {orders.filter((order) => order.product_type === ProductType.GIFT_PRODUCT).length ===
-              0 ? (
-                <Box></Box>
-              ) : (
-                <Box>
-                  <Typography mb={2} variant="h5">
-                    Quà tặng
-                  </Typography>
-                  {orders
-                    .filter((order) => order.product_type === ProductType.GIFT_PRODUCT)
-                    .map((order, idx) => (
-                      <OrderItemSummary
-                        orderItem={order}
-                        key={order.order_detail_id}
-                        isEndItem={idx === orders.length - 1}
-                      />
-                    ))}
-                </Box>
-              )}
             </DialogContentText>
           </DialogContent>
         )}
