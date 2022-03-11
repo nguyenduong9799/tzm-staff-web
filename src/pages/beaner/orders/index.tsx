@@ -24,6 +24,8 @@ import { FilterList, Replay } from '@mui/icons-material';
 import { Store } from 'types/store';
 import { FormProvider, useForm } from 'react-hook-form';
 import OrderFilter from 'components/filter';
+import useConfirmOrder from 'hooks/useConfirmOrder';
+import ConfirmOrderModal from 'components/confirmBeforeOrder';
 type Props = {};
 
 const TABLE_HEAD = [
@@ -37,10 +39,13 @@ const TABLE_HEAD = [
 const BeanerOrderList = (props: Props) => {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [confirmOrderId, setConfirmOrderId] = useState<number | null>(null);
+  const [showCOnfirmModal, setShowCOnfirmModal] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
   const store: Store = getAreaCookie();
   const storeId = store.id;
+
+  const [isConfirmed, updateConfirm] = useConfirmOrder();
 
   const [openFilter, setOpenFilter] = useState(false);
 
@@ -60,6 +65,22 @@ const BeanerOrderList = (props: Props) => {
       .get<{ data: OrderResponse[] }>(`/stores/${storeId}/orders`, { params: filters })
       .then((res) => res.data.data[0])
   );
+
+  const confirmCheckedOrder = async (isNotify?: boolean) => {
+    let success = true;
+    if (isNotify) {
+      await request.get(`/stores/${storeId}/orders/notification`).catch(() => {
+        success = false;
+      });
+    }
+    if (success) {
+      enqueueSnackbar('Xác nhận thành công', {
+        variant: 'success',
+      });
+      updateConfirm();
+      setShowCOnfirmModal(false);
+    }
+  };
 
   const renderOrder = (order: Order) => {
     const isCancled = order.order_status === OrderStatus.CANCLE;
@@ -122,9 +143,38 @@ const BeanerOrderList = (props: Props) => {
     filterForm.setValue('order-status', status ?? OrderStatus.ALL);
   };
   const countTotalFilter = Object.values(filters).filter((v) => v != null).length;
+  const renderConfirmButton = () => {
+    if (totalOrder === 0 || isConfirmed) {
+      return null;
+    }
+
+    return (
+      <Box
+        sx={{
+          bgcolor: (theme) => theme.palette.background.default,
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          p: 1,
+          width: '100%',
+          zIndex: (theme) => theme.zIndex.appBar,
+        }}
+      >
+        <Button onClick={() => setShowCOnfirmModal(true)} variant="outlined" fullWidth>
+          Xác nhận bắt đầu giao
+        </Button>
+      </Box>
+    );
+  };
 
   return (
     <Page title="Danh sách đơn hàng">
+      {renderConfirmButton()}
+      <ConfirmOrderModal
+        onConfirm={confirmCheckedOrder}
+        open={showCOnfirmModal}
+        onClose={() => setShowCOnfirmModal(false)}
+      />
       <Container>
         <Box textAlign="center" mb={4}>
           <Typography variant="h4">Danh sách đơn hàng</Typography>
@@ -180,19 +230,7 @@ const BeanerOrderList = (props: Props) => {
                 onClick={() => filterOrderStatus()}
               />
             </Stack>
-            <Stack direction="row" justifyContent="end">
-              <Button
-                color="inherit"
-                sx={{ mb: 2 }}
-                endIcon={<FilterList />}
-                onClick={() => setOpenFilter(true)}
-              >
-                Bộ lọc
-                {countTotalFilter !== 0 && (
-                  <Chip sx={{ height: 24, ml: 1 }} label={countTotalFilter} color="primary" />
-                )}
-              </Button>
-            </Stack>
+
             <FormProvider {...filterForm}>
               <OrderFilter
                 onReset={() =>
@@ -225,6 +263,19 @@ const BeanerOrderList = (props: Props) => {
                 />
               )}
             </Box>
+          </Stack>
+          <Stack direction="row" justifyContent="start">
+            <Button
+              color="inherit"
+              sx={{ mb: 2 }}
+              endIcon={<FilterList />}
+              onClick={() => setOpenFilter(true)}
+            >
+              Bộ lọc
+              {countTotalFilter !== 0 && (
+                <Chip sx={{ height: 24, ml: 1 }} label={countTotalFilter} color="primary" />
+              )}
+            </Button>
           </Stack>
         </Box>
         <Box>
