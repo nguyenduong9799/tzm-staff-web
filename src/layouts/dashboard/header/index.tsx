@@ -18,6 +18,10 @@ import AccountPopover from './AccountPopover';
 import LanguagePopover from './LanguagePopover';
 import ContactsPopover from './ContactsPopover';
 import NotificationsPopover from './NotificationsPopover';
+import { Store } from 'types/store';
+import { getAreaCookie } from 'utils/utils';
+import { MoneyOutlined } from '@mui/icons-material';
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +30,7 @@ type RootStyleProps = {
   isOffset: boolean;
   verticalLayout: boolean;
 };
+const store: Store = getAreaCookie();
 
 const RootStyle = styled(AppBar, {
   shouldForwardProp: (prop) =>
@@ -93,8 +98,8 @@ export default function DashboardHeader({
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
-          <Button onClick={handleClick} variant="outlined">
-            Chọn Khu Vực
+          <Button endIcon={<BorderColorOutlinedIcon />} onClick={handleClick}>
+            {store.name}
           </Button>
           <AccountPopover />
         </Stack>

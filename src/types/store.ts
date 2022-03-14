@@ -7,6 +7,7 @@ export type Store = {
     address: string;
     type: number;
     is_available: boolean;
+    time_slots: TimeSlot[];
 }
 // export interface Location {
 //     location_id: number;
@@ -16,13 +17,13 @@ export type Store = {
 //     code: string;
 // }
 
-// export interface TimeSlot {
-//     menu_id: number;
-//     from: string;
-//     to: string;
-//     arrive_time: string;
-//     available: boolean;
-// }
+export type TimeSlot = {
+    menu_id: number;
+    from: string;
+    to: string;
+    arrive_time: string;
+    available: boolean;
+}
 
 
 

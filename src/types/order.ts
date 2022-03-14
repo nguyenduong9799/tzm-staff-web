@@ -17,6 +17,7 @@ export type Order = {
   delivery_address: string;
   package_ids: any[];
   other_amounts: any[];
+  time_slot: string;
 };
 
 export type Customer = {

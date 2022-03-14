@@ -1,27 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { createContext, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { ArrowForward } from '@mui/icons-material';
+import { Box, Card, CircularProgress, Container, Fab, Stack, Typography } from '@mui/material';
 // @mui
 import { styled } from '@mui/material/styles';
-import { Box, Card, CircularProgress, Container, Fab, Stack, Typography } from '@mui/material';
-// hooks
-import useSettings from '../../hooks/useSettings';
-import useResponsive from '../../hooks/useResponsive';
-import useCollapseDrawer from '../../hooks/useCollapseDrawer';
+import Page from 'components/Page';
+import { useState } from 'react';
+import { useQuery } from 'react-query';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { PATH_DASHBOARD } from 'routes/paths';
+import { Store } from 'types/store';
+import request from 'utils/axios';
+import { AREA_COOKIE_KEY } from 'utils/constants';
+import { delete_cookie, getCookie, setCookie } from 'utils/utils';
 // config
 import { HEADER, NAVBAR } from '../../config';
+import useCollapseDrawer from '../../hooks/useCollapseDrawer';
+import useResponsive from '../../hooks/useResponsive';
+// hooks
+import useSettings from '../../hooks/useSettings';
 //
 import DashboardHeader from './header';
-import NavbarVertical from './navbar/NavbarVertical';
 import NavbarHorizontal from './navbar/NavbarHorizontal';
-import { Store } from 'types/store';
-import { ArrowForward } from '@mui/icons-material';
-import { useQuery } from 'react-query';
-import { PATH_DASHBOARD } from 'routes/paths';
-import request from 'utils/axios';
-import Page from 'components/Page';
-import { delete_cookie, getCookie, setCookie } from 'utils/utils';
-import { AREA_COOKIE_KEY } from 'utils/constants';
+import NavbarVertical from './navbar/NavbarVertical';
 
 // ----------------------------------------------------------------------
 
@@ -54,7 +54,6 @@ const MainStyle = styled('main', {
 
 export default function DashboardLayout() {
   const { collapseClick, isCollapse } = useCollapseDrawer();
-
   const { themeLayout } = useSettings();
 
   const isDesktop = useResponsive('up', 'lg');
@@ -101,6 +100,7 @@ export default function DashboardLayout() {
                 setStore(store);
                 setCookie(AREA_COOKIE_KEY, JSON.stringify(store), 5);
                 navigate(PATH_DASHBOARD.root);
+                navigate(0);
               }}
               color="primary"
               aria-label="add"

@@ -4,7 +4,7 @@ import Iconify from 'components/Iconify';
 import Scrollbar from 'components/Scrollbar';
 import { useQuery } from 'react-query';
 import { Location } from 'types/location';
-import { Store } from 'types/store';
+import { Store, TimeSlot } from 'types/store';
 import request from 'utils/axios';
 import { getAreaCookie } from 'utils/utils';
 
@@ -60,6 +60,18 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
                 />
               </Stack>
             ))}
+            <Stack spacing={1.5}>
+              <Typography variant="h6">Khung giờ</Typography>
+            </Stack>
+            <RHFRadioGroup
+              name="time-slot"
+              options={store.time_slots?.map(
+                (d: TimeSlot) => `${d.from.toString()};${d.to.toString()}`
+              )}
+              getOptionLabel={store.time_slots?.map(
+                (d: TimeSlot) => `Từ ${d.from.toString()} - ${d.to.toString()}`
+              )}
+            />
           </Stack>
         </Scrollbar>
 

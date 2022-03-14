@@ -28,6 +28,8 @@ import { Order, OrderResponse } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
 import { formatCurrency, getAreaCookie } from 'utils/utils';
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 
 type Props = {};
 
@@ -73,11 +75,20 @@ const SupplierOrderList = (props: Props) => {
           <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
             <Box>
               <Typography variant="h6">
-                {order.invoice_id} <Chip size="small" label={order.delivery_address} />
+                {order.invoice_id} {order.customer.name}
               </Typography>
-              <Typography>{order.customer.name}</Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <LocationOnOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
+                <Typography>{order.delivery_address}</Typography>
+              </Stack>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <AccessTimeOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
+                <Typography>{order.time_slot}</Typography>
+              </Stack>
             </Box>
-            <Box>{order.master_product_quantity} món</Box>
+            <Box>
+              <Typography variant="h6">{order.master_product_quantity} món</Typography>
+            </Box>
           </Stack>
         </Box>
       </CardActionArea>

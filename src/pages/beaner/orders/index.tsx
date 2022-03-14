@@ -1,3 +1,4 @@
+import { FilterList, Replay } from '@mui/icons-material';
 import {
   Box,
   Button,
@@ -5,27 +6,30 @@ import {
   CardActionArea,
   CardActions,
   Chip,
+  CircularProgress,
   Container,
   IconButton,
   Stack,
   Typography,
 } from '@mui/material';
-import { Order, OrderResponse, OrderStatus } from 'types/order';
-import React, { useContext, useState } from 'react';
-import { useQuery } from 'react-query';
-import OrderDetailDialog from 'sections/beaner/OrderDetailDialog';
-import request from 'utils/axios';
-import Page from '../../../components/Page';
+import MenuOutLinedIcon from '@mui/material/Icon';
 import ConfirmDialog from 'components/confirm-dialog/ConfirmDialog';
-import { useSnackbar } from 'notistack';
-import { CircularProgress } from '@mui/material';
-import { formatCurrency, getAreaCookie } from 'utils/utils';
-import { FilterList, Replay } from '@mui/icons-material';
-import { Store } from 'types/store';
-import { FormProvider, useForm } from 'react-hook-form';
+import ConfirmOrderModal from 'components/confirmBeforeOrder';
 import OrderFilter from 'components/filter';
 import useConfirmOrder from 'hooks/useConfirmOrder';
-import ConfirmOrderModal from 'components/confirmBeforeOrder';
+import { useSnackbar } from 'notistack';
+import React, { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useQuery } from 'react-query';
+import OrderDetailDialog from 'sections/beaner/OrderDetailDialog';
+import { Order, OrderResponse, OrderStatus } from 'types/order';
+import { Store } from 'types/store';
+import request from 'utils/axios';
+import { formatCurrency, getAreaCookie } from 'utils/utils';
+import Page from '../../../components/Page';
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+
 type Props = {};
 
 const TABLE_HEAD = [
@@ -42,7 +46,7 @@ const BeanerOrderList = (props: Props) => {
   const [showCOnfirmModal, setShowCOnfirmModal] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
-  const store: Store = getAreaCookie();
+  const store: Store = getAreaCookie() ?? [];
   const storeId = store.id;
 
   const [isConfirmed, updateConfirm] = useConfirmOrder();
@@ -95,11 +99,20 @@ const BeanerOrderList = (props: Props) => {
             <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
               <Box>
                 <Typography variant="h6">
-                  {order.invoice_id} <Chip size="small" label={order.delivery_address} />
+                  {order.invoice_id} {order.customer.name}
                 </Typography>
-                <Typography>{order.customer.name}</Typography>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <LocationOnOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
+                  <Typography>{order.delivery_address}</Typography>
+                </Stack>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <AccessTimeOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
+                  <Typography>{order.time_slot}</Typography>
+                </Stack>
               </Box>
-              <Box>{order.master_product_quantity} món</Box>
+              <Box>
+                <Typography variant="h6">{order.master_product_quantity} món</Typography>
+              </Box>
             </Stack>
           </Box>
         </CardActionArea>
