@@ -9,12 +9,13 @@ import { PATH_DASHBOARD } from 'routes/paths';
 import { Store } from 'types/store';
 import { Supplier } from 'types/supplier';
 import request from 'utils/axios';
-import { getAreaCookie } from 'utils/utils';
+import { AREA_STORAGE_KEY } from 'utils/constants';
+import { getAreaStorage } from 'utils/utils';
 
 type Props = {};
 
 const SupplierList = (props: Props) => {
-  const store: Store = getAreaCookie() ?? {};
+  const store: Store = getAreaStorage(AREA_STORAGE_KEY) ?? {};
   const storeId = store.id;
   const { data: suppliers, isLoading } = useQuery([storeId, 'suppliers'], () =>
     request.get<{ data: Supplier[] }>(`/stores/${storeId}/suppliers`).then((res) => res.data.data)

@@ -6,7 +6,8 @@ import { useQuery } from 'react-query';
 import { Location } from 'types/location';
 import { Store, TimeSlot } from 'types/store';
 import request from 'utils/axios';
-import { getAreaCookie } from 'utils/utils';
+import { AREA_STORAGE_KEY } from 'utils/constants';
+import { getAreaStorage } from 'utils/utils';
 
 type Props = {
   open?: boolean;
@@ -15,13 +16,11 @@ type Props = {
 };
 
 const OrderFilter = ({ open, onClose, onReset }: Props) => {
-  const store: Store = getAreaCookie() ?? {};
+  const store: Store = getAreaStorage(AREA_STORAGE_KEY) ?? {};
   const storeId = store.id;
   const { data: destinations } = useQuery(['stores', 'destinations'], () =>
     request.get<{ data: Location[] }>(`/stores/${storeId}/locations`).then((res) => res.data.data)
   );
-
-  console.log('destinations', destinations);
 
   return (
     <Drawer

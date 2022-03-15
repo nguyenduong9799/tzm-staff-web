@@ -27,9 +27,11 @@ import SupplierOrderDetailDialog from 'sections/beaner/SupplierOrderDetailDialog
 import { Order, OrderResponse } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
-import { formatCurrency, getAreaCookie } from 'utils/utils';
+import { formatCurrency, getAreaStorage } from 'utils/utils';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
+import { AREA_STORAGE_KEY } from 'utils/constants';
 
 type Props = {};
 
@@ -37,7 +39,7 @@ const SupplierOrderList = (props: Props) => {
   const { supplierId } = useParams();
   const navigate = useNavigate();
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-  const store: Store = getAreaCookie() ?? {};
+  const store: Store = getAreaStorage(AREA_STORAGE_KEY) ?? {};
   const storeId = store.id;
 
   const [openFilter, setOpenFilter] = useState(false);
@@ -74,9 +76,15 @@ const SupplierOrderList = (props: Props) => {
         <Box sx={{ px: 2, pt: 1 }}>
           <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
             <Box>
-              <Typography variant="h6">
-                {order.invoice_id} {order.customer.name}
-              </Typography>
+              <Typography variant="h6">{order.invoice_id}</Typography>
+              <Typography variant="h6"> {order.customer.name}</Typography>
+              <Typography variant="h6">{order.master_product_quantity} món</Typography>
+            </Box>
+            <Box>
+              <Stack direction="row" spacing={1} alignItems="center">
+                <PhoneAndroidOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
+                <Typography>{order.customer.phone_number}</Typography>
+              </Stack>
               <Stack direction="row" spacing={1} alignItems="center">
                 <LocationOnOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
                 <Typography>{order.delivery_address}</Typography>
@@ -85,9 +93,6 @@ const SupplierOrderList = (props: Props) => {
                 <AccessTimeOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
                 <Typography>{order.time_slot}</Typography>
               </Stack>
-            </Box>
-            <Box>
-              <Typography variant="h6">{order.master_product_quantity} món</Typography>
             </Box>
           </Stack>
         </Box>
@@ -110,18 +115,18 @@ const SupplierOrderList = (props: Props) => {
 
           <Stack direction="row" spacing={1}>
             <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
-              <Stack direction="row" spacing={1} justifyContent="space-between">
-                <Box>
+              <Stack direction="column" justifyContent="space-between">
+                <Stack direction="row" justifyContent="space-between" spacing={2}>
                   <Typography variant="body1">Tổng đơn:</Typography>
                   <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
-                </Box>
-                <Box>
+                </Stack>
+                <Stack direction="row" justifyContent="space-between" spacing={2}>
                   <Typography variant="body1">Tổng phần:</Typography>
                   <Typography fontWeight="bold">{totalProduct ?? 0} </Typography>
-                </Box>
+                </Stack>
               </Stack>
             </Card>
-            <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
+            <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'center' }}>
               <Typography>Tổng tiền: </Typography>
               <Typography fontWeight="bold">{formatCurrency(totalFinalAmount)}</Typography>
             </Card>

@@ -21,9 +21,9 @@ import { useQuery } from 'react-query';
 import { Order, OrderDetail, OrderItem, OrderStatus } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
-import { ProductType } from 'utils/constants';
+import { AREA_STORAGE_KEY, ProductType } from 'utils/constants';
 import { fCurrency } from 'utils/formatNumber';
-import { getAreaCookie } from 'utils/utils';
+import { getAreaStorage } from 'utils/utils';
 
 type Props = {
   orderId?: number | null;
@@ -71,7 +71,7 @@ const SupplierOrderDetailDialog = ({
 }: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
   const theme = useTheme();
-  const store: Store = getAreaCookie() ?? {};
+  const store: Store = getAreaStorage(AREA_STORAGE_KEY) ?? {};
   const storeId = store.id;
   const { data, isLoading } = useQuery(
     [storeId, 'suppliers', supplierId, 'orders', orderId],

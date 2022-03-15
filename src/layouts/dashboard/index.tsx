@@ -10,8 +10,8 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { PATH_DASHBOARD } from 'routes/paths';
 import { Store } from 'types/store';
 import request from 'utils/axios';
-import { AREA_COOKIE_KEY } from 'utils/constants';
-import { delete_cookie, getCookie, setCookie } from 'utils/utils';
+import { AREA_COOKIE_KEY, AREA_STORAGE_KEY } from 'utils/constants';
+import { delete_cookie, getAreaStorage, removeLocalStorage, setAreaStorage } from 'utils/utils';
 // config
 import { HEADER, NAVBAR } from '../../config';
 import useCollapseDrawer from '../../hooks/useCollapseDrawer';
@@ -59,9 +59,9 @@ export default function DashboardLayout() {
   const isDesktop = useResponsive('up', 'lg');
 
   const [open, setOpen] = useState(false);
-  const [store, setStore] = useState<Store | null>(() => {
+  const [currentStore, setCurrentStore] = useState<Store | null>(() => {
     try {
-      return JSON.parse(getCookie(AREA_COOKIE_KEY));
+      return JSON.parse(getAreaStorage(AREA_COOKIE_KEY));
     } catch (e) {
       return null;
     }
@@ -81,8 +81,8 @@ export default function DashboardLayout() {
       .then((res) => res.data.data)
   );
   const handleClick = () => {
-    setStore(null);
-    delete_cookie(AREA_COOKIE_KEY);
+    setCurrentStore(null);
+    removeLocalStorage(AREA_COOKIE_KEY);
   };
   const navigate = useNavigate();
   const renderStore = (store: Store) => (
@@ -97,10 +97,9 @@ export default function DashboardLayout() {
             <Fab
               size="small"
               onClick={() => {
-                setStore(store);
-                setCookie(AREA_COOKIE_KEY, JSON.stringify(store), 5);
+                setCurrentStore(store);
+                setAreaStorage(AREA_STORAGE_KEY, store);
                 navigate(PATH_DASHBOARD.root);
-                navigate(0);
               }}
               color="primary"
               aria-label="add"
@@ -113,7 +112,7 @@ export default function DashboardLayout() {
     </Card>
   );
 
-  if (store == null) {
+  if (currentStore == null) {
     return (
       <Page title="Danh sách các khu vực">
         <Container>
@@ -141,6 +140,7 @@ export default function DashboardLayout() {
           handleClick={handleClick}
           onOpenSidebar={() => setOpen(true)}
           verticalLayout={verticalLayout}
+          store={currentStore}
         />
 
         {isDesktop ? (
@@ -181,6 +181,7 @@ export default function DashboardLayout() {
           handleClick={handleClick}
           isCollapse={isCollapse}
           onOpenSidebar={() => setOpen(true)}
+          store={currentStore}
         />
 
         <NavbarVertical isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />
