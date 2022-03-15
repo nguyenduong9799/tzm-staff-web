@@ -30,7 +30,7 @@ type RootStyleProps = {
   isOffset: boolean;
   verticalLayout: boolean;
 };
-const store: Store = getAreaCookie();
+const store: Store = getAreaCookie() ?? {};
 
 const RootStyle = styled(AppBar, {
   shouldForwardProp: (prop) =>

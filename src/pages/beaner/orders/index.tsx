@@ -46,7 +46,7 @@ const BeanerOrderList = (props: Props) => {
   const [showCOnfirmModal, setShowCOnfirmModal] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
-  const store: Store = getAreaCookie() ?? [];
+  const store: Store = getAreaCookie() ?? {};
   const storeId = store.id;
 
   const [isConfirmed, updateConfirm] = useConfirmOrder();

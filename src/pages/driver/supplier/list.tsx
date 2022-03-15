@@ -14,7 +14,7 @@ import { getAreaCookie } from 'utils/utils';
 type Props = {};
 
 const SupplierList = (props: Props) => {
-  const store: Store = getAreaCookie();
+  const store: Store = getAreaCookie() ?? {};
   const storeId = store.id;
   const { data: suppliers, isLoading } = useQuery([storeId, 'suppliers'], () =>
     request.get<{ data: Supplier[] }>(`/stores/${storeId}/suppliers`).then((res) => res.data.data)

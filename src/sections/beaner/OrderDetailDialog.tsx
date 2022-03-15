@@ -68,7 +68,7 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
 
   const theme = useTheme();
-  const store: Store = getAreaCookie();
+  const store: Store = getAreaCookie() ?? {};
   const storeId = store.id;
   const { data, isLoading } = useQuery(
     [storeId, 'orders', orderId],

@@ -37,7 +37,7 @@ const SupplierOrderList = (props: Props) => {
   const { supplierId } = useParams();
   const navigate = useNavigate();
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-  const store: Store = getAreaCookie();
+  const store: Store = getAreaCookie() ?? {};
   const storeId = store.id;
 
   const [openFilter, setOpenFilter] = useState(false);
