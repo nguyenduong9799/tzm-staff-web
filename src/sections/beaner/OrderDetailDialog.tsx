@@ -1,4 +1,5 @@
 import CloseIcon from '@mui/icons-material/Close';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import {
   AppBar,
   Box,
@@ -24,9 +25,8 @@ import { useQuery } from 'react-query';
 import { Order, OrderDetail, OrderStatus } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
-import { formatCurrency, getAreaCookie } from 'utils/utils';
+import { formatCurrency, getAreaStorage } from 'utils/utils';
 import OrderListItem from './OrderListItem';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 type Props = {
   orderId?: number | null;
@@ -68,7 +68,7 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
 
   const theme = useTheme();
-  const store: Store = getAreaCookie();
+  const store: Store = getAreaStorage() ?? {};
   const storeId = store.id;
   const { data, isLoading } = useQuery(
     [storeId, 'orders', orderId],
@@ -149,7 +149,6 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
       setOpenCollapse(state ?? []);
     } else setOpenCollapse([...openCollapse, key]);
   };
-  console.log(openCollapse);
   return (
     <Dialog
       maxWidth="lg"
@@ -201,6 +200,9 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
                         variant="elevation"
                         onClick={() => handlerExpand(s)}
                         aria-controls="example-collapse-text"
+                        sx={{
+                          bgcolor: (theme) => theme.palette.background.paper,
+                        }}
                       >
                         <Box sx={{ px: 2, pt: 1 }}>
                           <Stack
@@ -223,7 +225,7 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
                         </Box>
                         <Collapse in={!Boolean(openCollapse?.find((e) => e === s))}>
                           <Box sx={{ px: 2, pt: 1 }} id="example-collapse-text">
-                            <Typography mb={2} variant="subtitle2">
+                            <Typography mb={2} variant="subtitle1">
                               Ghi chú : {getNoteOfSupplier(s)}
                             </Typography>
                             <OrderListItem orderList={getOrdersOfSupplier(s)} />

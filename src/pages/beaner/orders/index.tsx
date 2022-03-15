@@ -25,10 +25,12 @@ import OrderDetailDialog from 'sections/beaner/OrderDetailDialog';
 import { Order, OrderResponse, OrderStatus } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
-import { formatCurrency, getAreaCookie } from 'utils/utils';
+import { formatCurrency, getAreaStorage } from 'utils/utils';
 import Page from '../../../components/Page';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
+import { AREA_STORAGE_KEY } from 'utils/constants';
 
 type Props = {};
 
@@ -46,7 +48,7 @@ const BeanerOrderList = (props: Props) => {
   const [showCOnfirmModal, setShowCOnfirmModal] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
-  const store: Store = getAreaCookie() ?? [];
+  const store: Store = getAreaStorage() ?? {};
   const storeId = store.id;
 
   const [isConfirmed, updateConfirm] = useConfirmOrder();
@@ -54,7 +56,11 @@ const BeanerOrderList = (props: Props) => {
   const [openFilter, setOpenFilter] = useState(false);
 
   const filterForm = useForm({
-    defaultValues: { 'destination-location-id': null, 'order-status': OrderStatus.NEW },
+    defaultValues: {
+      'destination-location-id': null,
+      'order-status': OrderStatus.NEW,
+      'time-slot': null,
+    },
   });
 
   const filters = filterForm.watch();
@@ -92,15 +98,21 @@ const BeanerOrderList = (props: Props) => {
       <Card
         elevation={isCancled ? 0 : 1}
         key={order.order_id}
-        sx={{ bgcolor: isCancled ? '#ccc' : 'white' }}
+        sx={{ bgcolor: (theme) => (isCancled ? '#ccc' : theme.palette.background.paper) }}
       >
         <CardActionArea onClick={() => setSelectedOrderId(order.order_id)}>
           <Box sx={{ px: 2, pt: 1 }}>
             <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
               <Box>
-                <Typography variant="h6">
-                  {order.invoice_id} {order.customer.name}
-                </Typography>
+                <Typography variant="h6">{order.invoice_id}</Typography>
+                <Typography variant="h6"> {order.customer.name}</Typography>
+                <Typography variant="h6">{order.master_product_quantity} món</Typography>
+              </Box>
+              <Box>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <PhoneAndroidOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
+                  <Typography>{order.customer.phone_number}</Typography>
+                </Stack>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <LocationOnOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
                   <Typography>{order.delivery_address}</Typography>
@@ -109,9 +121,6 @@ const BeanerOrderList = (props: Props) => {
                   <AccessTimeOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
                   <Typography>{order.time_slot}</Typography>
                 </Stack>
-              </Box>
-              <Box>
-                <Typography variant="h6">{order.master_product_quantity} món</Typography>
               </Box>
             </Stack>
           </Box>
@@ -190,18 +199,20 @@ const BeanerOrderList = (props: Props) => {
       />
       <Container>
         <Box textAlign="center" mb={4}>
-          <Typography variant="h4">Danh sách đơn hàng</Typography>
+          <Typography mb={2} variant="h4">
+            Danh sách đơn hàng
+          </Typography>
           <Stack direction="row" spacing={1}>
             <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
-              <Stack direction="row" spacing={1} justifyContent="space-between">
-                <Box>
+              <Stack direction="column" justifyContent="space-between">
+                <Stack direction="row" justifyContent="space-between" spacing={2}>
                   <Typography variant="body1">Tổng đơn:</Typography>
                   <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
-                </Box>
-                <Box>
+                </Stack>
+                <Stack direction="row" justifyContent="space-between" spacing={2}>
                   <Typography variant="body1">Tổng phần:</Typography>
                   <Typography fontWeight="bold">{totalProduct ?? 0} </Typography>
-                </Box>
+                </Stack>
               </Stack>
             </Card>
             <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
@@ -250,6 +261,7 @@ const BeanerOrderList = (props: Props) => {
                   filterForm.reset({
                     'destination-location-id': null,
                     'order-status': OrderStatus.NEW,
+                    'time-slot': null,
                   })
                 }
                 open={openFilter}

@@ -23,7 +23,7 @@ import { Store } from 'types/store';
 import request from 'utils/axios';
 import { ProductType } from 'utils/constants';
 import { fCurrency } from 'utils/formatNumber';
-import { getAreaCookie } from 'utils/utils';
+import { getAreaStorage } from 'utils/utils';
 
 type Props = {
   orderId?: number | null;
@@ -71,7 +71,7 @@ const SupplierOrderDetailDialog = ({
 }: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
   const theme = useTheme();
-  const store: Store = getAreaCookie();
+  const store: Store = getAreaStorage() ?? {};
   const storeId = store.id;
   const { data, isLoading } = useQuery(
     [storeId, 'suppliers', supplierId, 'orders', orderId],

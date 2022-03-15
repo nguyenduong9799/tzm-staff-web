@@ -13,6 +13,8 @@ import useIsMountedRef from '../../../hooks/useIsMountedRef';
 import MyAvatar from '../../../components/MyAvatar';
 import MenuPopover from '../../../components/MenuPopover';
 import { IconButtonAnimate } from '../../../components/animate';
+import { AREA_STORAGE_KEY } from 'utils/constants';
+import { removeLocalStorage } from 'utils/utils';
 
 // ----------------------------------------------------------------------
 
@@ -55,6 +57,7 @@ export default function AccountPopover() {
   const handleLogout = async () => {
     try {
       await logout();
+      removeLocalStorage(AREA_STORAGE_KEY);
       navigate(PATH_AUTH.login, { replace: true });
 
       if (isMountedRef.current) {

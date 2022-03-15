@@ -1,27 +1,22 @@
 // @mui
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import { AppBar, Box, Button, Stack, Toolbar } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Box, Stack, AppBar, Toolbar, Button } from '@mui/material';
+import { Store } from 'types/store';
+import { AREA_STORAGE_KEY } from 'utils/constants';
+import { getAreaStorage } from 'utils/utils';
+import { IconButtonAnimate } from '../../../components/animate';
+import Iconify from '../../../components/Iconify';
+// components
+import Logo from '../../../components/Logo';
+// config
+import { HEADER, NAVBAR } from '../../../config';
 // hooks
 import useOffSetTop from '../../../hooks/useOffSetTop';
 import useResponsive from '../../../hooks/useResponsive';
 // utils
 import cssStyles from '../../../utils/cssStyles';
-// config
-import { HEADER, NAVBAR } from '../../../config';
-// components
-import Logo from '../../../components/Logo';
-import Iconify from '../../../components/Iconify';
-import { IconButtonAnimate } from '../../../components/animate';
-//
-import Searchbar from './Searchbar';
 import AccountPopover from './AccountPopover';
-import LanguagePopover from './LanguagePopover';
-import ContactsPopover from './ContactsPopover';
-import NotificationsPopover from './NotificationsPopover';
-import { Store } from 'types/store';
-import { getAreaCookie } from 'utils/utils';
-import { MoneyOutlined } from '@mui/icons-material';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +25,6 @@ type RootStyleProps = {
   isOffset: boolean;
   verticalLayout: boolean;
 };
-const store: Store = getAreaCookie();
 
 const RootStyle = styled(AppBar, {
   shouldForwardProp: (prop) =>
@@ -67,6 +61,7 @@ type Props = {
   isCollapse?: boolean;
   verticalLayout?: boolean;
   handleClick: VoidFunction;
+  store: Store;
 };
 
 export default function DashboardHeader({
@@ -74,6 +69,7 @@ export default function DashboardHeader({
   handleClick,
   isCollapse = false,
   verticalLayout = false,
+  store,
 }: Props) {
   const isOffset = useOffSetTop(HEADER.DASHBOARD_DESKTOP_HEIGHT) && !verticalLayout;
 

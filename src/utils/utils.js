@@ -2,7 +2,7 @@
 import { parse } from 'querystring';
 import moment from 'moment';
 import pathRegexp from 'path-to-regexp';
-import { AREA_COOKIE_KEY } from 'utils/constants';
+import { AREA_STORAGE_KEY } from 'utils/constants';
 
 /* eslint no-useless-escape:0 import/prefer-default-export:0 */
 const reg =
@@ -158,13 +158,6 @@ export function delete_cookie(cname) {
   document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
 }
 
-export const getAreaCookie = () => {
-  try {
-    return JSON.parse(getCookie(AREA_COOKIE_KEY));
-  } catch (e) {
-    return null;
-  }
-};
 // set localstorage
 export const setLocalStorage = (name, value) => {
   localStorage.setItem(name, value);
@@ -173,6 +166,17 @@ export const setLocalStorage = (name, value) => {
 // get localstorage
 export const getLocalStorage = (name) => localStorage.getItem(name);
 //
+
+export const getAreaStorage = () => {
+  try {
+    return JSON.parse(getLocalStorage(AREA_STORAGE_KEY));
+  } catch (e) {
+    return {};
+  }
+};
+export const setAreaStorage = (value) => {
+  localStorage.setItem(AREA_STORAGE_KEY, JSON.stringify(value));
+};
 export const removeLocalStorage = (key) => localStorage.removeItem(key);
 
 export const saveCollections = (data) => localStorage.setItem('COLLECTIONS', JSON.stringify(data));
