@@ -167,15 +167,15 @@ export const setLocalStorage = (name, value) => {
 export const getLocalStorage = (name) => localStorage.getItem(name);
 //
 
-export const getAreaStorage = (name) => {
+export const getAreaStorage = () => {
   try {
-    return JSON.parse(getLocalStorage(name));
+    return JSON.parse(getLocalStorage(AREA_STORAGE_KEY));
   } catch (e) {
     return {};
   }
 };
-export const setAreaStorage = (name, value) => {
-  localStorage.setItem(name, JSON.stringify(value));
+export const setAreaStorage = (value) => {
+  localStorage.setItem(AREA_STORAGE_KEY, JSON.stringify(value));
 };
 export const removeLocalStorage = (key) => localStorage.removeItem(key);
 

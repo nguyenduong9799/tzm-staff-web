@@ -2,20 +2,18 @@ import { ArrowForward } from '@mui/icons-material';
 import { Box, Card, CircularProgress, Container, Fab, Stack, Typography } from '@mui/material';
 import Page from 'components/Page';
 import React from 'react';
-import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router';
 import { PATH_DASHBOARD } from 'routes/paths';
 import { Store } from 'types/store';
 import { Supplier } from 'types/supplier';
 import request from 'utils/axios';
-import { AREA_STORAGE_KEY } from 'utils/constants';
 import { getAreaStorage } from 'utils/utils';
 
 type Props = {};
 
 const SupplierList = (props: Props) => {
-  const store: Store = getAreaStorage(AREA_STORAGE_KEY) ?? {};
+  const store: Store = getAreaStorage() ?? {};
   const storeId = store.id;
   const { data: suppliers, isLoading } = useQuery([storeId, 'suppliers'], () =>
     request.get<{ data: Supplier[] }>(`/stores/${storeId}/suppliers`).then((res) => res.data.data)

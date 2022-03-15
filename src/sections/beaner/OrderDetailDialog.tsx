@@ -1,4 +1,5 @@
 import CloseIcon from '@mui/icons-material/Close';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import {
   AppBar,
   Box,
@@ -26,8 +27,6 @@ import { Store } from 'types/store';
 import request from 'utils/axios';
 import { formatCurrency, getAreaStorage } from 'utils/utils';
 import OrderListItem from './OrderListItem';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { AREA_STORAGE_KEY } from 'utils/constants';
 
 type Props = {
   orderId?: number | null;
@@ -69,7 +68,7 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
 
   const theme = useTheme();
-  const store: Store = getAreaStorage(AREA_STORAGE_KEY) ?? {};
+  const store: Store = getAreaStorage() ?? {};
   const storeId = store.id;
   const { data, isLoading } = useQuery(
     [storeId, 'orders', orderId],

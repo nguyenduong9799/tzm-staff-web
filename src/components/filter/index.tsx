@@ -16,7 +16,7 @@ type Props = {
 };
 
 const OrderFilter = ({ open, onClose, onReset }: Props) => {
-  const store: Store = getAreaStorage(AREA_STORAGE_KEY) ?? {};
+  const store: Store = getAreaStorage() ?? {};
   const storeId = store.id;
   const { data: destinations } = useQuery(['stores', 'destinations'], () =>
     request.get<{ data: Location[] }>(`/stores/${storeId}/locations`).then((res) => res.data.data)

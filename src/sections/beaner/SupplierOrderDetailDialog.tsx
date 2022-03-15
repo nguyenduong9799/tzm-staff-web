@@ -21,7 +21,7 @@ import { useQuery } from 'react-query';
 import { Order, OrderDetail, OrderItem, OrderStatus } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
-import { AREA_STORAGE_KEY, ProductType } from 'utils/constants';
+import { ProductType } from 'utils/constants';
 import { fCurrency } from 'utils/formatNumber';
 import { getAreaStorage } from 'utils/utils';
 
@@ -71,7 +71,7 @@ const SupplierOrderDetailDialog = ({
 }: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
   const theme = useTheme();
-  const store: Store = getAreaStorage(AREA_STORAGE_KEY) ?? {};
+  const store: Store = getAreaStorage() ?? {};
   const storeId = store.id;
   const { data, isLoading } = useQuery(
     [storeId, 'suppliers', supplierId, 'orders', orderId],

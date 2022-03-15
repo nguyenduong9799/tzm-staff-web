@@ -1,4 +1,7 @@
 import { ArrowBack, FilterList, OpenInFullOutlined } from '@mui/icons-material';
+import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
 import {
   Box,
   Button,
@@ -9,7 +12,6 @@ import {
   CircularProgress,
   Container,
   Divider,
-  Drawer,
   Fab,
   Stack,
   Typography,
@@ -17,7 +19,6 @@ import {
 import EmptyContent from 'components/EmptyContent';
 import OrderFilter from 'components/filter';
 import Page from 'components/Page';
-import Scrollbar from 'components/Scrollbar';
 import React, { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
@@ -28,10 +29,6 @@ import { Order, OrderResponse } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
 import { formatCurrency, getAreaStorage } from 'utils/utils';
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
-import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
-import { AREA_STORAGE_KEY } from 'utils/constants';
 
 type Props = {};
 
@@ -39,7 +36,7 @@ const SupplierOrderList = (props: Props) => {
   const { supplierId } = useParams();
   const navigate = useNavigate();
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-  const store: Store = getAreaStorage(AREA_STORAGE_KEY) ?? {};
+  const store: Store = getAreaStorage() ?? {};
   const storeId = store.id;
 
   const [openFilter, setOpenFilter] = useState(false);

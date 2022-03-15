@@ -61,7 +61,7 @@ export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
   const [currentStore, setCurrentStore] = useState<Store | null>(() => {
     try {
-      return JSON.parse(getAreaStorage(AREA_COOKIE_KEY));
+      return JSON.parse(getAreaStorage());
     } catch (e) {
       return null;
     }
@@ -98,7 +98,7 @@ export default function DashboardLayout() {
               size="small"
               onClick={() => {
                 setCurrentStore(store);
-                setAreaStorage(AREA_STORAGE_KEY, store);
+                setAreaStorage(store);
                 navigate(PATH_DASHBOARD.root);
               }}
               color="primary"
