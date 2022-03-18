@@ -98,13 +98,32 @@ const BeanerOrderList = (props: Props) => {
       <Card
         elevation={isCancled ? 0 : 1}
         key={order.order_id}
-        sx={{ bgcolor: (theme) => (isCancled ? '#ccc' : theme.palette.background.paper) }}
+        sx={{
+          bgcolor: (theme) =>
+            isCancled ? theme.palette.background.neutral : theme.palette.background.paper,
+        }}
       >
         <CardActionArea onClick={() => setSelectedOrderId(order.order_id)}>
           <Box sx={{ px: 2, pt: 1 }}>
             <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
               <Box>
-                <Typography variant="h6">{order.invoice_id}</Typography>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Typography variant="h6">{order.invoice_id}</Typography>
+                  {order.order_status == OrderStatus.DONE && (
+                    <Chip color="success" size="small" label={'Hoàn Thành'} />
+                  )}
+                  {order.order_status == OrderStatus.NEW && (
+                    <Chip color="warning" label={'Mới'} size="small" />
+                  )}
+                  {order.order_status == OrderStatus.CANCLE && (
+                    <Chip color="error" label={'Đã Hủy'} size="small" />
+                  )}
+                </Stack>
                 <Typography variant="h6"> {order.customer.name}</Typography>
                 <Typography variant="h6">{order.master_product_quantity} món</Typography>
               </Box>
