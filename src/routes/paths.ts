@@ -46,6 +46,7 @@ export const PATH_DASHBOARD = {
         path(ROOTS_DASHBOARD, `/driver/suppliers/${supplierId}/orders`),
     },
   },
+  account: path(ROOTS_DASHBOARD, '/account'),
   general: {
     app: path(ROOTS_DASHBOARD, '/app'),
     ecommerce: path(ROOTS_DASHBOARD, '/ecommerce'),

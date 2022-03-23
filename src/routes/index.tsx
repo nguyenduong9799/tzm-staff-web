@@ -17,6 +17,8 @@ import LoadingScreen from '../components/LoadingScreen';
 import BeanerOrderList from 'pages/beaner/orders';
 import SupplierList from 'pages/driver/supplier/list';
 import SupplierOrderList from 'pages/driver/supplier/[supplierId]';
+import Account from 'pages/account';
+import AccountSearching from 'pages/account';
 
 // ----------------------------------------------------------------------
 
@@ -76,6 +78,7 @@ export default function Router() {
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'app', element: <GeneralApp /> },
         { path: 'beaner/orders', element: <BeanerOrderList /> },
+        { path: 'account', element: <AccountSearching /> },
         {
           path: 'driver/suppliers',
           children: [
