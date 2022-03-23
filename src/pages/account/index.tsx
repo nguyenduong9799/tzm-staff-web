@@ -18,7 +18,7 @@ import {
 import { RHFTextField } from 'components/hook-form';
 import Page from 'components/Page';
 import { useSnackbar } from 'notistack';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery } from 'react-query';
@@ -26,6 +26,8 @@ import { Account } from 'types/account';
 import { Store } from 'types/store';
 import request from 'utils/axios';
 import * as Yup from 'yup';
+import { debounce, throttle } from 'lodash';
+import useDebounce from 'hooks/useDebounce';
 
 type Props = {};
 const COIN_VALUE = [10, 20, 50, 100, 200, 500];
@@ -60,10 +62,11 @@ const AccountSearching = (props: Props) => {
   const currentAmount = addCoinForm.watch('amount');
 
   const filters = searchForm.watch();
+  const debounceFilters = useDebounce(filters, 500);
 
-  const { data, refetch: fetchAccounts } = useQuery(['phone', filters], () =>
+  const { data, refetch: fetchAccounts } = useQuery(['phone', debounceFilters], () =>
     request
-      .get<{ data: Account[] }>(`/admin/customers`, { params: filters })
+      .get<{ data: Account[] }>(`/admin/customers`, { params: debounceFilters })
       .then((res) => res.data)
   );
   console.log(data);
