@@ -1,4 +1,7 @@
 import { FilterList, Replay } from '@mui/icons-material';
+import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
 import {
   Box,
   Button,
@@ -12,7 +15,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import MenuOutLinedIcon from '@mui/material/Icon';
 import ConfirmDialog from 'components/confirm-dialog/ConfirmDialog';
 import ConfirmOrderModal from 'components/confirmBeforeOrder';
 import OrderFilter from 'components/filter';
@@ -22,25 +24,13 @@ import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import OrderDetailDialog from 'sections/beaner/OrderDetailDialog';
-import { Order, OrderResponse, OrderStatus } from 'types/order';
+import { Order, OrderResponse, OrderStatus, PaymentType } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
 import { formatCurrency, getAreaStorage } from 'utils/utils';
 import Page from '../../../components/Page';
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
-import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
-import { AREA_STORAGE_KEY } from 'utils/constants';
 
 type Props = {};
-
-const TABLE_HEAD = [
-  { id: 'name', label: 'Product', alignRight: false },
-  { id: 'createdAt', label: 'Create at', alignRight: false },
-  { id: 'inventoryType', label: 'Status', alignRight: false },
-  { id: 'price', label: 'Price', alignRight: true },
-  { id: '' },
-];
 
 const BeanerOrderList = (props: Props) => {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
@@ -68,7 +58,6 @@ const BeanerOrderList = (props: Props) => {
   const {
     data,
     refetch: fetchOrders,
-    isLoading,
     isFetching,
   } = useQuery([storeId, 'beaner-orders', filters], () =>
     request
@@ -138,7 +127,7 @@ const BeanerOrderList = (props: Props) => {
                 </Stack>
                 <Stack direction="row" spacing={1} alignItems="center">
                   <AccessTimeOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
-                  <Typography>{order.time_slot}</Typography>
+                  <Typography>{order.time_slot.replace(';', ' - ')}</Typography>
                 </Stack>
               </Box>
             </Stack>
@@ -170,10 +159,13 @@ const BeanerOrderList = (props: Props) => {
       });
 
   const totalOrder = data?.list_of_orders.length;
-  const totalFinalAmount = (data?.list_of_orders ?? []).reduce(
-    (total, order) => total + order.final_amount,
-    0
-  );
+  const totalFinalAmount = (
+    data?.list_of_orders.filter((e) => e.payment_type === PaymentType.Cash) ?? []
+  ).reduce((total, order) => total + order.final_amount, 0);
+
+  const totalFinalAmountCoin = (
+    data?.list_of_orders.filter((e) => e.payment_type === PaymentType.CreditPayment) ?? []
+  ).reduce((total, order) => total + order.final_amount, 0);
 
   const totalProduct = (data?.list_of_orders ?? []).reduce(
     (total, order) => total + order.master_product_quantity,
@@ -222,7 +214,7 @@ const BeanerOrderList = (props: Props) => {
             Danh sách đơn hàng
           </Typography>
           <Stack direction="row" spacing={1}>
-            <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
+            <Card sx={{ p: 1, width: '40%', mx: 'auto', textAlign: 'left' }}>
               <Stack direction="column" justifyContent="space-between">
                 <Stack direction="row" justifyContent="space-between" spacing={2}>
                   <Typography variant="body1">Tổng đơn:</Typography>
@@ -234,9 +226,17 @@ const BeanerOrderList = (props: Props) => {
                 </Stack>
               </Stack>
             </Card>
-            <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
-              <Typography>Tổng tiền: </Typography>
-              <Typography fontWeight="bold">{formatCurrency(totalFinalAmount)}</Typography>
+            <Card sx={{ p: 1, width: '60%', mx: 'auto', textAlign: 'left' }}>
+              <Stack direction="column" justifyContent="space-between">
+                <Stack direction="row" justifyContent="space-between" spacing={2}>
+                  <Typography variant="body1">Tổng Tiền:</Typography>
+                  <Typography fontWeight="bold">{formatCurrency(totalFinalAmount)} </Typography>
+                </Stack>
+                <Stack direction="row" justifyContent="space-between" spacing={2}>
+                  <Typography variant="body1">Tổng xu:</Typography>
+                  <Typography fontWeight="bold">{totalFinalAmountCoin} xu</Typography>
+                </Stack>
+              </Stack>
             </Card>
           </Stack>
         </Box>

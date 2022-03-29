@@ -1,3 +1,4 @@
+import { yupResolver } from '@hookform/resolvers/yup';
 import { LoadingButton } from '@mui/lab';
 import {
   Box,
@@ -5,36 +6,32 @@ import {
   Card,
   CardActionArea,
   CardActions,
+  Chip,
   Container,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Stack,
-  Chip,
-  Typography,
   Grid,
+  Stack,
+  Typography,
 } from '@mui/material';
 import { RHFTextField } from 'components/hook-form';
 import Page from 'components/Page';
+import useDebounce from 'hooks/useDebounce';
 import { useSnackbar } from 'notistack';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useQuery } from 'react-query';
 import { Account } from 'types/account';
-import { Store } from 'types/store';
 import request from 'utils/axios';
 import * as Yup from 'yup';
-import { debounce, throttle } from 'lodash';
-import useDebounce from 'hooks/useDebounce';
 
 type Props = {};
 const COIN_VALUE = [10, 20, 50, 100, 200, 500];
 
 const AccountSearching = (props: Props) => {
   const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
-  const [selectedCurrentCoin, setSelectedCurrentCoin] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
