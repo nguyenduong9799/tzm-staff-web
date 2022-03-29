@@ -27,7 +27,7 @@ const OrderListItem = ({ orderList }: Props) => (
             </Stack>
           </Box>
           <Box width="90px" textAlign="right">
-            <Typography>{fCurrency(order.final_amount)}</Typography>
+            <Typography>{fCurrency(order.final_amount)} đ</Typography>
           </Box>
         </Stack>
       ))}
@@ -56,7 +56,7 @@ const OrderListItem = ({ orderList }: Props) => (
                 </Stack>
               </Box>
               <Box width="90px" textAlign="right">
-                <Typography>{fCurrency(order.final_amount)}</Typography>
+                <Typography>{fCurrency(order.final_amount)} Bean</Typography>
               </Box>
             </Stack>
           ))}
