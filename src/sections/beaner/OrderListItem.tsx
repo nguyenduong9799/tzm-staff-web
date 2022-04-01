@@ -27,7 +27,7 @@ const OrderListItem = ({ orderList }: Props) => (
               ))}
             </Stack>
             {order.product_name?.toLowerCase()?.includes('combo') ? (
-              <Typography variant="body2"> có combo {order.product_description}</Typography>
+              <Typography variant="body2">{order.product_description}</Typography>
             ) : (
               <Typography />
             )}
@@ -54,11 +54,11 @@ const OrderListItem = ({ orderList }: Props) => (
               <Box flex={10}>
                 <Typography variant="body1">{order.product_name}</Typography>
                 <Stack spacing={0.5}>
-                  {order.list_of_childs.map((childItem) => (
-                    <Typography variant="body2" key={childItem.order_detail_id}>
-                      {childItem.quantity} x {childItem.product_name}
-                    </Typography>
-                  ))}
+                  {order.product_name?.toLowerCase()?.includes('combo') ? (
+                    <Typography variant="body2">{order.product_description}</Typography>
+                  ) : (
+                    <Typography />
+                  )}
                 </Stack>
                 {order.product_name.includes('combo') ? (
                   <Typography variant="body2"> có combo {order.description}</Typography>
