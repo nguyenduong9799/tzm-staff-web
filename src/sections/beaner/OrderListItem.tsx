@@ -3,6 +3,7 @@ import React from 'react';
 import { OrderItem } from 'types/order';
 import { ProductType } from 'utils/constants';
 import { fCurrency } from 'utils/formatNumber';
+import { formatCurrency } from 'utils/utils';
 
 type Props = {
   orderList: OrderItem[];
@@ -12,11 +13,11 @@ const OrderListItem = ({ orderList }: Props) => (
     {orderList
       .filter((order) => order.product_type !== ProductType.GIFT_PRODUCT)
       .map((order, idx) => (
-        <Stack mb={2} pb={2} direction="row" key={order.order_detail_id} spacing={1}>
-          <Box width="40px">
-            <Typography variant="caption">{order.quantity}x</Typography>
-          </Box>
+        <Stack pb={1} direction="row" key={order.order_detail_id} spacing={1}>
           <Box flex={1}>
+            <Typography variant="body2">{order.quantity} x</Typography>
+          </Box>
+          <Box flex={10}>
             <Typography variant="body1">{order.product_name}</Typography>
             <Stack spacing={0.5}>
               {order.list_of_childs.map((childItem) => (
@@ -25,27 +26,32 @@ const OrderListItem = ({ orderList }: Props) => (
                 </Typography>
               ))}
             </Stack>
+            {order.product_name?.toLowerCase()?.includes('combo') ? (
+              <Typography variant="body2"> có combo {order.product_description}</Typography>
+            ) : (
+              <Typography />
+            )}
           </Box>
-          <Box width="90px" textAlign="right">
-            <Typography>{fCurrency(order.final_amount)} đ</Typography>
+          <Box flex={4} textAlign="right">
+            <Typography>{formatCurrency(order.final_amount)}</Typography>
           </Box>
         </Stack>
       ))}
     {orderList.filter((order) => order.product_type === ProductType.GIFT_PRODUCT).length === 0 ? (
-      <Box></Box>
+      <Box />
     ) : (
       <Box>
-        <Typography mb={2} variant="h6">
+        <Typography mb={1} variant="h6">
           Quà tặng
         </Typography>
         {orderList
           .filter((order) => order.product_type === ProductType.GIFT_PRODUCT)
           .map((order, idx) => (
             <Stack mb={2} pb={2} direction="row" key={order.order_detail_id} spacing={1}>
-              <Box width="40px">
-                <Typography variant="caption">{order.quantity}x</Typography>
-              </Box>
               <Box flex={1}>
+                <Typography variant="body2">{order.quantity}x</Typography>
+              </Box>
+              <Box flex={10}>
                 <Typography variant="body1">{order.product_name}</Typography>
                 <Stack spacing={0.5}>
                   {order.list_of_childs.map((childItem) => (
@@ -54,8 +60,13 @@ const OrderListItem = ({ orderList }: Props) => (
                     </Typography>
                   ))}
                 </Stack>
+                {order.product_name.includes('combo') ? (
+                  <Typography variant="body2"> có combo {order.description}</Typography>
+                ) : (
+                  <Typography>Ko có combo</Typography>
+                )}
               </Box>
-              <Box width="90px" textAlign="right">
+              <Box flex={4} textAlign="right">
                 <Typography>{fCurrency(order.final_amount)} Bean</Typography>
               </Box>
             </Stack>

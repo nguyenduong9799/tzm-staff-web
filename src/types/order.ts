@@ -42,6 +42,7 @@ export interface OrderItem {
     discount: number;
     final_amount: number;
     description: string;
+    product_description: string;
     supplier_store_name: string;
     supplier_store_id: number;
     unit_price: number;

@@ -11,6 +11,7 @@ import {
   Dialog,
   DialogContent,
   DialogContentText,
+  Divider,
   IconButton,
   Stack,
   Toolbar,
@@ -208,19 +209,18 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
                         onClick={() => handlerExpand(s)}
                         aria-controls="example-collapse-text"
                         sx={{
+                          p: 1.5,
                           bgcolor: (theme) => theme.palette.background.paper,
                         }}
                       >
-                        <Box sx={{ px: 2, pt: 1 }}>
+                        <Box>
                           <Stack
                             direction="row"
                             spacing={1}
                             justifyContent="space-between"
                             alignItems="center"
                           >
-                            <Typography mb={2} variant="h6">
-                              Đơn hàng cho {s}
-                            </Typography>
+                            <Typography variant="h6">Đơn hàng cho {s}</Typography>
                             <KeyboardArrowDownIcon
                               style={{
                                 transform: Boolean(openCollapse?.find((e) => e === s))
@@ -231,8 +231,8 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
                           </Stack>
                         </Box>
                         <Collapse in={!Boolean(openCollapse?.find((e) => e === s))}>
-                          <Box sx={{ px: 2, pt: 1 }} id="example-collapse-text">
-                            <Typography mb={2} variant="subtitle1">
+                          <Box sx={{ mb: 1 }} id="example-collapse-text">
+                            <Typography variant="subtitle1">
                               Ghi chú : {getNoteOfSupplier(s)}
                             </Typography>
                             <OrderListItem orderList={getOrdersOfSupplier(s)} />
