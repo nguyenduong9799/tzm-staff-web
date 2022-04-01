@@ -26,7 +26,11 @@ const OrderListItem = ({ orderList }: Props) => (
                 </Typography>
               ))}
             </Stack>
-            <Typography variant="body2">{order.description}</Typography>
+            {order.product_name?.toLowerCase()?.includes('combo') ? (
+              <Typography variant="body2"> có combo {order.product_description}</Typography>
+            ) : (
+              <Typography />
+            )}
           </Box>
           <Box flex={4} textAlign="right">
             <Typography>{formatCurrency(order.final_amount)}</Typography>
@@ -34,7 +38,7 @@ const OrderListItem = ({ orderList }: Props) => (
         </Stack>
       ))}
     {orderList.filter((order) => order.product_type === ProductType.GIFT_PRODUCT).length === 0 ? (
-      <Box></Box>
+      <Box />
     ) : (
       <Box>
         <Typography mb={1} variant="h6">
@@ -56,7 +60,11 @@ const OrderListItem = ({ orderList }: Props) => (
                     </Typography>
                   ))}
                 </Stack>
-                <Typography variant="body2">{order.description}</Typography>
+                {order.product_name.includes('combo') ? (
+                  <Typography variant="body2"> có combo {order.description}</Typography>
+                ) : (
+                  <Typography>Ko có combo</Typography>
+                )}
               </Box>
               <Box flex={4} textAlign="right">
                 <Typography>{fCurrency(order.final_amount)} Bean</Typography>
