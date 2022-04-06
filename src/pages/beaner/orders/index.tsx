@@ -216,11 +216,11 @@ const BeanerOrderList = (props: Props) => {
           <Stack direction="row" spacing={1}>
             <Card sx={{ p: 1, width: '40%', mx: 'auto', textAlign: 'left' }}>
               <Stack direction="column" justifyContent="space-between">
-                <Stack direction="row" justifyContent="space-between" spacing={2}>
+                <Stack direction="row" justifyContent="space-between" spacing={1}>
                   <Typography variant="body1">Tổng đơn:</Typography>
                   <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
                 </Stack>
-                <Stack direction="row" justifyContent="space-between" spacing={2}>
+                <Stack direction="row" justifyContent="space-between" spacing={1}>
                   <Typography variant="body1">Tổng phần:</Typography>
                   <Typography fontWeight="bold">{totalProduct ?? 0} </Typography>
                 </Stack>

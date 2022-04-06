@@ -20,8 +20,10 @@ import {
 } from '@mui/material';
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
+import ConfirmDialog from 'components/confirm-dialog/ConfirmDialog';
 import ResoDescriptions, { ResoDescriptionColumnType } from 'components/ResoDescriptions';
 import { sortBy, uniq } from 'lodash';
+import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { Order, OrderDetail, OrderStatus, PaymentType } from 'types/order';
@@ -57,6 +59,23 @@ export const ORDER_STATUS_OPTIONS = [
     color: 'warning',
   },
 ];
+export const PAYMENT_TYPE_OPTIONS = [
+  {
+    label: 'Tiền mặt',
+    value: PaymentType.Cash,
+    color: 'success',
+  },
+  {
+    label: 'Xu',
+    value: PaymentType.CreditPayment,
+    color: 'success',
+  },
+  {
+    label: 'Momo',
+    value: PaymentType.Momo,
+    color: 'success',
+  },
+];
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
     children: React.ReactElement;
@@ -68,11 +87,13 @@ const Transition = React.forwardRef(function Transition(
 
 const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
+  const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
 
+  const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
   const store: Store = getAreaStorage() ?? {};
   const storeId = store.id;
-  const { data, isLoading } = useQuery(
+  const { data, isLoading, refetch } = useQuery(
     [storeId, 'orders', orderId],
     () =>
       request
@@ -102,15 +123,22 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
         </Typography>
       ),
     },
-
-    {
-      title: 'Địa chỉ giao',
-      dataIndex: 'delivery_address',
-    },
     {
       title: 'Trạng thái',
       dataIndex: 'order_status',
       valueEnum: ORDER_STATUS_OPTIONS,
+      span: 2,
+    },
+    {
+      title: 'Phương thức thanh toán',
+      dataIndex: 'payment_type',
+      valueEnum: PAYMENT_TYPE_OPTIONS,
+      span: 2,
+    },
+    {
+      title: 'Địa chỉ giao',
+      dataIndex: 'delivery_address',
+      span: 2,
     },
     {
       title: 'Thời gian',
@@ -151,6 +179,20 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
       setOpenCollapse(state ?? []);
     } else setOpenCollapse([...openCollapse, key]);
   };
+
+  const handleUpdatePaymentTypeOrder = () =>
+    request
+      .put(`/orders/${orderId}/payment`, { payment_type: PaymentType.Momo })
+      .then(() => {
+        enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
+        refetch();
+        return true;
+      })
+      .catch((error) => {
+        enqueueSnackbar(error?.message ?? 'Có lỗi xảy ra! Vui lòng thử lại.', { variant: 'error' });
+        return false;
+      });
+
   // @ts-ignore
   return (
     <Dialog
@@ -259,9 +301,18 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
           }}
         >
           <Stack py={2} px={1} direction="row" spacing={2} justifyContent="flex-end">
-            <Button onClick={onClose} color="inherit">
-              Quay lại
-            </Button>
+            <ConfirmDialog
+              title={`Xác nhận thanh toán bằng momo`}
+              onClose={() => {
+                setOpenPaymentDialog(false);
+              }}
+              onOk={handleUpdatePaymentTypeOrder}
+              open={openPaymentDialog}
+            />
+            {data?.data.payment_type === PaymentType.Cash &&
+              data?.data.order_status === OrderStatus.NEW && (
+                <Button onClick={() => setOpenPaymentDialog(true)}>Thanh toán Momo</Button>
+              )}
             {data?.data.order_status === OrderStatus.NEW && (
               <Button onClick={onUpdate}>Cập nhật</Button>
             )}

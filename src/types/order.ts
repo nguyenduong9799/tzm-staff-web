@@ -80,4 +80,5 @@ export interface OrderDetail {
 export enum PaymentType {
     Cash = 1,
     CreditPayment = 2, //tra bang xu
+    Momo = 3
 }

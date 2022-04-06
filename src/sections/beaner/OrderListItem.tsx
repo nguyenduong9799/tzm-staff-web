@@ -14,7 +14,7 @@ const OrderListItem = ({ orderList }: Props) => (
       .filter((order) => order.product_type !== ProductType.GIFT_PRODUCT)
       .map((order, idx) => (
         <Stack pb={1} direction="row" key={order.order_detail_id} spacing={1}>
-          <Box flex={1}>
+          <Box flex={2}>
             <Typography variant="body2">{order.quantity} x</Typography>
           </Box>
           <Box flex={10}>
@@ -61,9 +61,9 @@ const OrderListItem = ({ orderList }: Props) => (
                   )}
                 </Stack>
                 {order.product_name.includes('combo') ? (
-                  <Typography variant="body2"> có combo {order.description}</Typography>
+                  <Typography variant="body2"> {order.description}</Typography>
                 ) : (
-                  <Typography>Ko có combo</Typography>
+                  <Box />
                 )}
               </Box>
               <Box flex={4} textAlign="right">
