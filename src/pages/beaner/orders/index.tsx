@@ -29,7 +29,13 @@ import { Store } from 'types/store';
 import request from 'utils/axios';
 import { formatCurrency, getAreaStorage } from 'utils/utils';
 import Page from '../../../components/Page';
-
+// import IconButton from '@mui/material/IconButton';
+// import Stack from '@mui/material/Stack';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AlarmIcon from '@mui/icons-material/Alarm';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 type Props = {};
 
 const BeanerOrderList = (props: Props) => {
@@ -50,6 +56,8 @@ const BeanerOrderList = (props: Props) => {
       'destination-location-id': null,
       'order-status': OrderStatus.NEW,
       'time-slot': null,
+      'from-date': null,
+      'to-date': null,
     },
   });
 
@@ -325,6 +333,14 @@ const BeanerOrderList = (props: Props) => {
         <Box>
           <Stack spacing={2}>{data?.list_of_orders?.map(renderOrder)}</Stack>
         </Box>
+        <Stack direction="row" spacing={1} justifyContent="center" mt={1.5}>
+          <IconButton color="primary" aria-label="add anya alarm">
+            <ArrowBackIosNewIcon />
+          </IconButton>
+          <IconButton color="primary" aria-label="add to shopping cart">
+            <ArrowForwardIosIcon />
+          </IconButton>
+        </Stack>
       </Container>
     </Page>
   );
