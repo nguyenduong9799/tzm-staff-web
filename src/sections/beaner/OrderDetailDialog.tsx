@@ -119,7 +119,9 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
       valueType: 'money',
       render: (_, { final_amount, payment_type }) => (
         <Typography variant="subtitle2" fontWeight="bold">
-          {payment_type == PaymentType.Cash ? formatCurrency(final_amount) : `${final_amount} xu`}
+          {payment_type == PaymentType.Cash || payment_type == PaymentType.Momo
+            ? formatCurrency(final_amount)
+            : `${final_amount} xu`}
         </Typography>
       ),
     },

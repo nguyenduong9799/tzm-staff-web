@@ -1,7 +1,24 @@
-import { Box, Button, Divider, Drawer, IconButton, Stack, Typography } from '@mui/material';
+import { Block } from '@mui/icons-material';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import DateRangePicker, { DateRange } from '@mui/lab/DateRangePicker';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import {
+  Box,
+  Button,
+  Divider,
+  Drawer,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { styled } from '@mui/system';
 import { RHFRadioGroup } from 'components/hook-form';
+import RHFDatePickerField from 'components/hook-form/RHFDatePickerField';
+import RHFDateRangePickerField from 'components/hook-form/RHFDateRangePickerField';
 import Iconify from 'components/Iconify';
 import Scrollbar from 'components/Scrollbar';
+import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { Location } from 'types/location';
 import { Store, TimeSlot } from 'types/store';
@@ -21,7 +38,11 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
   const { data: destinations } = useQuery(['stores', 'destinations'], () =>
     request.get<{ data: Location[] }>(`/stores/${storeId}/locations`).then((res) => res.data.data)
   );
-
+  // const [value, setValue] = React.useState<DateRange<Date>>([null, null]);
+  // console.log('first', value);
+  // const DateRangePicker1 = styled(DateRangePicker)({
+  //   fontSize: '10px',
+  // });
   return (
     <Drawer
       sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -71,6 +92,10 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
                 (d: TimeSlot) => `Từ ${d.from.toString()} - ${d.to.toString()}`
               )}
             />
+            <Stack spacing={1.5}>
+              <Typography variant="h6">Ngày</Typography>
+            </Stack>
+            <RHFDateRangePickerField name="date-range" />
           </Stack>
         </Scrollbar>
 
