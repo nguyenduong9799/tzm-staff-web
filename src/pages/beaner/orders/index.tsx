@@ -56,8 +56,7 @@ const BeanerOrderList = (props: Props) => {
       'destination-location-id': null,
       'order-status': OrderStatus.NEW,
       'time-slot': null,
-      'from-date': null,
-      'to-date': null,
+      'date-range': null,
     },
   });
 
@@ -171,6 +170,10 @@ const BeanerOrderList = (props: Props) => {
     data?.list_of_orders.filter((e) => e.payment_type === PaymentType.Cash) ?? []
   ).reduce((total, order) => total + order.final_amount, 0);
 
+  const totalFinalAmountMomo = (
+    data?.list_of_orders.filter((e) => e.payment_type === PaymentType.Momo) ?? []
+  ).reduce((total, order) => total + order.final_amount, 0);
+
   const totalFinalAmountCoin = (
     data?.list_of_orders.filter((e) => e.payment_type === PaymentType.CreditPayment) ?? []
   ).reduce((total, order) => total + order.final_amount, 0);
@@ -237,11 +240,15 @@ const BeanerOrderList = (props: Props) => {
             <Card sx={{ p: 1, width: '60%', mx: 'auto', textAlign: 'left' }}>
               <Stack direction="column" justifyContent="space-between">
                 <Stack direction="row" justifyContent="space-between" spacing={2}>
-                  <Typography variant="body1">Tổng Tiền:</Typography>
+                  <Typography variant="body2">Tổng tiền mặt:</Typography>
                   <Typography fontWeight="bold">{formatCurrency(totalFinalAmount)} </Typography>
                 </Stack>
                 <Stack direction="row" justifyContent="space-between" spacing={2}>
-                  <Typography variant="body1">Tổng xu:</Typography>
+                  <Typography variant="body2">Tổng Momo:</Typography>
+                  <Typography fontWeight="bold">{formatCurrency(totalFinalAmountMomo)}</Typography>
+                </Stack>
+                <Stack direction="row" justifyContent="space-between" spacing={2}>
+                  <Typography variant="body2">Tổng xu:</Typography>
                   <Typography fontWeight="bold">{totalFinalAmountCoin} xu</Typography>
                 </Stack>
               </Stack>
@@ -289,6 +296,7 @@ const BeanerOrderList = (props: Props) => {
                     'destination-location-id': null,
                     'order-status': OrderStatus.NEW,
                     'time-slot': null,
+                    'date-range': null,
                   })
                 }
                 open={openFilter}

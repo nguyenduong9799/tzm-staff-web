@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { RHFRadioGroup } from 'components/hook-form';
+import RHFDatePickerField from 'components/hook-form/RHFDatePickerField';
+import RHFDateRangePickerField from 'components/hook-form/RHFDateRangePickerField';
 import Iconify from 'components/Iconify';
 import Scrollbar from 'components/Scrollbar';
 import React, { useState } from 'react';
@@ -91,8 +93,9 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
               )}
             />
             <Stack spacing={1.5}>
-              <Typography variant="h6">Khung ngày</Typography>
+              <Typography variant="h6">Ngày</Typography>
             </Stack>
+            <RHFDateRangePickerField name="date-range" />
           </Stack>
         </Scrollbar>
 

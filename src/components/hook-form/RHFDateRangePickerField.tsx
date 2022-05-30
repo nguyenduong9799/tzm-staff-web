@@ -20,7 +20,6 @@ const DateRangePickerField: React.FC<Props & Partial<DatePickerProps>> = ({
   ...props
 }) => {
   const { control } = useFormContext();
-  const { translate } = useLocales();
 
   return (
     <Controller
@@ -32,22 +31,10 @@ const DateRangePickerField: React.FC<Props & Partial<DatePickerProps>> = ({
           renderInput={(startProps, endProps) => (
             <Stack width="100%" spacing={2} direction="row">
               <Box flex={1}>
-                <TextField
-                  size="small"
-                  fullWidth
-                  {...startProps}
-                  label={translate('common.fromTime')}
-                  placeholder={translate('common.fromTime')}
-                />
+                <TextField size="small" fullWidth {...startProps} label="From" placeholder="From" />
               </Box>
               <Box flex={1}>
-                <TextField
-                  size="small"
-                  fullWidth
-                  {...endProps}
-                  label={translate('common.toTime')}
-                  placeholder={translate('common.toTime')}
-                />
+                <TextField size="small" fullWidth {...endProps} label="To" placeholder="To" />
               </Box>
             </Stack>
           )}
