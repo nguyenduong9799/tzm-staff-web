@@ -181,11 +181,11 @@ const SupplierOrderList = (props: Props) => {
               current={currentIdx + 1}
               total={totalOrder}
               supplierId={Number(supplierId)}
-              onPrevious={() => {
+              onNext={() => {
                 console.log('orders[currentIdx - 1]', orders[currentIdx - 1]);
                 if (currentIdx > 0) setSelectedOrderId(orders[currentIdx - 1].order_id);
               }}
-              onNext={() => {
+              onPrevious={() => {
                 if (currentIdx < totalOrder - 1) {
                   setSelectedOrderId(orders[currentIdx + 1].order_id);
                 }

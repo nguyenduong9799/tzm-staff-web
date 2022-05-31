@@ -20,16 +20,28 @@ const DateRangePickerField: React.FC<Props & Partial<DatePickerProps>> = ({
   ...props
 }) => {
   const { control } = useFormContext();
+  function formatDate(date: any) {
+    let d = new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear();
 
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('/');
+  }
   return (
     <Controller
       render={({ field, fieldState }) => (
         <DateRangePicker
+         // inputFormat="yyyy/MM/dd"
           calendars={2}
           {...field}
-          value={field.value ?? [null, null]}
+           value={field.value ?? [null, null]}
           renderInput={(startProps, endProps) => (
             <Stack width="100%" spacing={2} direction="row">
+              {console.log(control)}
               <Box flex={1}>
                 <TextField size="small" fullWidth {...startProps} label="From" placeholder="From" />
               </Box>

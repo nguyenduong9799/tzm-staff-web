@@ -20,7 +20,7 @@ import ConfirmOrderModal from 'components/confirmBeforeOrder';
 import OrderFilter from 'components/filter';
 import useConfirmOrder from 'hooks/useConfirmOrder';
 import { useSnackbar } from 'notistack';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import OrderDetailDialog from 'sections/beaner/OrderDetailDialog';
@@ -36,6 +36,8 @@ import AlarmIcon from '@mui/icons-material/Alarm';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import EmptyContent from 'components/EmptyContent';
+// import OrderDetailDialog from 'sections/beaner/OrderDetailDialog';
 type Props = {};
 
 const BeanerOrderList = (props: Props) => {
@@ -64,6 +66,7 @@ const BeanerOrderList = (props: Props) => {
 
   const {
     data,
+    isLoading,
     refetch: fetchOrders,
     isFetching,
   } = useQuery([storeId, 'beaner-orders', filters], () =>
@@ -71,6 +74,8 @@ const BeanerOrderList = (props: Props) => {
       .get<{ data: OrderResponse[] }>(`/stores/${storeId}/orders`, { params: filters })
       .then((res) => res.data.data[0])
   );
+  const orders = useMemo(() => data?.list_of_orders ?? [], [data]);
+  const currentIdx = selectedOrderId ? orders.findIndex((o) => o.order_id === selectedOrderId) : -1;
 
   const confirmCheckedOrder = async (isNotify?: boolean) => {
     let success = true;
@@ -166,6 +171,8 @@ const BeanerOrderList = (props: Props) => {
       });
 
   const totalOrder = data?.list_of_orders.length;
+  const totalOrder1 = orders.length;
+
   const totalFinalAmount = (
     data?.list_of_orders.filter((e) => e.payment_type === PaymentType.Cash) ?? []
   ).reduce((total, order) => total + order.final_amount, 0);
@@ -320,6 +327,14 @@ const BeanerOrderList = (props: Props) => {
                   onUpdate={() => setConfirmOrderId(selectedOrderId)}
                   orderId={selectedOrderId}
                   onClose={() => setSelectedOrderId(null)}
+                  // current={0}
+                  // onNext={function () {
+                  //   throw new Error('Function not implemented.');
+                  // }}
+                  // onPrevious={function () {
+                  //   throw new Error('Function not implemented.');
+                  // }}
+                  // total={0}
                 />
               )}
             </Box>
@@ -341,17 +356,37 @@ const BeanerOrderList = (props: Props) => {
         <Box>
           <Stack spacing={2}>{data?.list_of_orders?.map(renderOrder)}</Stack>
         </Box>
-        <Stack direction="row" spacing={1} justifyContent="center" mt={1.5}>
-          <IconButton color="primary" aria-label="add anya alarm">
-            <ArrowBackIosNewIcon />
-          </IconButton>
-          <IconButton color="primary" aria-label="add to shopping cart">
-            <ArrowForwardIosIcon />
-          </IconButton>
-        </Stack>
+        <Box>
+          {isLoading ? (
+            <Box textAlign="center" p={4}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <OrderDetailDialog
+              current={currentIdx + 1}
+              total={totalOrder1}
+              // orderId={Number(orderId)}
+              onNext={() => {
+                console.log('orders[currentIdx - 1]', orders[currentIdx - 1]);
+                if (currentIdx > 0) setSelectedOrderId(orders[currentIdx - 1].order_id);
+              }}
+              onPrevious={() => {
+                if (currentIdx < totalOrder1 - 1) {
+                  setSelectedOrderId(orders[currentIdx + 1].order_id);
+                }
+              }}
+              orderId={selectedOrderId}
+              onClose={() => setSelectedOrderId(null)}
+            />
+          )}
+          {!isLoading && totalOrder === 0 && <EmptyContent title="Không có đơn hàng nào" />}
+        </Box>
       </Container>
     </Page>
   );
 };
 
 export default BeanerOrderList;
+function orderId(orderId: any): number | null | undefined {
+  throw new Error('Function not implemented.');
+}

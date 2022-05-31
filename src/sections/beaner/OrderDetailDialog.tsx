@@ -34,8 +34,12 @@ import OrderListItem from './OrderListItem';
 
 type Props = {
   orderId?: number | null;
-  onClose: () => any;
-  onUpdate: () => any;
+  onClose?: () => any;
+  onUpdate?: () => any;
+  current?: number;
+  onNext?: () => any;
+  onPrevious?: () => any;
+  total?: number;
 };
 
 export const ORDER_STATUS_OPTIONS = [
@@ -85,7 +89,15 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
+const OrderDetailDialog = ({
+  orderId,
+  onClose,
+  onUpdate,
+  onPrevious,
+  onNext,
+  total,
+  current,
+}: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
   const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
 
@@ -318,6 +330,39 @@ const OrderDetailDialog = ({ orderId, onClose, onUpdate }: Props) => {
             {data?.data.order_status === OrderStatus.NEW && (
               <Button onClick={onUpdate}>Cập nhật</Button>
             )}
+          </Stack>
+        </Box>
+        <Box
+          position="fixed"
+          width="100%"
+          sx={{
+            left: 0,
+            bottom: 0,
+            borderTop: '1px solid #cccccc6f',
+            textAlign: 'right',
+            zIndex: 10,
+            bgcolor: theme.palette.background.default,
+          }}
+        >
+          <Stack
+            py={2}
+            px={1}
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Button onClick={onNext} color="inherit">
+              Trước
+            </Button>
+            <Box textAlign="center" mx="auto">
+              <Typography>
+                {current} / {total}
+              </Typography>
+            </Box>
+            <Button onClick={onPrevious} color="inherit">
+              Tiếp theo
+            </Button>
           </Stack>
         </Box>
       </Box>

@@ -256,7 +256,7 @@ const SupplierOrderDetailDialog = ({
             alignItems="center"
             justifyContent="space-between"
           >
-            <Button onClick={onPrevious} color="inherit">
+            <Button onClick={onNext} color="inherit">
               Trước
             </Button>
             <Box textAlign="center" mx="auto">
@@ -264,7 +264,7 @@ const SupplierOrderDetailDialog = ({
                 {current} / {total}
               </Typography>
             </Box>
-            <Button onClick={onNext} color="inherit">
+            <Button onClick={onPrevious} color="inherit">
               Tiếp theo
             </Button>
           </Stack>
