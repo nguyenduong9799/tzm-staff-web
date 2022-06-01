@@ -39,6 +39,7 @@ type Props = {
   current?: number;
   onNext?: () => any;
   onPrevious?: () => any;
+  onDelete?: () => any;
   total?: number;
 };
 
@@ -97,7 +98,9 @@ const OrderDetailDialog = ({
   onNext,
   total,
   current,
-}: Props) => {
+  onDelete,
+}: // onDelete,
+Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
   const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
 
@@ -314,55 +317,51 @@ const OrderDetailDialog = ({
             bgcolor: theme.palette.background.default,
           }}
         >
-          <Stack py={2} px={1} direction="row" spacing={2} justifyContent="flex-end">
-            <ConfirmDialog
-              title={`Xác nhận thanh toán bằng momo`}
-              onClose={() => {
-                setOpenPaymentDialog(false);
-              }}
-              onOk={handleUpdatePaymentTypeOrder}
-              open={openPaymentDialog}
-            />
-            {data?.data.payment_type === PaymentType.Cash &&
-              data?.data.order_status === OrderStatus.NEW && (
-                <Button onClick={() => setOpenPaymentDialog(true)}>Thanh toán Momo</Button>
+          <Stack>
+            <Stack py={2} px={1} direction="row" spacing={2} justifyContent="space-between">
+              <ConfirmDialog
+                title={`Xác nhận thanh toán bằng momo`}
+                onClose={() => {
+                  setOpenPaymentDialog(false);
+                }}
+                onOk={handleUpdatePaymentTypeOrder}
+                open={openPaymentDialog}
+              />
+              {data?.data.order_status === OrderStatus.NEW && (
+                <Button onClick={onDelete} color="error">
+                  Delete
+                </Button>
               )}
-            {data?.data.order_status === OrderStatus.NEW && (
-              <Button onClick={onUpdate}>Cập nhật</Button>
-            )}
-          </Stack>
-        </Box>
-        <Box
-          position="fixed"
-          width="100%"
-          sx={{
-            left: 0,
-            bottom: 0,
-            borderTop: '1px solid #cccccc6f',
-            textAlign: 'right',
-            zIndex: 10,
-            bgcolor: theme.palette.background.default,
-          }}
-        >
-          <Stack
-            py={2}
-            px={1}
-            direction="row"
-            spacing={2}
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Button onClick={onNext} color="inherit">
-              Trước
-            </Button>
-            <Box textAlign="center" mx="auto">
-              <Typography>
-                {current} / {total}
-              </Typography>
-            </Box>
-            <Button onClick={onPrevious} color="inherit">
-              Tiếp theo
-            </Button>
+              <Box>
+                {data?.data.payment_type === PaymentType.Cash &&
+                  data?.data.order_status === OrderStatus.NEW && (
+                    <Button onClick={() => setOpenPaymentDialog(true)}>Thanh toán Momo</Button>
+                  )}
+                {data?.data.order_status === OrderStatus.NEW && (
+                  <Button onClick={onUpdate}>Cập nhật</Button>
+                )}
+              </Box>
+            </Stack>
+            <Stack
+              py={2}
+              px={1}
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Button onClick={onNext} color="inherit">
+                Trước
+              </Button>
+              <Box textAlign="center" mx="auto">
+                <Typography>
+                  {current} / {total}
+                </Typography>
+              </Box>
+              <Button onClick={onPrevious} color="inherit">
+                Tiếp theo
+              </Button>
+            </Stack>
           </Stack>
         </Box>
       </Box>
