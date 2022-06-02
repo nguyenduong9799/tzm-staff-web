@@ -99,8 +99,7 @@ const OrderDetailDialog = ({
   total,
   current,
   onDelete,
-}: // onDelete,
-Props) => {
+}: Props) => {
   const [open, setOpen] = useState(Boolean(orderId));
   const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
 
@@ -327,11 +326,13 @@ Props) => {
                 onOk={handleUpdatePaymentTypeOrder}
                 open={openPaymentDialog}
               />
-              {data?.data.order_status === OrderStatus.NEW && (
-                <Button onClick={onDelete} color="error">
-                  Delete
-                </Button>
-              )}
+              <Box>
+                {data?.data.order_status === OrderStatus.NEW && (
+                  <Button onClick={onDelete} color="error">
+                    Hủy đơn
+                  </Button>
+                )}
+              </Box>
               <Box>
                 {data?.data.payment_type === PaymentType.Cash &&
                   data?.data.order_status === OrderStatus.NEW && (
@@ -349,6 +350,7 @@ Props) => {
               spacing={2}
               alignItems="center"
               justifyContent="space-between"
+              paddingTop={-10}
             >
               <Button onClick={onNext} color="inherit">
                 Trước

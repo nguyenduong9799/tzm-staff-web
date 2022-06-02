@@ -171,16 +171,16 @@ const BeanerOrderList = (props: Props) => {
       });
   const handleDeleteOrder = () =>
     request
-      .put(`/stores/${storeId}/orders/${confirmOrderId}`, 4)
+      .put(`/stores/${storeId}/orders/${confirmOrderIdc}`, 4)
       .then(() => {
-        setConfirmOrderId(null);
+        setConfirmOrderIdc(null);
         setSelectedOrderId(null);
-        enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
+        enqueueSnackbar('Cancel thành công', { variant: 'success' });
         fetchOrders();
         return true;
       })
       .catch((error) => {
-        setConfirmOrderId(null);
+        setConfirmOrderIdc(null);
         enqueueSnackbar(error?.message ?? 'Có lỗi xảy ra! Vui lòng thử lại.', { variant: 'error' });
         return false;
       });
@@ -287,6 +287,14 @@ const BeanerOrderList = (props: Props) => {
             onOk={handleUpdateOrder}
             open={Boolean(confirmOrderId)}
           />
+          <ConfirmDialog
+            title={`Xác nhận hủy đơn hàng`}
+            onClose={() => {
+              setConfirmOrderIdc(null);
+            }}
+            onOk={handleDeleteOrder}
+            open={Boolean(confirmOrderIdc)}
+          />
           <Stack direction="row" spacing={1} mb={2} justifyContent="space-between">
             <Stack direction="row" spacing={1}>
               <Chip
@@ -342,8 +350,21 @@ const BeanerOrderList = (props: Props) => {
                   onUpdate={() => setConfirmOrderId(selectedOrderId)}
                   orderId={selectedOrderId}
                   onClose={() => setSelectedOrderId(null)}
+                  onDelete={() => setConfirmOrderIdc(selectedOrderId)}
+                  current={currentIdx + 1}
+                  total={totalOrder1}
+                  onNext={() => {
+                    console.log('orders[currentIdx - 1]', orders[currentIdx - 1]);
+                    if (currentIdx > 0) setSelectedOrderId(orders[currentIdx - 1].order_id);
+                  }}
+                  onPrevious={() => {
+                    if (currentIdx < totalOrder1 - 1) {
+                      setSelectedOrderId(orders[currentIdx + 1].order_id);
+                    }
+                  }}
                 />
               )}
+              {/* {!isLoading && totalOrder1 === 0 && <EmptyContent title="Không có đơn hàng nào" />} */}
             </Box>
           </Stack>
           <Stack direction="row" justifyContent="start">
@@ -360,64 +381,12 @@ const BeanerOrderList = (props: Props) => {
             </Button>
           </Stack>
         </Box>
+
         <Box>
           <Stack spacing={2}>{data?.list_of_orders?.map(renderOrder)}</Stack>
         </Box>
-
-        <Box>
-          {isLoading ? (
-            <Box textAlign="center" p={4}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <OrderDetailDialog
-              current={currentIdx + 1}
-              total={totalOrder1}
-              onPrevious={() => {
-                console.log('orders[currentIdx - 1]', orders[currentIdx - 1]);
-                if (currentIdx > 0) setSelectedOrderId(orders[currentIdx - 1].order_id);
-              }}
-              onNext={() => {
-                if (currentIdx < totalOrder1 - 1) {
-                  setSelectedOrderId(orders[currentIdx + 1].order_id);
-                }
-              }}
-              orderId={selectedOrderId}
-              onClose={() => setSelectedOrderId(null)}
-            />
-          )}
-          {!isLoading && totalOrder === 0 && <EmptyContent title="Không có đơn hàng nào" />}
-        </Box>
-        <Stack>
-          <Box>
-            <ConfirmDialog
-              title={`Xác nhận hủy đơn hàng`}
-              onClose={() => {
-                setSelectedOrderId(null);
-                setConfirmOrderIdc(null);
-              }}
-              onOk={handleDeleteOrder}
-              open={Boolean(confirmOrderIdc)}
-            />
-            {isFetching ? (
-              <Box textAlign="center">
-                <CircularProgress />
-              </Box>
-            ) : (
-              <OrderDetailDialog
-                onDelete={() => setConfirmOrderId(selectedOrderId)}
-                orderId={selectedOrderId}
-                onClose={() => setSelectedOrderId(null)}
-              />
-            )}
-          </Box>
-        </Stack>
       </Container>
     </Page>
   );
 };
-
 export default BeanerOrderList;
-function orderId(orderId: any): number | null | undefined {
-  throw new Error('Function not implemented.');
-}
