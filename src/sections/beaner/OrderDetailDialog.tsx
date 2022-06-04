@@ -228,7 +228,7 @@ const OrderDetailDialog = ({
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
             Đơn hàng {data?.data.invoice_id}
           </Typography>
-          {data?.data.payment_type == PaymentType.CreditPayment ? (
+          {data?.data.payment_type === PaymentType.CreditPayment ? (
             <Chip color={'primary'} variant={'outlined'} label={'Đã Thanh toán'} />
           ) : (
             <Chip color={'primary'} variant={'outlined'} label={'Chưa Thanh toán'} />
@@ -327,11 +327,9 @@ const OrderDetailDialog = ({
                 open={openPaymentDialog}
               />
               <Box>
-                {data?.data.order_status === OrderStatus.NEW && (
-                  <Button onClick={onDelete} color="error">
-                    Hủy đơn
-                  </Button>
-                )}
+                <Button onClick={onDelete} color="error">
+                  Hủy đơn
+                </Button>
               </Box>
               <Box>
                 {data?.data.payment_type === PaymentType.Cash &&
@@ -339,7 +337,7 @@ const OrderDetailDialog = ({
                     <Button onClick={() => setOpenPaymentDialog(true)}>Thanh toán Momo</Button>
                   )}
                 {data?.data.order_status === OrderStatus.NEW && (
-                  <Button onClick={onUpdate}>Cập nhật</Button>
+                  <Button onClick={onUpdate}>Hoàn Thành</Button>
                 )}
               </Box>
             </Stack>

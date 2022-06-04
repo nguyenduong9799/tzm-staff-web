@@ -20,7 +20,7 @@ import ConfirmOrderModal from 'components/confirmBeforeOrder';
 import OrderFilter from 'components/filter';
 import useConfirmOrder from 'hooks/useConfirmOrder';
 import { useSnackbar } from 'notistack';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import OrderDetailDialog from 'sections/beaner/OrderDetailDialog';
@@ -29,15 +29,6 @@ import { Store } from 'types/store';
 import request from 'utils/axios';
 import { formatCurrency, getAreaStorage } from 'utils/utils';
 import Page from '../../../components/Page';
-// import IconButton from '@mui/material/IconButton';
-// import Stack from '@mui/material/Stack';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AlarmIcon from '@mui/icons-material/Alarm';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import EmptyContent from 'components/EmptyContent';
-// import OrderDetailDialog from 'sections/beaner/OrderDetailDialog';
 type Props = {};
 
 const BeanerOrderList = (props: Props) => {
@@ -58,24 +49,52 @@ const BeanerOrderList = (props: Props) => {
       'destination-location-id': null,
       'order-status': OrderStatus.NEW,
       'time-slot': null,
-      'date-range': null,
+      'from-date': null,
+      'to-date': null,
     },
   });
 
+  const transformFilters = (filters: any = {}) => {
+    const transformedFilters = { ...filters } as any;
+    if (filters['from-date'] != null) {
+      transformedFilters['from-date'] = filters['from-date'][0];
+      transformedFilters['to-date'] = filters['from-date'][1];
+      transformedFilters['from-date'] = transformedFilters['from-date'].toISOString();
+    }
+    if (transformedFilters['to-date'] != null) {
+      transformedFilters['to-date'] = transformedFilters['to-date'].toISOString();
+    }
+    return transformedFilters;
+  };
   const filters = filterForm.watch();
-
+  const transformValue = transformFilters(filters);
   const {
     data,
     isLoading,
     refetch: fetchOrders,
     isFetching,
-  } = useQuery([storeId, 'beaner-orders', filters], () =>
+  } = useQuery([storeId, 'beaner-orders', transformFilters(filters)], () =>
     request
-      .get<{ data: OrderResponse[] }>(`/stores/${storeId}/orders`, { params: filters })
-      .then((res) => res.data.data[0])
+      .get<{ data: OrderResponse[] }>(`/stores/${storeId}/orders`, {
+        params: transformFilters(filters),
+      })
+      .then((res) => res.data.data)
   );
-  const orders = useMemo(() => data?.list_of_orders ?? [], [data]);
-  const currentIdx = selectedOrderId ? orders.findIndex((o) => o.order_id === selectedOrderId) : -1;
+  const getListOrder = (data: OrderResponse[]) => {
+    const orders: Order[] = [];
+    const listOrder = data?.reduce(
+      (value, element) => value.concat(element.list_of_orders),
+      orders
+    );
+    return listOrder;
+  };
+
+  const orders = useMemo(() => getListOrder(data!), [data]);
+
+  console.log('orders :>> ', orders);
+  const currentIdx = selectedOrderId
+    ? orders?.findIndex((o) => o.order_id === selectedOrderId)
+    : -1;
 
   const confirmCheckedOrder = async (isNotify?: boolean) => {
     let success = true;
@@ -115,13 +134,13 @@ const BeanerOrderList = (props: Props) => {
                   alignItems="center"
                 >
                   <Typography variant="h6">{order.invoice_id}</Typography>
-                  {order.order_status == OrderStatus.DONE && (
+                  {order.order_status === OrderStatus.DONE && (
                     <Chip color="success" size="small" label={'Hoàn Thành'} />
                   )}
-                  {order.order_status == OrderStatus.NEW && (
+                  {order.order_status === OrderStatus.NEW && (
                     <Chip color="warning" label={'Mới'} size="small" />
                   )}
-                  {order.order_status == OrderStatus.CANCLE && (
+                  {order.order_status === OrderStatus.CANCLE && (
                     <Chip color="error" label={'Đã Hủy'} size="small" />
                   )}
                 </Stack>
@@ -185,22 +204,22 @@ const BeanerOrderList = (props: Props) => {
         return false;
       });
 
-  const totalOrder = data?.list_of_orders.length;
-  const totalOrder1 = orders.length;
+  const totalOrder = orders?.length;
+  const totalOrder1 = orders?.length;
 
   const totalFinalAmount = (
-    data?.list_of_orders.filter((e) => e.payment_type === PaymentType.Cash) ?? []
+    orders?.filter((e) => e.payment_type === PaymentType.Cash) ?? []
   ).reduce((total, order) => total + order.final_amount, 0);
 
   const totalFinalAmountMomo = (
-    data?.list_of_orders.filter((e) => e.payment_type === PaymentType.Momo) ?? []
+    orders?.filter((e) => e.payment_type === PaymentType.Momo) ?? []
   ).reduce((total, order) => total + order.final_amount, 0);
 
   const totalFinalAmountCoin = (
-    data?.list_of_orders.filter((e) => e.payment_type === PaymentType.CreditPayment) ?? []
+    orders?.filter((e) => e.payment_type === PaymentType.CreditPayment) ?? []
   ).reduce((total, order) => total + order.final_amount, 0);
 
-  const totalProduct = (data?.list_of_orders ?? []).reduce(
+  const totalProduct = (orders ?? []).reduce(
     (total, order) => total + order.master_product_quantity,
     0
   );
@@ -326,7 +345,8 @@ const BeanerOrderList = (props: Props) => {
                     'destination-location-id': null,
                     'order-status': OrderStatus.NEW,
                     'time-slot': null,
-                    'date-range': null,
+                    'from-date': null,
+                    'to-date': null,
                   })
                 }
                 open={openFilter}
@@ -383,7 +403,7 @@ const BeanerOrderList = (props: Props) => {
         </Box>
 
         <Box>
-          <Stack spacing={2}>{data?.list_of_orders?.map(renderOrder)}</Stack>
+          <Stack spacing={2}>{orders?.map(renderOrder)}</Stack>
         </Box>
       </Container>
     </Page>
