@@ -51,6 +51,7 @@ const BeanerOrderList = (props: Props) => {
       'time-slot': null,
       'from-date': null,
       'to-date': null,
+      'payment-type': null,
     },
   });
 
@@ -126,13 +127,8 @@ const BeanerOrderList = (props: Props) => {
         <CardActionArea onClick={() => setSelectedOrderId(order.order_id)}>
           <Box sx={{ px: 2, pt: 1 }}>
             <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
-              <Box>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
+              <Box justifyContent="space-between">
+                <Stack direction="row" spacing={1} alignItems="center">
                   <Typography variant="h6">{order.invoice_id}</Typography>
                   {order.order_status === OrderStatus.DONE && (
                     <Chip color="success" size="small" label={'Hoàn Thành'} />
@@ -147,7 +143,7 @@ const BeanerOrderList = (props: Props) => {
                 <Typography variant="h6"> {order.customer.name}</Typography>
                 <Typography variant="h6">{order.master_product_quantity} món</Typography>
               </Box>
-              <Box>
+              <Box justifyContent="space-between">
                 <Stack direction="row" spacing={1} alignItems="center">
                   <PhoneAndroidOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
                   <Typography>{order.customer.phone_number}</Typography>
@@ -227,6 +223,7 @@ const BeanerOrderList = (props: Props) => {
   const filterOrderStatus = (status?: OrderStatus) => {
     filterForm.setValue('order-status', status ?? OrderStatus.ALL);
   };
+
   const countTotalFilter = Object.values(filters).filter((v) => v != null).length;
   const renderConfirmButton = () => {
     if (totalOrder === 0 || isConfirmed) {
@@ -347,6 +344,7 @@ const BeanerOrderList = (props: Props) => {
                     'time-slot': null,
                     'from-date': null,
                     'to-date': null,
+                    'payment-type': null,
                   })
                 }
                 open={openFilter}

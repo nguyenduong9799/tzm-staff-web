@@ -1,4 +1,5 @@
 
+
 export type Store = {
     store_code: string;
     id: number;
@@ -24,6 +25,7 @@ export type TimeSlot = {
     arrive_time: string;
     available: boolean;
 }
+
 
 
 

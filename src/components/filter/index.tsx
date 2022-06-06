@@ -1,11 +1,13 @@
 import { Button, Divider, Drawer, IconButton, Stack, Typography } from '@mui/material';
 import { RHFRadioGroup } from 'components/hook-form';
+import RadioGroupField from 'components/hook-form/RadioGroupField';
 import RHFDateRangePickerField from 'components/hook-form/RHFDateRangePickerField';
 import Iconify from 'components/Iconify';
 import Scrollbar from 'components/Scrollbar';
 import React from 'react';
 import { useQuery } from 'react-query';
 import { Location } from 'types/location';
+import { paymentList } from 'types/order';
 import { Store, TimeSlot } from 'types/store';
 import request from 'utils/axios';
 import { getAreaStorage } from 'utils/utils';
@@ -75,9 +77,12 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
               <Typography variant="h6">Ngày</Typography>
             </Stack>
             <RHFDateRangePickerField name="from-date" />
+            <Stack spacing={1.5}>
+              <Typography variant="h6">Phuơng thức thanh toán</Typography>
+            </Stack>
+            <RadioGroupField options={paymentList} name="payment-type" />
           </Stack>
         </Scrollbar>
-
         <Stack spacing={1} p={1} direction="row">
           <Button onClick={onReset} fullWidth variant="outlined">
             Xoá bộ lọc

@@ -82,3 +82,23 @@ export enum PaymentType {
     CreditPayment = 2, //tra bang xu
     Momo = 3
 }
+
+export const paymentList = [
+   
+    {
+      label: 'Tiền mặt',
+      value: `${PaymentType.Cash}`,
+    },
+    {
+      label: 'Momo',
+      value: `${PaymentType.Momo}`,
+    },
+    {
+        label: 'Tín dụng',
+        value: `${PaymentType.CreditPayment}`,
+      },
+      {
+        label: 'Tất Cả',
+        value: ``,
+      }
+  ];
