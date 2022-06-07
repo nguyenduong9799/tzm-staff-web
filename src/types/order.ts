@@ -88,16 +88,16 @@ export const paymentList = [
     {
       label: 'Tiền mặt',
       value: `${PaymentType.Cash}`,
-    },
+      },
     {
       label: 'Momo',
       value: `${PaymentType.Momo}`,
-    },
+      },
     {
         label: 'Tín dụng',
         value: `${PaymentType.CreditPayment}`,
       },
-      {
+    {
         label: 'Tất Cả',
         value: ``,
       }

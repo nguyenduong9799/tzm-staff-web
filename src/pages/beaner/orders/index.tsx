@@ -68,10 +68,9 @@ const BeanerOrderList = (props: Props) => {
     return transformedFilters;
   };
   const filters = filterForm.watch();
-  const transformValue = transformFilters(filters);
+  // const transformValue = transformFilters(filters);
   const {
     data,
-    isLoading,
     refetch: fetchOrders,
     isFetching,
   } = useQuery([storeId, 'beaner-orders', transformFilters(filters)], () =>
@@ -140,7 +139,7 @@ const BeanerOrderList = (props: Props) => {
                     <Chip color="error" label={'Đã Hủy'} size="small" />
                   )}
                 </Stack>
-                <Typography variant="h6"> {order.customer.name}</Typography>
+                <Typography maxWidth={"170px"} variant="h6">{order.customer.name}</Typography>
                 <Typography variant="h6">{order.master_product_quantity} món</Typography>
               </Box>
               <Box justifyContent="space-between">
@@ -382,7 +381,6 @@ const BeanerOrderList = (props: Props) => {
                   }}
                 />
               )}
-              {/* {!isLoading && totalOrder1 === 0 && <EmptyContent title="Không có đơn hàng nào" />} */}
             </Box>
           </Stack>
           <Stack direction="row" justifyContent="start">
