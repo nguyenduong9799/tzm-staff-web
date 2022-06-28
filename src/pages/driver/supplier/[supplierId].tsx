@@ -25,7 +25,7 @@ import { useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router';
 import { PATH_DASHBOARD } from 'routes/paths';
 import SupplierOrderDetailDialog from 'sections/beaner/SupplierOrderDetailDialog';
-import { Order, OrderResponse } from 'types/order';
+import { Order, OrderResponse, OrderStatus } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
 import { formatCurrency, getAreaStorage } from 'utils/utils';
@@ -42,17 +42,39 @@ const SupplierOrderList = (props: Props) => {
   const [openFilter, setOpenFilter] = useState(false);
 
   const filterForm = useForm({
-    defaultValues: { 'destination-location-id': null },
+    defaultValues: {
+      'destination-location-id': null,
+      'order-status': OrderStatus.NEW,
+      'time-slot': null,
+      'from-date': null,
+      'to-date': null,
+      'payment-type': null,
+    },
   });
+
+  const transformFilters = (filters: any = {}) => {
+    const transformedFilters = { ...filters } as any;
+    if (filters['from-date'] != null) {
+      transformedFilters['from-date'] = filters['from-date'][0];
+      transformedFilters['to-date'] = filters['from-date'][1];
+      transformedFilters['from-date'] = transformedFilters['from-date'].toISOString();
+    }
+    if (transformedFilters['to-date'] != null) {
+      transformedFilters['to-date'] = transformedFilters['to-date'].toISOString();
+    }
+    return transformedFilters;
+  };
 
   const filters = filterForm.watch();
 
-  const { data, isLoading } = useQuery([storeId, 'suppliers', supplierId, 'orders', filters], () =>
-    request
-      .get<{ data: OrderResponse[] }>(`/stores/${storeId}/suppliers/${supplierId}/orders`, {
-        params: filters,
-      })
-      .then((res) => res.data.data[0])
+  const { data, isLoading } = useQuery(
+    [storeId, 'suppliers', supplierId, 'orders', transformFilters(filters)],
+    () =>
+      request
+        .get<{ data: OrderResponse[] }>(`/stores/${storeId}/suppliers/${supplierId}/orders`, {
+          params: transformFilters(filters),
+        })
+        .then((res) => res.data.data[0])
   );
 
   const orders = useMemo(() => data?.list_of_orders ?? [], [data]);
@@ -145,7 +167,16 @@ const SupplierOrderList = (props: Props) => {
         </Stack>
         <FormProvider {...filterForm}>
           <OrderFilter
-            onReset={() => filterForm.reset({ 'destination-location-id': null })}
+            onReset={() =>
+              filterForm.reset({
+                'destination-location-id': null,
+                'order-status': OrderStatus.NEW,
+                'time-slot': null,
+                'from-date': null,
+                'to-date': null,
+                'payment-type': null,
+              })
+            }
             open={openFilter}
             onClose={() => setOpenFilter(false)}
           />
