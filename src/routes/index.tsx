@@ -19,6 +19,8 @@ import SupplierList from 'pages/driver/supplier/list';
 import SupplierOrderList from 'pages/driver/supplier/[supplierId]';
 import Account from 'pages/account';
 import AccountSearching from 'pages/account';
+import GiftList from 'pages/beanoi';
+import { Gift } from 'types/gift';
 
 // ----------------------------------------------------------------------
 
@@ -79,6 +81,7 @@ export default function Router() {
         { path: 'app', element: <GeneralApp /> },
         { path: 'beaner/orders', element: <BeanerOrderList /> },
         { path: 'account', element: <AccountSearching /> },
+        { path: 'beanoi/gift', element: <GiftList />, },
         {
           path: 'driver/suppliers',
           children: [

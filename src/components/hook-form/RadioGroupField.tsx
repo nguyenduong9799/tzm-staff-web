@@ -1,12 +1,9 @@
 // form
-import { useFormContext, Controller } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 // @mui
 import {
-  Radio,
-  RadioGroup,
-  FormHelperText,
-  RadioGroupProps,
-  FormControlLabel,
+  FormControlLabel, FormHelperText, Grid, Radio,
+  RadioGroup, RadioGroupProps, Typography
 } from '@mui/material';
 
 // ----------------------------------------------------------------------
@@ -31,17 +28,26 @@ export default function RadioGroupField({
       control={control}
       render={({ field, fieldState: { error } }) => (
         <div>
-          <RadioGroup {...field} row {...other}>
-            {options.map(({ value, label }) => (
-              <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
-            ))}
-          </RadioGroup>
+          <Grid container spacing={1}>
+            <Grid item xs={10}>
+              <RadioGroup {...field} row {...other}>
+                {options.map(({ value, label }) => (
+                  <FormControlLabel
+                    key={value}
+                    value={value}
+                    control={<Radio />}
+                    label={<Typography fontSize={'1.1rem'}>{label}</Typography>}
+                  />
+                ))}
+              </RadioGroup>
 
-          {!!error && (
-            <FormHelperText error sx={{ px: 2 }}>
-              {error.message}
-            </FormHelperText>
-          )}
+              {!!error && (
+                <FormHelperText error sx={{ px: 2 }}>
+                  {error.message}
+                </FormHelperText>
+              )}
+            </Grid>
+          </Grid>
         </div>
       )}
     />

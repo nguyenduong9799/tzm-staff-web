@@ -7,6 +7,7 @@ import {
   FormHelperText,
   RadioGroupProps,
   FormControlLabel,
+  Typography,
 } from '@mui/material';
 
 // ----------------------------------------------------------------------
@@ -37,7 +38,11 @@ export default function RHFRadioGroup({
                 key={option}
                 value={option}
                 control={<Radio />}
-                label={getOptionLabel?.length ? getOptionLabel[index] : option}
+                label={
+                  <Typography fontSize={'1.1rem'}>
+                    {getOptionLabel?.length ? getOptionLabel[index] : option}
+                  </Typography>
+                }
               />
             ))}
           </RadioGroup>

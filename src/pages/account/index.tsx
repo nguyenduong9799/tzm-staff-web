@@ -66,7 +66,7 @@ const AccountSearching = (props: Props) => {
       .get<{ data: Account[] }>(`/admin/customers`, { params: debounceFilters })
       .then((res) => res.data)
   );
-  console.log(data);
+  // console.log(data);
 
   const renderAccount = (account: Account) => (
     <Card
