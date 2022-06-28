@@ -1,3 +1,4 @@
+
 export type Account = {
     id: number;
     name: string;
@@ -6,4 +7,5 @@ export type Account = {
     ref_code: string;
     ref_from: string;
     created_at: Date;
+    email: String;
 }

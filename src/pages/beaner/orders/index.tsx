@@ -1,4 +1,4 @@
-import { FilterList, Replay } from '@mui/icons-material';
+import { CloseFullscreen, FilterList, Replay } from '@mui/icons-material';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
@@ -39,11 +39,8 @@ const BeanerOrderList = (props: Props) => {
   const { enqueueSnackbar } = useSnackbar();
   const store: Store = getAreaStorage() ?? {};
   const storeId = store.id;
-
   const [isConfirmed, updateConfirm] = useConfirmOrder();
-
   const [openFilter, setOpenFilter] = useState(false);
-
   const filterForm = useForm({
     defaultValues: {
       'destination-location-id': null,
@@ -62,13 +59,16 @@ const BeanerOrderList = (props: Props) => {
       transformedFilters['to-date'] = filters['from-date'][1];
       transformedFilters['from-date'] = transformedFilters['from-date'].toISOString();
     }
+    // console.log(transformedFilters['from-date']);
     if (transformedFilters['to-date'] != null) {
       transformedFilters['to-date'] = transformedFilters['to-date'].toISOString();
     }
     return transformedFilters;
   };
   const filters = filterForm.watch();
-  // const transformValue = transformFilters(filters);
+  const transformdatefilter = transformFilters(filters);
+
+  // console.log(transformdatefilter['from-date']);
   const {
     data,
     refetch: fetchOrders,
@@ -91,7 +91,7 @@ const BeanerOrderList = (props: Props) => {
 
   const orders = useMemo(() => getListOrder(data!), [data]);
 
-  console.log('orders :>> ', orders);
+  // console.log('orders :>> ', orders);
   const currentIdx = selectedOrderId
     ? orders?.findIndex((o) => o.order_id === selectedOrderId)
     : -1;
@@ -139,7 +139,9 @@ const BeanerOrderList = (props: Props) => {
                     <Chip color="error" label={'Đã Hủy'} size="small" />
                   )}
                 </Stack>
-                <Typography maxWidth={"170px"} variant="h6">{order.customer.name}</Typography>
+                <Typography maxWidth={'170px'} variant="h6">
+                  {order.customer.name}
+                </Typography>
                 <Typography variant="h6">{order.master_product_quantity} món</Typography>
               </Box>
               <Box justifyContent="space-between">
@@ -260,6 +262,7 @@ const BeanerOrderList = (props: Props) => {
         <Box textAlign="center" mb={4}>
           <Typography mb={2} variant="h4">
             Danh sách đơn hàng
+            {/* {`: Từ ${transformdatefilter['from-date']} Đến ${transformdatefilter['to-date']}`} */}
           </Typography>
           <Stack direction="row" spacing={1}>
             <Card sx={{ p: 1, width: '40%', mx: 'auto', textAlign: 'left' }}>

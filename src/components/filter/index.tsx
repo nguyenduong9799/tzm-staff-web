@@ -1,13 +1,11 @@
 import { Button, Divider, Drawer, IconButton, Stack, Typography } from '@mui/material';
-import { RHFRadioGroup } from 'components/hook-form';
-import RadioGroupField from 'components/hook-form/RadioGroupField';
+import { RHFRadioGroup, RHFSelect } from 'components/hook-form';
 import RHFDateRangePickerField from 'components/hook-form/RHFDateRangePickerField';
 import Iconify from 'components/Iconify';
 import Scrollbar from 'components/Scrollbar';
-import React from 'react';
 import { useQuery } from 'react-query';
 import { Location } from 'types/location';
-import { paymentList } from 'types/order';
+import { paymentList, statusList } from 'types/order';
 import { Store, TimeSlot } from 'types/store';
 import request from 'utils/axios';
 import { getAreaStorage } from 'utils/utils';
@@ -24,6 +22,7 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
   const { data: destinations } = useQuery(['stores', 'destinations'], () =>
     request.get<{ data: Location[] }>(`/stores/${storeId}/locations`).then((res) => res.data.data)
   );
+
   return (
     <Drawer
       sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -43,13 +42,46 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
             <Iconify icon={'eva:close-fill'} width={20} height={20} />
           </IconButton>
         </Stack>
-
         <Divider sx={{ borderStyle: 'dashed' }} />
-
         <Scrollbar sx={{ flexGrow: 1 }}>
-          <Stack spacing={3} sx={{ p: 3 }}>
+          <Stack spacing={2} sx={{ p: 2 }}>
             <Stack spacing={1.5}>
-              <Typography variant="h6">Địa điểm giao</Typography>
+              <Typography variant="h5">Ngày</Typography>
+            </Stack>
+            <RHFDateRangePickerField name="from-date" />
+            <Stack spacing={1.5}>
+              <Typography variant="h5">Trạng Thái</Typography>
+            </Stack>
+            <RHFSelect name="order-status" placeholder="Trạng Thái">
+              {statusList.map((option) => (
+                <option key={option.label} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </RHFSelect>
+            <Stack spacing={1.5}>
+              <Typography variant="h5">Phuơng thức thanh toán</Typography>
+            </Stack>
+            <RHFSelect name="payment-type" placeholder="Phương Thức Thanh Toán">
+              {paymentList.map((option) => (
+                <option key={option.label} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </RHFSelect>
+            <Stack spacing={1.5}>
+              <Typography variant="h5">Khung giờ</Typography>
+            </Stack>
+            <RHFSelect name="time-slot" placeholder="Khung giờ">
+              <option value="" label="Tất cả" />
+              {store.time_slots?.map((option: TimeSlot) => (
+                <option key={option.from.toString()} value={option.to.toString()}>
+                  {option.from.toString()} - {option.to.toString()}
+                </option>
+              ))}
+            </RHFSelect>
+            <Stack spacing={1.5}>
+              <Typography variant="h5">Địa điểm giao</Typography>
             </Stack>
             {destinations?.map((d: Location) => (
               <Stack key={d.destination_id}>
@@ -61,26 +93,6 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
                 />
               </Stack>
             ))}
-            <Stack spacing={1.5}>
-              <Typography variant="h6">Khung giờ</Typography>
-            </Stack>
-            <RHFRadioGroup
-              name="time-slot"
-              options={store.time_slots?.map(
-                (d: TimeSlot) => `${d.from.toString()};${d.to.toString()}`
-              )}
-              getOptionLabel={store.time_slots?.map(
-                (d: TimeSlot) => `Từ ${d.from.toString()} - ${d.to.toString()}`
-              )}
-            />
-            <Stack spacing={1.5}>
-              <Typography variant="h6">Ngày</Typography>
-            </Stack>
-            <RHFDateRangePickerField name="from-date" />
-            <Stack spacing={1.5}>
-              <Typography variant="h6">Phuơng thức thanh toán</Typography>
-            </Stack>
-            <RadioGroupField options={paymentList} name="payment-type" />
           </Stack>
         </Scrollbar>
         <Stack spacing={1} p={1} direction="row">
