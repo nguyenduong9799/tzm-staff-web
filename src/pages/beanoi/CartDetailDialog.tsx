@@ -106,7 +106,7 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
       customer_info: {
         name: '',
         phone: '',
-        email: 'baophamtranle@gmail.com',
+        email: 'no-reply@beanoi.com',
       },
     };
 
