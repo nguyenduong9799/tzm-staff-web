@@ -18,7 +18,7 @@ const Cart: React.FC<Props> = ({ cartItems, addToCart, removeFromCart }) => {
       <Stack spacing={2}>
         {cartItems.map((item) => (
           <CartItem
-            key={item.product_id}
+            key={item.master_product}
             item={item}
             addToCart={addToCart}
             removeFromCart={removeFromCart}

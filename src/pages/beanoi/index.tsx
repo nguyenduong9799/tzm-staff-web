@@ -1,17 +1,19 @@
 import {
+  Alert,
   Badge,
   BottomNavigation,
   Box,
+  Button,
   CircularProgress,
   Container,
-  Divider,
   Grid,
+  Snackbar,
   Stack,
   Typography,
 } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Page from 'components/Page';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import { Gift } from 'types/gift';
@@ -30,7 +32,7 @@ const GiftList = (props: Props) => {
   const storeId = store.id;
   const filterForm = useForm({
     defaultValues: {
-      'time-slot': ['00:00:00', '11:00:00'],
+      'time-slot': ['00:00:00', '23:30:00'],
     },
   });
 
@@ -49,6 +51,7 @@ const GiftList = (props: Props) => {
   const getTotalItems = (items: Gift[]) => items.reduce((acc, item) => acc + item.amount, 0);
 
   const handleAddToCart = (clickedItem: Gift) => {
+    setOpen(true);
     setCartItems((prev) => {
       const isItemInCart = prev.find((item) => item.product_id === clickedItem.product_id);
 
@@ -63,6 +66,7 @@ const GiftList = (props: Props) => {
   };
 
   const handleRemoveFromCart = (product_id: number) => {
+    setOpenCancel(true);
     setCartItems((prev) =>
       prev.reduce((acc, item) => {
         if (item.product_id === product_id) {
@@ -76,6 +80,23 @@ const GiftList = (props: Props) => {
   };
   const calculateTotal = (items: Gift[]) =>
     items.reduce((acc: number, item) => acc + item.amount * item.price, 0);
+
+  const [open, setOpen] = React.useState(false);
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+  const [openCancel, setOpenCancel] = React.useState(false);
+  const handleCloseCancle = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenCancel(false);
+  };
 
   return (
     <Page title="Danh sách quà tặng">
@@ -102,10 +123,43 @@ const GiftList = (props: Props) => {
               ))}
             </Grid>
           )}
-          <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
-            <Divider sx={{ pb: '10px', borderTop: '2px solid #00AB55 ' }} />
+          <Snackbar
+            open={open}
+            autoHideDuration={700}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            <Alert severity="success" sx={{ width: '100%', fontSize: '18px' }}>
+              Đã thêm vào giỏ hàng!
+            </Alert>
+          </Snackbar>
+          <Snackbar
+            open={openCancel}
+            autoHideDuration={700}
+            onClose={handleCloseCancle}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            <Alert severity="error" sx={{ width: '100%', fontSize: '18px' }}>
+              Đã xóa sản phẩm trong giỏ hàng!
+            </Alert>
+          </Snackbar>
+          <Paper
+            sx={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              borderTop: '2px solid #00AB55 ',
+            }}
+          >
             <BottomNavigation sx={{ height: '72px' }}>
-              <Stack direction="row" alignItems="center" spacing={6}>
+              <Stack direction="row" alignItems="center" spacing={6} sx={{ pt: '8px' }}>
                 <Box>
                   <Typography variant="h4">Tổng bean: {calculateTotal(cartItems)} Bean</Typography>
                   <Typography variant="body1">Số lượng quà: {getTotalItems(cartItems)}</Typography>

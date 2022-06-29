@@ -16,7 +16,7 @@ import {
   Paper,
   Stack,
   Toolbar,
-  Typography,
+  Typography
 } from '@mui/material';
 import AutoCompleteField from 'components/hook-form/AutoCompleteField';
 import Page from 'components/Page';
@@ -42,7 +42,7 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
     defaultValues: {
       phone: null,
       page: 1,
-      size: 20,
+      size: 10,
       searchPhone: null,
     },
   });
@@ -82,21 +82,38 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
       enqueueSnackbar('Bạn chưa nhập số điện thoại', { variant: 'error' });
       return;
     }
-
+    if (!cartItems.length) {
+      enqueueSnackbar('Bạn chưa chọn sản phẩm', { variant: 'error' });
+      return;
+    }
     const defaultValues: any = {
       destination_location_id: 23,
       payment: 1,
       vouchers: [],
+      products_list: [
+        {
+          master_product: '',
+          quantity: 1,
+
+          product_childs: [
+            {
+              product_in_menu_id: '',
+              quantity: '',
+            },
+          ],
+        },
+      ],
       customer_info: {
         name: '',
         phone: '',
-        email: '',
+        email: 'baophamtranle@gmail.com',
       },
     };
 
     defaultValues.customer_info.phone = phone;
     defaultValues.products_list = cartItems?.map((item, index) => ({
-      master_product: item.product_id,
+      master_product: item.product_in_menu_id,
+      product_id: item.product_id,
       quantity: item.amount,
     }));
 
@@ -115,7 +132,10 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
     items.reduce((acc: number, item) => acc + item.amount * item.price, 0);
   const getTotalItems = (items: Gift[]) => items.reduce((acc, item) => acc + item.amount, 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const userPhoneOpts: string[] = data?.data.map((account) => account.phone) || [];
+  const userFormatPhoneOpts = userPhoneOpts.map((item) => item.replace(/^\+84/, '0'));
+
   return (
     <Page title="">
       <Container>
@@ -151,7 +171,7 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
                   <Box>
                     <FormProvider {...searchForm}>
                       <AutoCompleteField
-                        options={userPhoneOpts}
+                        options={userFormatPhoneOpts}
                         name="phone"
                         label="Số điện thoại"
                         loading={isLoading}
@@ -178,14 +198,21 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
               </DialogContentText>
             </DialogContent>
           </Box>
-          <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
-            <Divider sx={{ pb: '10px', borderTop: '2px solid #00AB55 ' }} />
+          <Paper
+            sx={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              borderTop: '2px solid #00AB55 ',
+            }}
+          >
             <Stack
               direction="row"
               justifyContent="space-between"
               alignItems="center"
               spacing={2}
-              sx={{ pl: 2, pr: 2, pb: 1.5 }}
+              sx={{ pl: 2, pr: 2, pb: 1.5, pt: 1.3 }}
             >
               <Stack direction="column" justifyContent="center" alignItems="center">
                 <Typography>Tổng bean</Typography>
@@ -212,9 +239,10 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
                     sx={{ height: '50px', width: '200px', borderRadius: '8px' }}
                     type="submit"
                     variant="contained"
+                    color="error"
                     onClick={handleCloseDialog}
                   >
-                    Cancel
+                    Hủy
                   </Button>
                   <LoadingButton
                     sx={{ height: '50px', width: '200px', borderRadius: '8px' }}
