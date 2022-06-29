@@ -38,6 +38,9 @@ export const PATH_DASHBOARD = {
     orders: {
       root: path(ROOTS_DASHBOARD, '/beaner/orders'),
     },
+    gift: {
+      root: path(ROOTS_DASHBOARD, '/beaner/gift'),
+    }
   },
   driver: {
     suppliers: {
@@ -46,11 +49,7 @@ export const PATH_DASHBOARD = {
         path(ROOTS_DASHBOARD, `/driver/suppliers/${supplierId}/orders`),
     },
   },
-  beanoi: {
-    gift: {
-      root: path(ROOTS_DASHBOARD, '/beanoi/gift'),
-    }
-  },
+
   account: path(ROOTS_DASHBOARD, '/account'),
   general: {
     app: path(ROOTS_DASHBOARD, '/app'),
