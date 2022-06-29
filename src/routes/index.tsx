@@ -80,8 +80,9 @@ export default function Router() {
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'app', element: <GeneralApp /> },
         { path: 'beaner/orders', element: <BeanerOrderList /> },
+        { path: 'beaner/gift', element: <GiftList /> },
         { path: 'account', element: <AccountSearching /> },
-        { path: 'beanoi/gift', element: <GiftList />, },
+        { path: 'beaner/gift', element: <GiftList />, },
         {
           path: 'driver/suppliers',
           children: [

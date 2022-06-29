@@ -64,7 +64,10 @@ const GiftList = (props: Props) => {
       return [...prev, { ...clickedItem, amount: 1 }];
     });
   };
+ const handleFinish = () => {
+setCartItems ([]); 
 
+}
   const handleRemoveFromCart = (product_id: number) => {
     setOpenCancel(true);
     setCartItems((prev) =>
@@ -159,7 +162,7 @@ const GiftList = (props: Props) => {
             }}
           >
             <BottomNavigation sx={{ height: '72px' }}>
-              <Stack direction="row" alignItems="center" spacing={6} sx={{ pt: '8px' }}>
+              <Stack direction="row" alignItems="left" spacing={6} sx={{ pt: '8px' }}>
                 <Box>
                   <Typography variant="h4">Tổng bean: {calculateTotal(cartItems)} Bean</Typography>
                   <Typography variant="body1">Số lượng quà: {getTotalItems(cartItems)}</Typography>
@@ -172,6 +175,7 @@ const GiftList = (props: Props) => {
                       removeFromCart={handleRemoveFromCart}
                       handleAddToCart={handleAddToCart}
                       handleRemoveFromCart={handleRemoveFromCart}
+                      onFinish={handleFinish}
                     />
                   </Badge>
                 </Box>

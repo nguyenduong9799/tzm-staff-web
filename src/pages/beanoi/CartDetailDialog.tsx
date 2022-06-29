@@ -16,7 +16,7 @@ import {
   Paper,
   Stack,
   Toolbar,
-  Typography
+  Typography,
 } from '@mui/material';
 import AutoCompleteField from 'components/hook-form/AutoCompleteField';
 import Page from 'components/Page';
@@ -24,10 +24,13 @@ import { useSnackbar } from 'notistack';
 import React, { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
+import { useNavigate } from 'react-router';
+import { PATH_DASHBOARD } from 'routes/paths';
 import { Account } from 'types/account';
 import { Gift } from 'types/gift';
 import request from 'utils/axios';
 import Cart from './Cart';
+
 type Props = {
   onClose?: () => any;
   cartItems: Gift[];
@@ -35,9 +38,17 @@ type Props = {
   removeFromCart: (id: number) => void;
   handleAddToCart: (clickedItem: Gift) => void;
   handleRemoveFromCart: (id: number) => void;
+  onFinish: () => void;
 };
 
-const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddToCart }: Props) => {
+const CartDetailDialog = ({
+  cartItems,
+  onClose,
+  handleRemoveFromCart,
+  handleAddToCart,
+  onFinish,
+}: Props) => {
+  const navigate = useNavigate();
   const searchForm = useForm({
     defaultValues: {
       phone: null,
@@ -58,7 +69,6 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
   );
 
   const [open, setOpen] = React.useState(false);
-
   const [openDialog, setOpenDialog] = React.useState(false);
   const handleClickOpenDialog = () => {
     setOpenDialog(true);
@@ -90,19 +100,7 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
       destination_location_id: 23,
       payment: 1,
       vouchers: [],
-      products_list: [
-        {
-          master_product: '',
-          quantity: 1,
-
-          product_childs: [
-            {
-              product_in_menu_id: '',
-              quantity: '',
-            },
-          ],
-        },
-      ],
+      products_list: [],
       customer_info: {
         name: '',
         phone: '',
@@ -116,11 +114,14 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
       product_id: item.product_id,
       quantity: item.amount,
     }));
-
     request
       .post(`/orders`, defaultValues)
       .then(() => {
-        enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
+        enqueueSnackbar('Đã tạo đơn hàng thành công', { variant: 'success' });
+
+        setOpenDialog(false);
+        setOpen(false);
+        onFinish();
         return true;
       })
       .catch((error) => {
@@ -128,6 +129,7 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
         return false;
       });
   };
+
   const calculateTotal = (items: Gift[]) =>
     items.reduce((acc: number, item) => acc + item.amount * item.price, 0);
   const getTotalItems = (items: Gift[]) => items.reduce((acc, item) => acc + item.amount, 0);
@@ -214,7 +216,7 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
               spacing={2}
               sx={{ pl: 2, pr: 2, pb: 1.5, pt: 1.3 }}
             >
-              <Stack direction="column" justifyContent="center" alignItems="center">
+              <Stack direction="column" justifyContent="left" alignItems="left">
                 <Typography>Tổng bean</Typography>
                 <Typography variant="h3">{calculateTotal(cartItems)} Bean</Typography>
               </Stack>
@@ -238,11 +240,10 @@ const CartDetailDialog = ({ cartItems, onClose, handleRemoveFromCart, handleAddT
                   <Button
                     sx={{ height: '50px', width: '200px', borderRadius: '8px' }}
                     type="submit"
-                    variant="contained"
-                    color="error"
+                    variant="outlined"
                     onClick={handleCloseDialog}
                   >
-                    Hủy
+                    <Typography variant="h6">Hủy</Typography>
                   </Button>
                   <LoadingButton
                     sx={{ height: '50px', width: '200px', borderRadius: '8px' }}
