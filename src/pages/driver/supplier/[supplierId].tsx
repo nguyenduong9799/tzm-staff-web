@@ -152,35 +152,6 @@ const SupplierOrderList = (props: Props) => {
           </Stack>
         </Box>
         <Divider sx={{ my: 2 }} />
-        <Stack direction="row" justifyContent="end">
-          <Button
-            color="inherit"
-            sx={{ mb: 2 }}
-            endIcon={<FilterList />}
-            onClick={() => setOpenFilter(true)}
-          >
-            Bộ lọc
-            {countTotalFilter !== 0 && (
-              <Chip sx={{ height: 24, ml: 1 }} label={countTotalFilter} color="primary" />
-            )}
-          </Button>
-        </Stack>
-        <FormProvider {...filterForm}>
-          <OrderFilter
-            onReset={() =>
-              filterForm.reset({
-                'destination-location-id': null,
-                'order-status': OrderStatus.NEW,
-                'time-slot': null,
-                'from-date': null,
-                'to-date': null,
-                'payment-type': null,
-              })
-            }
-            open={openFilter}
-            onClose={() => setOpenFilter(false)}
-          />
-        </FormProvider>
         <Box sx={{ position: 'fixed', zIndex: 99, left: 24, bottom: 24 }}>
           <Fab
             onClick={() => navigate(PATH_DASHBOARD.driver.suppliers.root)}

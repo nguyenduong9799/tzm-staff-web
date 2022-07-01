@@ -258,7 +258,7 @@ const OrderDetailDialog = ({
                 datasource={data?.data}
                 column={2}
               />
-              <Box sx={{ pt: 2 }}>
+              <Box sx={{ pt: 2, pb: 10 }}>
                 <Stack spacing={1} direction="column">
                   {suppliers.map((s) => (
                     <Stack key={s}>

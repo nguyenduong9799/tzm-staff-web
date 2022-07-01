@@ -3,7 +3,6 @@ import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
 import Label from '../../../components/Label';
 import SvgIconStyle from '../../../components/SvgIconStyle';
-
 // ----------------------------------------------------------------------
 
 const getIcon = (name: string) => (
@@ -23,6 +22,7 @@ const ICONS = {
   analytics: getIcon('ic_analytics'),
   dashboard: getIcon('ic_dashboard'),
   booking: getIcon('ic_booking'),
+  gifts: getIcon('ic_gifts'),
 };
 
 const navConfig = [
@@ -35,6 +35,7 @@ const navConfig = [
       { title: 'Đơn hàng', path: PATH_DASHBOARD.beaner.orders.root, icon: ICONS.ecommerce },
       { title: 'Cửa hàng', path: PATH_DASHBOARD.driver.suppliers.root, icon: ICONS.cart },
       { title: 'Nạp xu', path: PATH_DASHBOARD.account, icon: ICONS.banking },
+      { title: 'Gift', path: PATH_DASHBOARD.beaner.gift.root, icon: ICONS.gifts },
     ],
   },
 ];
