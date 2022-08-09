@@ -42,12 +42,12 @@ export const ORDER_STATUS_OPTONS = [
   },
   {
     label: 'Mới',
-    value: OrderStatus.NEW,
+    value: OrderStatus.New,
     color: 'warning',
   },
   {
     label: 'Hoàn thành',
-    value: OrderStatus.DONE,
+    value: OrderStatus.Delivered,
     color: 'success',
   },
 ];

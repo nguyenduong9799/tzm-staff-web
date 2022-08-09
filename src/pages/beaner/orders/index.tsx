@@ -2,6 +2,7 @@ import { CloseFullscreen, FilterList, Replay } from '@mui/icons-material';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {
   Box,
   Button,
@@ -43,58 +44,42 @@ const BeanerOrderList = (props: Props) => {
   const [openFilter, setOpenFilter] = useState(false);
   const filterForm = useForm({
     defaultValues: {
-      'destination-location-id': null,
-      'order-status': OrderStatus.NEW,
-      'time-slot': null,
-      'from-date': null,
-      'to-date': null,
-      'payment-type': null,
+      Status: OrderStatus.New,
     },
   });
 
-  const transformFilters = (filters: any = {}) => {
-    const transformedFilters = { ...filters } as any;
-    if (filters['from-date'] != null) {
-      transformedFilters['from-date'] = filters['from-date'][0];
-      transformedFilters['to-date'] = filters['from-date'][1];
-      transformedFilters['from-date'] = transformedFilters['from-date'].toISOString();
-    }
-    // console.log(transformedFilters['from-date']);
-    if (transformedFilters['to-date'] != null) {
-      transformedFilters['to-date'] = transformedFilters['to-date'].toISOString();
-    }
-    return transformedFilters;
-  };
   const filters = filterForm.watch();
-  const transformdatefilter = transformFilters(filters);
 
   // console.log(transformdatefilter['from-date']);
   const {
     data,
     refetch: fetchOrders,
     isFetching,
-  } = useQuery([storeId, 'beaner-orders', transformFilters(filters)], () =>
+  } = useQuery([storeId, 'beaner-orders', filters], () =>
     request
-      .get<{ data: OrderResponse[] }>(`/stores/${storeId}/orders`, {
-        params: transformFilters(filters),
+      .get(`/orders`, {
+        params: filters,
       })
-      .then((res) => res.data.data)
+      .then((res) => res.data)
   );
-  const getListOrder = (data: OrderResponse[]) => {
-    const orders: Order[] = [];
-    const listOrder = data?.reduce(
-      (value, element) => value.concat(element.list_of_orders),
-      orders
+  const getListOrder = (data: OrderResponse) => {
+    let listOrder: Order[] = [];
+    const today = new Date();
+    listOrder = data?.results.filter(
+      (item: Order) => item.createdAt.substring(0, 10) === today.toJSON().substring(0, 10)
     );
     return listOrder;
   };
+  console.log('Response DATA', data);
+  const orderResponse: OrderResponse = data;
 
-  const orders = useMemo(() => getListOrder(data!), [data]);
+  const orders = useMemo(
+    () => (orderResponse !== undefined ? getListOrder(orderResponse!) : null),
+    [orderResponse]
+  );
 
-  // console.log('orders :>> ', orders);
-  const currentIdx = selectedOrderId
-    ? orders?.findIndex((o) => o.order_id === selectedOrderId)
-    : -1;
+  console.log('orders :>> ', orders);
+  const currentIdx = selectedOrderId ? orders?.findIndex((o) => o.id === selectedOrderId) : -1;
 
   const confirmCheckedOrder = async (isNotify?: boolean) => {
     let success = true;
@@ -113,56 +98,39 @@ const BeanerOrderList = (props: Props) => {
   };
 
   const renderOrder = (order: Order) => {
-    const isCancled = order.order_status === OrderStatus.CANCLE;
+    const isCancled = order.status === OrderStatus.Removed;
     return (
       <Card
         elevation={isCancled ? 0 : 1}
-        key={order.order_id}
+        key={order.id}
         sx={{
           bgcolor: (theme) =>
             isCancled ? theme.palette.background.neutral : theme.palette.background.paper,
         }}
       >
-        <CardActionArea onClick={() => setSelectedOrderId(order.order_id)}>
+        <CardActionArea onClick={() => setSelectedOrderId(order.id)}>
           <Box sx={{ px: 2, pt: 1 }}>
-            <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
-              <Box justifyContent="space-between">
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography variant="h6">{order.invoice_id}</Typography>
-                  {order.order_status === OrderStatus.DONE && (
-                    <Chip color="success" size="small" label={'Hoàn Thành'} />
-                  )}
-                  {order.order_status === OrderStatus.NEW && (
-                    <Chip color="warning" label={'Mới'} size="small" />
-                  )}
-                  {order.order_status === OrderStatus.CANCLE && (
-                    <Chip color="error" label={'Đã Hủy'} size="small" />
-                  )}
-                </Stack>
-                <Typography maxWidth={'170px'} variant="h6">
-                  {order.customer.name}
-                </Typography>
-                <Typography variant="h6">{order.master_product_quantity} món</Typography>
-              </Box>
-              <Box justifyContent="space-between">
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <PhoneAndroidOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
-                  <Typography>{order.customer.phone_number}</Typography>
-                </Stack>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <LocationOnOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
-                  <Typography>{order.delivery_address}</Typography>
-                </Stack>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <AccessTimeOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
-                  <Typography>{order.time_slot.replace(';', ' - ')}</Typography>
-                </Stack>
-              </Box>
+            <Stack spacing={2} direction="row">
+              <Typography variant="h5">{order.orderCode}</Typography>
+              {order.status === OrderStatus.Delivered && (
+                <Chip color="success" size="small" label={'Hoàn thành'} />
+              )}
+              {order.status === OrderStatus.New && (
+                <Chip color="warning" label={'Mới'} size="small" />
+              )}
+              {order.status === OrderStatus.Cancel && (
+                <Chip color="error" label={'Đã Hủy'} size="small" />
+              )}
             </Stack>
+            <Box sx={{ pt: 1 }} justifyContent="space-between">
+              <Typography>Điểm lấy: {order.fromStation.address}</Typography>
+              <Typography>Điểm giao: {order.toStation.address}</Typography>
+              <Typography>Giờ đặt: {new Date(order.createdAt).toLocaleTimeString()}</Typography>
+            </Box>
           </Box>
         </CardActionArea>
         <CardActions>
-          <Button onClick={() => setSelectedOrderId(order.order_id)} size="small" color="primary">
+          <Button onClick={() => setSelectedOrderId(order.id)} size="small" color="primary">
             Chi tiết
           </Button>
         </CardActions>
@@ -172,7 +140,7 @@ const BeanerOrderList = (props: Props) => {
 
   const handleUpdateOrder = () =>
     request
-      .put(`/stores/${storeId}/orders/${confirmOrderId}`, 3)
+      .put(`/orders/${confirmOrderId}/status`, { status: OrderStatus.Delivered })
       .then(() => {
         setConfirmOrderId(null);
         setSelectedOrderId(null);
@@ -204,25 +172,25 @@ const BeanerOrderList = (props: Props) => {
   const totalOrder = orders?.length;
   const totalOrder1 = orders?.length;
 
-  const totalFinalAmount = (
-    orders?.filter((e) => e.payment_type === PaymentType.Cash) ?? []
-  ).reduce((total, order) => total + order.final_amount, 0);
+  // const totalFinalAmount = (
+  //   orders?.filter((e) => e.paymentMethod === PaymentType.Cash) ?? []
+  // ).reduce((total, order) => total + order.final_amount, 0);
 
-  const totalFinalAmountMomo = (
-    orders?.filter((e) => e.payment_type === PaymentType.Momo) ?? []
-  ).reduce((total, order) => total + order.final_amount, 0);
+  // const totalFinalAmountMomo = (
+  //   orders?.filter((e) => e.paymentMethod === PaymentType.Momo) ?? []
+  // ).reduce((total, order) => total + order.final_amount, 0);
 
-  const totalFinalAmountCoin = (
-    orders?.filter((e) => e.payment_type === PaymentType.CreditPayment) ?? []
-  ).reduce((total, order) => total + order.final_amount, 0);
+  // const totalFinalAmountCoin = (
+  //   orders?.filter((e) => e.paymentMethod === PaymentType.CreditPayment) ?? []
+  // ).reduce((total, order) => total + order.final_amount, 0);
 
-  const totalProduct = (orders ?? []).reduce(
-    (total, order) => total + order.master_product_quantity,
-    0
-  );
+  // const totalProduct = (orders ?? []).reduce(
+  //   (total, order) => total + order.master_product_quantity,
+  //   0
+  // );
 
   const filterOrderStatus = (status?: OrderStatus) => {
-    filterForm.setValue('order-status', status ?? OrderStatus.ALL);
+    filterForm.setValue('Status', status ?? OrderStatus.All);
   };
 
   const countTotalFilter = Object.values(filters).filter((v) => v != null).length;
@@ -265,19 +233,19 @@ const BeanerOrderList = (props: Props) => {
             {/* {`: Từ ${transformdatefilter['from-date']} Đến ${transformdatefilter['to-date']}`} */}
           </Typography>
           <Stack direction="row" spacing={1}>
-            <Card sx={{ p: 1, width: '40%', mx: 'auto', textAlign: 'left' }}>
+            <Card sx={{ p: 1, mx: 'auto', textAlign: 'left' }}>
               <Stack direction="column" justifyContent="space-between">
                 <Stack direction="row" justifyContent="space-between" spacing={1}>
                   <Typography variant="body1">Tổng đơn:</Typography>
                   <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
                 </Stack>
-                <Stack direction="row" justifyContent="space-between" spacing={1}>
+                {/* <Stack direction="row" justifyContent="space-between" spacing={1}>
                   <Typography variant="body1">Tổng phần:</Typography>
                   <Typography fontWeight="bold">{totalProduct ?? 0} </Typography>
-                </Stack>
+                </Stack> */}
               </Stack>
             </Card>
-            <Card sx={{ p: 1, width: '60%', mx: 'auto', textAlign: 'left' }}>
+            {/* <Card sx={{ p: 1, width: '60%', mx: 'auto', textAlign: 'left' }}>
               <Stack direction="column" justifyContent="space-between">
                 <Stack direction="row" justifyContent="space-between" spacing={2}>
                   <Typography variant="body2">Tổng tiền mặt:</Typography>
@@ -292,7 +260,7 @@ const BeanerOrderList = (props: Props) => {
                   <Typography fontWeight="bold">{totalFinalAmountCoin} xu</Typography>
                 </Stack>
               </Stack>
-            </Card>
+            </Card> */}
           </Stack>
         </Box>
         <Box>
@@ -317,22 +285,22 @@ const BeanerOrderList = (props: Props) => {
             <Stack direction="row" spacing={1}>
               <Chip
                 label="Mới"
-                variant={filters['order-status'] === OrderStatus.NEW ? 'filled' : 'outlined'}
-                onClick={() => filterOrderStatus(OrderStatus.NEW)}
+                variant={filters.Status === OrderStatus.New ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus(OrderStatus.New)}
               />
               <Chip
                 label="Hoàn thành"
-                variant={filters['order-status'] === OrderStatus.DONE ? 'filled' : 'outlined'}
-                onClick={() => filterOrderStatus(OrderStatus.DONE)}
+                variant={filters.Status === OrderStatus.Delivered ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus(OrderStatus.Delivered)}
               />
               <Chip
                 label="Đã huỷ"
-                variant={filters['order-status'] === OrderStatus.CANCLE ? 'filled' : 'outlined'}
-                onClick={() => filterOrderStatus(OrderStatus.CANCLE)}
+                variant={filters.Status === OrderStatus.Removed ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus(OrderStatus.Removed)}
               />
               <Chip
                 label="Tất cả"
-                variant={!filters['order-status'] ? 'filled' : 'outlined'}
+                variant={filters.Status === OrderStatus.All ? 'filled' : 'outlined'}
                 onClick={() => filterOrderStatus()}
               />
             </Stack>
@@ -341,12 +309,7 @@ const BeanerOrderList = (props: Props) => {
               <OrderFilter
                 onReset={() =>
                   filterForm.reset({
-                    'destination-location-id': null,
-                    'order-status': OrderStatus.NEW,
-                    'time-slot': null,
-                    'from-date': null,
-                    'to-date': null,
-                    'payment-type': null,
+                    Status: OrderStatus.New,
                   })
                 }
                 open={openFilter}
@@ -371,15 +334,15 @@ const BeanerOrderList = (props: Props) => {
                   orderId={selectedOrderId}
                   onClose={() => setSelectedOrderId(null)}
                   onDelete={() => setConfirmOrderIdc(selectedOrderId)}
-                  current={currentIdx + 1}
+                  current={currentIdx! + 1}
                   total={totalOrder1}
                   onNext={() => {
-                    console.log('orders[currentIdx - 1]', orders[currentIdx - 1]);
-                    if (currentIdx > 0) setSelectedOrderId(orders[currentIdx - 1].order_id);
+                    console.log('orders[currentIdx - 1]', orders![currentIdx! - 1]);
+                    if (currentIdx! > 0) setSelectedOrderId(orders![currentIdx! - 1].id);
                   }}
                   onPrevious={() => {
-                    if (currentIdx < totalOrder1 - 1) {
-                      setSelectedOrderId(orders[currentIdx + 1].order_id);
+                    if (currentIdx! < totalOrder1! - 1) {
+                      setSelectedOrderId(orders![currentIdx! + 1].id);
                     }
                   }}
                 />
@@ -402,7 +365,13 @@ const BeanerOrderList = (props: Props) => {
         </Box>
 
         <Box>
-          <Stack spacing={2}>{orders?.map(renderOrder)}</Stack>
+          <Stack spacing={2}>
+            {orders == null ? (
+              <Typography> Không có đơn hàng naof</Typography>
+            ) : (
+              orders.map(renderOrder)
+            )}
+          </Stack>
         </Box>
       </Container>
     </Page>

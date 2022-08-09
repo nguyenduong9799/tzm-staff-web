@@ -19,9 +19,9 @@ type Props = {
 const OrderFilter = ({ open, onClose, onReset }: Props) => {
   const store: Store = getAreaStorage() ?? {};
   const storeId = store.id;
-  const { data: destinations } = useQuery(['stores', 'destinations'], () =>
-    request.get<{ data: Location[] }>(`/stores/${storeId}/locations`).then((res) => res.data.data)
-  );
+  // const { data: destinations } = useQuery(['stores', 'destinations'], () =>
+  //   request.get<{ data: Location[] }>(`/stores/${storeId}/locations`).then((res) => res.data.data)
+  // );
 
   return (
     <Drawer
@@ -83,7 +83,7 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
             <Stack spacing={1.5}>
               <Typography variant="h5">Địa điểm giao</Typography>
             </Stack>
-            {destinations?.map((d: Location) => (
+            {/* {destinations?.map((d: Location) => (
               <Stack key={d.destination_id}>
                 <Typography variant="subtitle2">{d.address}</Typography>
                 <RHFRadioGroup
@@ -92,7 +92,7 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
                   getOptionLabel={d.locations.map((l) => l.name)}
                 />
               </Stack>
-            ))}
+            ))} */}
           </Stack>
         </Scrollbar>
         <Stack spacing={1} p={1} direction="row">

@@ -1,23 +1,55 @@
 export type OrderResponse = {
-  check_in_date: Date;
-  list_of_orders: Order[];
+  pageNumber: number,
+  pageSize: number,
+  totalNumberOfPages: number,
+  totalNumberOfRecords: number,
+  results: Order[]
 };
 
+export type FromStation = {
+  id: number;
+  code: string;
+  longitude: number;
+  latitude: number;
+  address: string;
+  createdAt: string;
+}
+export type ToStation = {
+  id: number;
+  code: string;
+  longitude: number;
+  latitude: number;
+  address: string;
+  district: string;
+  ward: string;
+  city: string;
+  createdAt: string;
+}
+
+
 export type Order = {
-  order_id: number;
-  invoice_id: string;
-  master_product_quantity: number;
-  total_amount: number;
-  final_amount: number;
-  discount: number;
-  check_in_date: Date;
-  order_status: number;
-  customer: Customer;
-  payment_type: number;
-  delivery_address: string;
-  package_ids: any[];
-  other_amounts: any[];
-  time_slot: string;
+  packageActions: any[];
+  fromStation: FromStation;
+  toStation: ToStation;
+  id: number;
+  fromStationId: number;
+  toStationId: number;
+  batchId: number;
+  createdAt: string;
+  updatedAt: string;
+  orderCode: string;
+  status: number;
+  customerPhone: string;
+  customerName: string;
+  customerEmail: string;
+  orderAmount: number;
+  paymentMethod: number;
+  isCOD: boolean;
+  shippingFee: number;
+  distanceFee: number;
+  surCharge: number;
+  packageItems: any[];
+  brandId: number;
 };
 
 export type Customer = {
@@ -27,10 +59,13 @@ export type Customer = {
 };
 
 export enum OrderStatus {
-  DONE = 3,
-  NEW = 1,
-  CANCLE = 4,
-  ALL = '',
+  New = 0,
+  Assigend = 1,
+  Removed = 2,
+  PickedUp = 3,
+  Delivered = 4,
+  Cancel = 5,
+  All = 10,
 }
 
 export interface OrderItem {
@@ -119,15 +154,15 @@ export const paymentList = [
 export const statusList = [
   {
     label: 'Hoàn Thành',
-    value: `${OrderStatus.DONE}`,
+    value: `${OrderStatus.Delivered}`,
   },
   {
     label: 'Mới',
-    value: `${OrderStatus.NEW}`,
+    value: `${OrderStatus.New}`,
   },
   {
     label: 'Đã Hủy',
-    value: `${OrderStatus.CANCLE}`,
+    value: `${OrderStatus.Removed}`,
   },
   {
     label: 'Tất Cả',

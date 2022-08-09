@@ -50,17 +50,17 @@ export const ORDER_STATUS_OPTIONS = [
   },
   {
     label: 'Mới',
-    value: OrderStatus.NEW,
+    value: OrderStatus.New,
     color: 'warning',
   },
   {
     label: 'Hoàn thành',
-    value: OrderStatus.DONE,
+    value: OrderStatus.Delivered,
     color: 'success',
   },
   {
     label: 'Huỷ',
-    value: OrderStatus.CANCLE,
+    value: OrderStatus.Removed,
     color: 'warning',
   },
 ];
@@ -71,7 +71,7 @@ export const PAYMENT_TYPE_OPTIONS = [
     color: 'success',
   },
   {
-    label: 'Xu',
+    label: 'Bank',
     value: PaymentType.CreditPayment,
     color: 'success',
   },
@@ -109,14 +109,12 @@ const OrderDetailDialog = ({
   const storeId = store.id;
   const { data, isLoading, refetch } = useQuery(
     [storeId, 'orders', orderId],
-    () =>
-      request
-        .get<{ data: OrderDetail }>(`/stores/${storeId}/orders/${orderId}`)
-        .then((res) => res.data),
+    () => request.get<Order>(`/orders/${orderId}`).then((res) => res.data),
     {
       enabled: Boolean(orderId),
     }
   );
+  console.log('data', data);
 
   useEffect(() => {
     setOpen(Boolean(orderId));
@@ -124,41 +122,55 @@ const OrderDetailDialog = ({
 
   const orderColumns: ResoDescriptionColumnType<Order>[] = [
     {
-      title: 'Số sản phẩm',
-      dataIndex: 'master_product_quantity',
+      title: 'Mã sản phẩm',
+      dataIndex: 'orderCode',
+      span: 2,
     },
     {
       title: 'Tổng tiền',
-      dataIndex: 'final_amount',
+      dataIndex: 'orderAmount',
       valueType: 'money',
-      render: (_, { final_amount, payment_type }) => (
+      render: (_, { orderAmount }) => (
         <Typography variant="subtitle2" fontWeight="bold">
-          {payment_type == PaymentType.Cash || payment_type == PaymentType.Momo
-            ? formatCurrency(final_amount)
-            : `${final_amount} xu`}
+          {formatCurrency(orderAmount)}
+        </Typography>
+      ),
+    },
+    {
+      title: 'Phí Ship',
+      dataIndex: 'shippingFee',
+      valueType: 'money',
+      render: (_, { shippingFee }) => (
+        <Typography variant="subtitle2" fontWeight="bold">
+          {formatCurrency(shippingFee)}
         </Typography>
       ),
     },
     {
       title: 'Trạng thái',
-      dataIndex: 'order_status',
+      dataIndex: 'status',
       valueEnum: ORDER_STATUS_OPTIONS,
       span: 2,
     },
     {
-      title: 'Phương thức thanh toán',
-      dataIndex: 'payment_type',
+      title: 'PT Thanh toán',
+      dataIndex: 'paymentMethod',
       valueEnum: PAYMENT_TYPE_OPTIONS,
       span: 2,
     },
     {
-      title: 'Địa chỉ giao',
-      dataIndex: 'delivery_address',
+      title: 'Điểm lấy',
+      dataIndex: ['fromStation', 'address'],
       span: 2,
     },
     {
-      title: 'Thời gian',
-      dataIndex: 'check_in_date',
+      title: 'Điểm giao',
+      dataIndex: ['toStation', 'address'],
+      span: 2,
+    },
+    {
+      title: 'Thời gian đặt',
+      dataIndex: 'createdAt',
       valueType: 'datetime',
       span: 2,
     },
@@ -166,35 +178,40 @@ const OrderDetailDialog = ({
   const customerColumns: ResoDescriptionColumnType<Order>[] = [
     {
       title: 'Tên khách hàng',
-      dataIndex: ['customer', 'name'],
+      dataIndex: 'customerName',
       span: 2,
     },
     {
       title: 'SDT',
-      dataIndex: ['customer', 'phone_number'],
+      dataIndex: 'customerPhone',
       render: (phone) => <a href={`tel: ${phone}`}>{phone}</a>,
       span: 2,
     },
+    {
+      title: 'Email',
+      dataIndex: 'customerEmail',
+      span: 2,
+    },
   ];
-  const orders = sortBy(data?.data.list_order_details ?? [], (o) => o.supplier_id);
-  const suppliers = uniq(orders.map((order) => order.supplier_store_name));
-  const [openCollapse, setOpenCollapse] = useState<string[]>([]);
-  const getNoteOfSupplier = (storeName: string) => {
-    const values = orders.find((e) => e.supplier_store_name === storeName);
-    return values?.supplier_notes![0]?.content;
-  };
+  // const orders = sortBy(data?.data.list_order_details ?? [], (o) => o.supplier_id);
+  // const suppliers = uniq(orders.map((order) => order.supplier_store_name));
+  // const [openCollapse, setOpenCollapse] = useState<string[]>([]);
+  // const getNoteOfSupplier = (storeName: string) => {
+  //   const values = orders.find((e) => e.supplier_store_name === storeName);
+  //   return values?.supplier_notes![0]?.content;
+  // };
 
-  const getOrdersOfSupplier = (storeName: string) =>
-    orders.filter((e) => e.supplier_store_name === storeName);
+  // const getOrdersOfSupplier = (storeName: string) =>
+  //   orders.filter((e) => e.supplier_store_name === storeName);
 
-  const handlerExpand = (key: string) => {
-    let idx = openCollapse?.findIndex((e) => e === key);
-    if (idx != null && idx >= 0) {
-      let state = [...openCollapse];
-      state?.splice(idx, 1);
-      setOpenCollapse(state ?? []);
-    } else setOpenCollapse([...openCollapse, key]);
-  };
+  // const handlerExpand = (key: string) => {
+  //   let idx = openCollapse?.findIndex((e) => e === key);
+  //   if (idx != null && idx >= 0) {
+  //     let state = [...openCollapse];
+  //     state?.splice(idx, 1);
+  //     setOpenCollapse(state ?? []);
+  //   } else setOpenCollapse([...openCollapse, key]);
+  // };
 
   const handleUpdatePaymentTypeOrder = () =>
     request
@@ -225,14 +242,14 @@ const OrderDetailDialog = ({
           <IconButton edge="start" color="inherit" onClick={onClose} aria-label="close">
             <CloseIcon />
           </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            Đơn hàng {data?.data.invoice_id}
+          {/* <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+            Đơn hàng {data?.data.orderCode}
           </Typography>
-          {data?.data.payment_type === PaymentType.CreditPayment ? (
+          {data?.data.paymentMethod === PaymentType.CreditPayment ? (
             <Chip color={'primary'} variant={'outlined'} label={'Đã Thanh toán'} />
           ) : (
             <Chip color={'primary'} variant={'outlined'} label={'Chưa Thanh toán'} />
-          )}
+          )} */}
         </Toolbar>
       </AppBar>
       <Box pt={2}>
@@ -248,17 +265,17 @@ const OrderDetailDialog = ({
                 title="Thông tin"
                 labelProps={{ fontWeight: 'bold' }}
                 columns={orderColumns as any}
-                datasource={data?.data}
+                datasource={data}
                 column={2}
               />
               <ResoDescriptions
                 title="Khách hàng"
                 labelProps={{ fontWeight: 'bold' }}
                 columns={customerColumns as any}
-                datasource={data?.data}
+                datasource={data}
                 column={2}
               />
-              <Box sx={{ pt: 2, pb: 10 }}>
+              {/* <Box sx={{ pt: 2, pb: 10 }}>
                 <Stack spacing={1} direction="column">
                   {suppliers.map((s) => (
                     <Stack key={s}>
@@ -300,7 +317,7 @@ const OrderDetailDialog = ({
                     </Stack>
                   ))}
                 </Stack>
-              </Box>
+              </Box> */}
             </DialogContentText>
           </DialogContent>
         )}
@@ -332,13 +349,10 @@ const OrderDetailDialog = ({
                 </Button>
               </Box>
               <Box>
-                {data?.data.payment_type === PaymentType.Cash &&
-                  data?.data.order_status === OrderStatus.NEW && (
-                    <Button onClick={() => setOpenPaymentDialog(true)}>Thanh toán Momo</Button>
-                  )}
-                {data?.data.order_status === OrderStatus.NEW && (
-                  <Button onClick={onUpdate}>Hoàn Thành</Button>
-                )}
+                {/* {data?.paymentMethod === PaymentType.Cash && data?.status === OrderStatus.New && (
+                  <Button onClick={() => setOpenPaymentDialog(true)}>Thanh toán Momo</Button>
+                )} */}
+                {data?.status === OrderStatus.New && <Button onClick={onUpdate}>Hoàn Thành</Button>}
               </Box>
             </Stack>
             <Stack

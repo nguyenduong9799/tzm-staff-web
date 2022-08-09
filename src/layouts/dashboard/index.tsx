@@ -59,88 +59,16 @@ export default function DashboardLayout() {
   const isDesktop = useResponsive('up', 'lg');
 
   const [open, setOpen] = useState(false);
-  const [currentStore, setCurrentStore] = useState<Store | null>(() => {
-    try {
-      return JSON.parse(getAreaStorage());
-    } catch (e) {
-      return null;
-    }
-  });
   const verticalLayout = themeLayout === 'vertical';
-  const { data: stores, isLoading } = useQuery(['stores'], () =>
-    request
-      .get<{
-        data: Store[];
-      }>(`/stores`, {
-        params: {
-          type: 8,
-          'main-store': false,
-          'has-menu': true,
-        },
-      })
-      .then((res) => res.data.data)
-  );
-  const handleClick = () => {
-    setCurrentStore(null);
-    removeLocalStorage(AREA_COOKIE_KEY);
-  };
-  const navigate = useNavigate();
-  const renderStore = (store: Store) => (
-    <Card key={store.id}>
-      <Box sx={{ px: 2, py: 1 }}>
-        <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
-          <Box>
-            <Typography variant="h6">{store.name}</Typography>
-            <Typography>{store.address}</Typography>
-          </Box>
-          <Box>
-            <Fab
-              size="small"
-              onClick={() => {
-                setCurrentStore(store);
-                setAreaStorage(store);
-                navigate(PATH_DASHBOARD.root);
-              }}
-              color="primary"
-              aria-label="add"
-            >
-              <ArrowForward />
-            </Fab>
-          </Box>
-        </Stack>
-      </Box>
-    </Card>
-  );
-
-  if (currentStore == null) {
-    return (
-      <Page title="Danh sách các khu vực">
-        <Container>
-          <Box textAlign="center" mb={4}>
-            <Typography variant="h4">Danh sách các khu vực</Typography>
-          </Box>
-          <Box>
-            {isLoading ? (
-              <Box textAlign="center" p={4}>
-                <CircularProgress />
-              </Box>
-            ) : (
-              <Box>
-                <Stack spacing={2}>{stores?.map(renderStore)}</Stack>
-              </Box>
-            )}
-          </Box>
-        </Container>
-      </Page>
-    );
-  } else if (verticalLayout) {
+  const handleClick = () => {};
+  if (verticalLayout) {
     return (
       <>
         <DashboardHeader
           handleClick={handleClick}
           onOpenSidebar={() => setOpen(true)}
           verticalLayout={verticalLayout}
-          store={currentStore}
+          // store={currentStore}
         />
 
         {isDesktop ? (
@@ -181,7 +109,7 @@ export default function DashboardLayout() {
           handleClick={handleClick}
           isCollapse={isCollapse}
           onOpenSidebar={() => setOpen(true)}
-          store={currentStore}
+          // store={currentStore}
         />
 
         <NavbarVertical isOpenSidebar={open} onCloseSidebar={() => setOpen(false)} />

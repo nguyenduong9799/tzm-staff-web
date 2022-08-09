@@ -91,6 +91,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
           const response = await authenApi.getUserInfo();
           const user = response.data.data;
+          console.log('user', user);
 
           dispatch({
             type: Types.Initial,
@@ -125,16 +126,17 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   const login = async (email: string, password: string) => {
     const response = await authenApi.loginByUsername(email, password);
-    const { access_token: accessToken, roles, name } = response.data.data;
+    const accessToken = response.data;
+    console.log('accessToken', accessToken);
 
     setSession(accessToken);
     dispatch({
       type: Types.Login,
       payload: {
         user: {
-          displayName: name,
-          name,
-          roles,
+          displayName: 'Tai xe',
+          name: 'name',
+          roles: 'Taixe',
         },
       },
     });

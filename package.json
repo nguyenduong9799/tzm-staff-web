@@ -5,7 +5,7 @@
   "description": "react scripts & typescript",
   "private": true,
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3000 react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .ts,.tsx ./src",

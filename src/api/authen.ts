@@ -1,10 +1,10 @@
-import { BeanUser } from 'types/user';
+import { BeanUser, UserResponse } from 'types/user';
 import request from 'utils/axios';
 
 export const loginByUsername = (username: string, password: string) =>
-  request.post('/admin/login-by-username', { user_name: username, password });
+  request.post('/accounts/authenticate-username-pass', { userName: username, password: password });
 
-export const getUserInfo = () => request.get<{ data: BeanUser }>('/staffs/me');
+export const getUserInfo = () => request.get<{ data: UserResponse }>('/accounts');
 
 const authenApi = { loginByUsername, getUserInfo };
 

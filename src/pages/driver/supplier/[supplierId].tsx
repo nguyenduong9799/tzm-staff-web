@@ -44,7 +44,7 @@ const SupplierOrderList = (props: Props) => {
   const filterForm = useForm({
     defaultValues: {
       'destination-location-id': null,
-      'order-status': OrderStatus.NEW,
+      'order-status': OrderStatus.New,
       'time-slot': null,
       'from-date': null,
       'to-date': null,
@@ -52,72 +52,69 @@ const SupplierOrderList = (props: Props) => {
     },
   });
 
-  const transformFilters = (filters: any = {}) => {
-    const transformedFilters = { ...filters } as any;
-    if (filters['from-date'] != null) {
-      transformedFilters['from-date'] = filters['from-date'][0];
-      transformedFilters['to-date'] = filters['from-date'][1];
-      transformedFilters['from-date'] = transformedFilters['from-date'].toISOString();
-    }
-    if (transformedFilters['to-date'] != null) {
-      transformedFilters['to-date'] = transformedFilters['to-date'].toISOString();
-    }
-    return transformedFilters;
-  };
+  // const transformFilters = (filters: any = {}) => {
+  //   const transformedFilters = { ...filters } as any;
+  //   if (filters['from-date'] != null) {
+  //     transformedFilters['from-date'] = filters['from-date'][0];
+  //     transformedFilters['to-date'] = filters['from-date'][1];
+  //     transformedFilters['from-date'] = transformedFilters['from-date'].toISOString();
+  //   }
+  //   if (transformedFilters['to-date'] != null) {
+  //     transformedFilters['to-date'] = transformedFilters['to-date'].toISOString();
+  //   }
+  //   return transformedFilters;
+  // };
 
-  const filters = filterForm.watch();
+  // const filters = filterForm.watch();
 
-  const { data, isLoading } = useQuery(
-    [storeId, 'suppliers', supplierId, 'orders', transformFilters(filters)],
-    () =>
-      request
-        .get<{ data: OrderResponse[] }>(`/stores/${storeId}/suppliers/${supplierId}/orders`, {
-          params: transformFilters(filters),
-        })
-        .then((res) => res.data.data[0])
-  );
+  // const { data, isLoading } = useQuery(
+  //   [storeId, 'suppliers', supplierId, 'orders', transformFilters(filters)],
+  //   () =>
+  //     request
+  //       .get<{ data: OrderResponse[] }>(`/stores/${storeId}/suppliers/${supplierId}/orders`, {
+  //         params: transformFilters(filters),
+  //       })
+  //       .then((res) => res.data.data[0])
+  // );
 
-  const orders = useMemo(() => data?.list_of_orders ?? [], [data]);
-  const totalOrder = orders.length;
-  const currentIdx = selectedOrderId ? orders.findIndex((o) => o.order_id === selectedOrderId) : -1;
-  const totalFinalAmount = orders.reduce((total, order) => total + order.final_amount, 0);
+  // const orders = useMemo(() => data?.results ?? [], [data]);
+  // const totalOrder = orders.length;
+  // const currentIdx = selectedOrderId ? orders.findIndex((o) => o.id === selectedOrderId) : -1;
+  // const totalFinalAmount = orders.reduce((total, order) => total + order.shippingFee, 0);
 
-  const totalProduct = (data?.list_of_orders ?? []).reduce(
-    (total, order) => total + order.master_product_quantity,
-    0
-  );
+  // const totalProduct = (data?.results ?? []).reduce((total, order) => total + order.shippingFee, 0);
 
-  const countTotalFilter = Object.values(filters).filter((v) => v != null).length;
+  // const countTotalFilter = Object.values(filters).filter((v) => v != null).length;
 
   const renderOrder = (order: Order) => (
-    <Card key={order.order_id}>
-      <CardActionArea onClick={() => setSelectedOrderId(order.order_id)}>
+    <Card key={order.id}>
+      <CardActionArea onClick={() => setSelectedOrderId(order.id)}>
         <Box sx={{ px: 2, pt: 1 }}>
           <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
             <Box>
-              <Typography variant="h6">{order.invoice_id}</Typography>
-              <Typography variant="h6"> {order.customer.name}</Typography>
-              <Typography variant="h6">{order.master_product_quantity} món</Typography>
+              <Typography variant="h6">{order.orderCode}</Typography>
+              <Typography variant="h6"> {order.customerName}</Typography>
+              {/* <Typography variant="h6">{order} món</Typography> */}
             </Box>
             <Box>
               <Stack direction="row" spacing={1} alignItems="center">
                 <PhoneAndroidOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
-                <Typography>{order.customer.phone_number}</Typography>
+                <Typography>{order.customerPhone}</Typography>
               </Stack>
               <Stack direction="row" spacing={1} alignItems="center">
                 <LocationOnOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
-                <Typography>{order.delivery_address}</Typography>
+                <Typography>{order.toStation.address}</Typography>
               </Stack>
               <Stack direction="row" spacing={1} alignItems="center">
                 <AccessTimeOutlinedIcon sx={{ color: 'warning.main' }} fontSize="small" />
-                <Typography>{order.time_slot}</Typography>
+                {/* <Typography>{order.time_slot}</Typography> */}
               </Stack>
             </Box>
           </Stack>
         </Box>
       </CardActionArea>
       <CardActions>
-        <Button onClick={() => setSelectedOrderId(order.order_id)} size="small" color="primary">
+        <Button onClick={() => setSelectedOrderId(order.id)} size="small" color="primary">
           Chi tiết
         </Button>
       </CardActions>
@@ -126,7 +123,7 @@ const SupplierOrderList = (props: Props) => {
 
   return (
     <Page title="Danh sách đơn hàng nhà cung cấp">
-      <Container>
+      {/* <Container>
         <Box textAlign="center">
           <Typography variant="h4" mb={2}>
             Danh sách đơn hàng
@@ -164,11 +161,7 @@ const SupplierOrderList = (props: Props) => {
         </Box>
         {orders && totalOrder !== 0 && (
           <Box sx={{ position: 'fixed', zIndex: 99, right: 24, bottom: 24 }}>
-            <Fab
-              onClick={() => setSelectedOrderId(orders[0].order_id)}
-              size="medium"
-              aria-label="add"
-            >
+            <Fab onClick={() => setSelectedOrderId(orders[0].id)} size="medium" aria-label="add">
               <OpenInFullOutlined />
             </Fab>
           </Box>
@@ -185,11 +178,11 @@ const SupplierOrderList = (props: Props) => {
               supplierId={Number(supplierId)}
               onNext={() => {
                 console.log('orders[currentIdx - 1]', orders[currentIdx - 1]);
-                if (currentIdx > 0) setSelectedOrderId(orders[currentIdx - 1].order_id);
+                if (currentIdx > 0) setSelectedOrderId(orders[currentIdx - 1].id);
               }}
               onPrevious={() => {
                 if (currentIdx < totalOrder - 1) {
-                  setSelectedOrderId(orders[currentIdx + 1].order_id);
+                  setSelectedOrderId(orders[currentIdx + 1].id);
                 }
               }}
               orderId={selectedOrderId}
@@ -201,7 +194,7 @@ const SupplierOrderList = (props: Props) => {
         <Box pb={6}>
           <Stack spacing={2}>{orders.map(renderOrder)}</Stack>
         </Box>
-      </Container>
+      </Container> */}
     </Page>
   );
 };

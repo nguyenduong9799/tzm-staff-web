@@ -134,3 +134,24 @@ export type BeanUser = {
   birth_dat: Date;
   staff_id: number;
 };
+
+export type StaffUser = {
+  id: string;
+  fullname: string;
+  phoneNumber: string;
+  email: string;
+  role: number;
+  active: boolean;
+  createDate: Date;
+  brandId: number;
+  imageUrl: string;
+  brandName: string;
+}
+
+export type UserResponse = {
+  pageNumber: number,
+  pageSize: number,
+  totalNumberOfPages: number,
+  totalNumberOfRecords: number,
+  results: StaffUser[]
+};

@@ -61,7 +61,7 @@ type Props = {
   isCollapse?: boolean;
   verticalLayout?: boolean;
   handleClick: VoidFunction;
-  store: Store;
+  // store: Store;
 };
 
 export default function DashboardHeader({
@@ -69,8 +69,8 @@ export default function DashboardHeader({
   handleClick,
   isCollapse = false,
   verticalLayout = false,
-  store,
-}: Props) {
+}: // store,
+Props) {
   const isOffset = useOffSetTop(HEADER.DASHBOARD_DESKTOP_HEIGHT) && !verticalLayout;
 
   const isDesktop = useResponsive('up', 'lg');
@@ -94,9 +94,9 @@ export default function DashboardHeader({
         <Box sx={{ flexGrow: 1 }} />
 
         <Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
-          <Button endIcon={<BorderColorOutlinedIcon />} onClick={handleClick}>
+          {/* <Button endIcon={<BorderColorOutlinedIcon />} onClick={handleClick}>
             {store.name}
-          </Button>
+          </Button> */}
           <AccountPopover />
         </Stack>
       </Toolbar>
