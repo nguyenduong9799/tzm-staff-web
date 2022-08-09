@@ -64,18 +64,18 @@ const BeanerOrderList = (props: Props) => {
   );
   const getListOrder = (data: OrderResponse) => {
     let listOrder: Order[] = [];
-    const today = new Date();
-    listOrder = data?.results.filter(
-      (item: Order) => item.createdAt.substring(0, 10) === today.toJSON().substring(0, 10)
-    );
+    if (data != null) {
+      listOrder = data?.results;
+    } else listOrder = [];
+
     return listOrder;
   };
   console.log('Response DATA', data);
   const orderResponse: OrderResponse = data;
 
   const orders = useMemo(
-    () => (orderResponse !== undefined ? getListOrder(orderResponse!) : null),
-    [orderResponse]
+    () => (data !== undefined || data !== null ? getListOrder(orderResponse) : null),
+    [orderResponse, data]
   );
 
   console.log('orders :>> ', orders);
@@ -99,7 +99,10 @@ const BeanerOrderList = (props: Props) => {
 
   const renderOrder = (order: Order) => {
     const isCancled = order.status === OrderStatus.Removed;
-    return (
+    console.log('order', order);
+    return order == null ? (
+      <Typography> Hiện không có đơn hàng nào</Typography>
+    ) : (
       <Card
         elevation={isCancled ? 0 : 1}
         key={order.id}
@@ -169,6 +172,7 @@ const BeanerOrderList = (props: Props) => {
         return false;
       });
 
+  const today = new Date();
   const totalOrder = orders?.length;
   const totalOrder1 = orders?.length;
 
@@ -366,10 +370,15 @@ const BeanerOrderList = (props: Props) => {
 
         <Box>
           <Stack spacing={2}>
-            {orders == null ? (
-              <Typography> Không có đơn hàng naof</Typography>
+            {orders == null || orders === undefined ? (
+              <Typography> Không có đơn hàng nào</Typography>
             ) : (
-              orders.map(renderOrder)
+              orders
+                .filter(
+                  (item: Order) =>
+                    item.createdAt.substring(0, 10) === today.toJSON().substring(0, 10)
+                )
+                .map(renderOrder)
             )}
           </Stack>
         </Box>
