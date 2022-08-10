@@ -21,6 +21,7 @@ import Account from 'pages/account';
 import AccountSearching from 'pages/account';
 import GiftList from 'pages/beanoi';
 import { Gift } from 'types/gift';
+import OrderDetailPage from 'pages/beaner/orders/orderDetail';
 
 // ----------------------------------------------------------------------
 
@@ -79,10 +80,16 @@ export default function Router() {
       children: [
         { element: <Navigate to={PATH_AFTER_LOGIN} replace />, index: true },
         { path: 'app', element: <GeneralApp /> },
-        { path: 'beaner/orders', element: <BeanerOrderList /> },
+        {
+          path: 'beaner/orders',
+          children: [
+            { path: '', element: <BeanerOrderList /> },
+            { path: ':orderId/detail', element: <OrderDetailPage /> },
+          ],
+        },
         { path: 'beaner/gift', element: <GiftList /> },
         { path: 'account', element: <AccountSearching /> },
-        { path: 'beaner/gift', element: <GiftList />, },
+        { path: 'beaner/gift', element: <GiftList /> },
         {
           path: 'driver/suppliers',
           children: [

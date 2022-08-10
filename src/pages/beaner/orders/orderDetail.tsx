@@ -8,6 +8,7 @@ import {
   Chip,
   CircularProgress,
   Collapse,
+  Container,
   Dialog,
   DialogContent,
   DialogContentText,
@@ -21,28 +22,26 @@ import {
 import Slide from '@mui/material/Slide';
 import { TransitionProps } from '@mui/material/transitions';
 import ConfirmDialog from 'components/confirm-dialog/ConfirmDialog';
+import Page from 'components/Page';
 import ResoDescriptions, { ResoDescriptionColumnType } from 'components/ResoDescriptions';
 import { sortBy, uniq } from 'lodash';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
+import { useNavigate, useParams } from 'react-router';
 import { Order, OrderDetail, OrderStatus, PaymentType } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
 import { formatCurrency, getAreaStorage } from 'utils/utils';
-import OrderListItem from './OrderListItem';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-type Props = {
-  orderId?: number | null;
-  onClose?: () => any;
-  onUpdate?: () => any;
-  current?: number;
-  onNext?: () => any;
-  onPrevious?: () => any;
-  onDelete?: () => any;
-  total?: number;
-};
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { PATH_DASHBOARD } from 'routes/paths';
 export const ORDER_STATUS_OPTIONS = [
   {
     label: 'Tất cả',
@@ -96,44 +95,23 @@ export const PAYMENT_TYPE_OPTIONS = [
     color: 'success',
   },
 ];
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
-const OrderDetailDialog = ({
-  orderId,
-  onClose,
-  onUpdate,
-  onPrevious,
-  onNext,
-  total,
-  current,
-  onDelete,
-}: Props) => {
-  const [open, setOpen] = useState(Boolean(orderId));
-  const [openPaymentDialog, setOpenPaymentDialog] = useState<PaymentType | null>(null);
+const OrderDetailPage = () => {
+  const [confirmPaymentOrder, setConfirmPaymentOrder] = useState<PaymentType | null>(null);
+  const [confirmStatusOrder, setConfirmStatusOrder] = useState<OrderStatus | null>(null);
+  const nav = useNavigate();
+  const { orderId } = useParams();
 
   const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
-  const store: Store = getAreaStorage() ?? {};
-  const storeId = store.id;
   const { data, isLoading, refetch } = useQuery(
-    [storeId, 'orders', orderId],
+    ['orders', orderId],
     () => request.get<Order>(`/orders/${orderId}`).then((res) => res.data),
     {
       enabled: Boolean(orderId),
     }
   );
   console.log('data', data);
-
-  useEffect(() => {
-    setOpen(Boolean(orderId));
-  }, [orderId]);
 
   const orderColumns: ResoDescriptionColumnType<Order>[] = [
     {
@@ -261,6 +239,7 @@ const OrderDetailDialog = ({
       .put(`/orders/${orderId}/payment`, { payment_type: paymentType })
       .then(() => {
         enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
+        setConfirmPaymentOrder(null);
         refetch();
         return true;
       })
@@ -274,7 +253,8 @@ const OrderDetailDialog = ({
       .put(`/orders/${orderId}/status`, { status: status })
       .then(() => {
         enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
-
+        setConfirmStatusOrder(null);
+        refetch();
         return true;
       })
       .catch((error) => {
@@ -284,61 +264,53 @@ const OrderDetailDialog = ({
 
   // @ts-ignore
   return (
-    <Dialog
-      maxWidth="lg"
-      fullScreen
-      open={open}
-      scroll="body"
-      aria-labelledby="scroll-dialog-title"
-      aria-describedby="scroll-dialog-description"
-      TransitionComponent={Transition}
-    >
-      <AppBar position="fixed">
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={onClose} aria-label="close">
-            <CloseIcon />
-          </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            {data?.orderCode}
-          </Typography>
-          {data?.paymentMethod === PaymentType.Paid ? (
-            <Chip color={'primary'} variant={'outlined'} label={'Đã Thanh toán'} />
-          ) : (
-            <Chip color={'primary'} variant={'outlined'} label={'Thanh toán khi nhận hàng'} />
-          )}
-        </Toolbar>
-      </AppBar>
-      <Box pt={2}>
+    <Container>
+      <Toolbar>
+        <IconButton
+          edge="start"
+          color="inherit"
+          onClick={() => nav(PATH_DASHBOARD.beaner.orders.root)}
+          aria-label="close"
+        >
+          <ArrowBackIcon />
+        </IconButton>
+        {data?.paymentMethod === PaymentType.Paid ? (
+          <Chip color={'primary'} variant={'outlined'} label={'Đã Thanh toán'} />
+        ) : (
+          <Chip color={'primary'} variant={'outlined'} label={'Thanh toán khi nhận hàng'} />
+        )}
+      </Toolbar>
+
+      <Box>
         {isLoading && (
           <Box p={4} textAlign="center">
             <CircularProgress />
           </Box>
         )}
         {!isLoading && (
-          <DialogContent sx={{ my: 4, pb: 4 }}>
-            <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
-              <ResoDescriptions
-                title="Thông tin đơn hàng"
-                labelProps={{ fontWeight: 'bold' }}
-                columns={orderColumns as any}
-                datasource={data}
-                column={2}
-              />
-              <ResoDescriptions
-                title="Thông tin lấy hàng"
-                labelProps={{ fontWeight: 'bold' }}
-                columns={fromStationColumns as any}
-                datasource={data}
-                column={2}
-              />
-              <ResoDescriptions
-                title="Thông tin giao hàng"
-                labelProps={{ fontWeight: 'bold' }}
-                columns={customerColumns as any}
-                datasource={data}
-                column={2}
-              />
-              {/* <Box sx={{ pt: 2, pb: 10 }}>
+          <Box>
+            <ResoDescriptions
+              title="Thông tin đơn hàng"
+              labelProps={{ fontWeight: 'bold' }}
+              columns={orderColumns as any}
+              datasource={data}
+              column={2}
+            />
+            <ResoDescriptions
+              title="Thông tin lấy hàng"
+              labelProps={{ fontWeight: 'bold' }}
+              columns={fromStationColumns as any}
+              datasource={data}
+              column={2}
+            />
+            <ResoDescriptions
+              title="Thông tin giao hàng"
+              labelProps={{ fontWeight: 'bold' }}
+              columns={customerColumns as any}
+              datasource={data}
+              column={2}
+            />
+            {/* <Box sx={{ pt: 2, pb: 10 }}>
                 <Stack spacing={1} direction="column">
                   {suppliers.map((s) => (
                     <Stack key={s}>
@@ -381,8 +353,7 @@ const OrderDetailDialog = ({
                   ))}
                 </Stack>
               </Box> */}
-            </DialogContentText>
-          </DialogContent>
+          </Box>
         )}
         <Box
           position="fixed"
@@ -397,52 +368,8 @@ const OrderDetailDialog = ({
           }}
         >
           <Stack>
-            <Stack py={2} px={1} direction="row" spacing={2} justifyContent="space-between">
-              <ConfirmDialog
-                title={
-                  openPaymentDialog == PaymentType.Momo
-                    ? `Xác nhận thanh toán bằng Momo`
-                    : `Xác nhận thanh toán bằng Chuyển khoản`
-                }
-                onClose={() => {
-                  setOpenPaymentDialog(null);
-                }}
-                onOk={() => handleUpdatePaymentTypeOrder(openPaymentDialog ?? PaymentType.Cash)}
-                open={Boolean(openPaymentDialog)}
-              />
-              <Box>
-                <Button onClick={onDelete} color="error">
-                  Hủy đơn
-                </Button>
-              </Box>
-              <Box>
-                {data?.paymentMethod === PaymentType.Cash &&
-                  data?.status !== OrderStatus.Cancel && (
-                    <Button onClick={() => setOpenPaymentDialog(PaymentType.Momo)}>
-                      Thanh toán Momo
-                    </Button>
-                  )}
-                {data?.paymentMethod === PaymentType.Cash &&
-                  data?.status !== OrderStatus.Cancel && (
-                    <Button onClick={() => setOpenPaymentDialog(PaymentType.Momo)}>
-                      Chuyển khoản
-                    </Button>
-                  )}
-                {data?.status === OrderStatus.New ? (
-                  <Button onClick={() => handleUpdateOrder(OrderStatus.Assigned)}>Nhận đơn</Button>
-                ) : data?.status === OrderStatus.Assigned ? (
-                  <Button onClick={() => handleUpdateOrder(OrderStatus.PickedUp)}>Lấy hàng</Button>
-                ) : (
-                  data?.status === OrderStatus.PickedUp ?? (
-                    <Button onClick={() => handleUpdateOrder(OrderStatus.Delivered)}>
-                      Hoàn thành
-                    </Button>
-                  )
-                )}
-              </Box>
-            </Stack>
             <Stack
-              py={1}
+              py={2}
               px={1}
               direction="row"
               spacing={2}
@@ -450,23 +377,107 @@ const OrderDetailDialog = ({
               justifyContent="space-between"
               paddingTop={-10}
             >
-              <Button onClick={onNext} color="inherit">
-                Trước
-              </Button>
-              <Box textAlign="center" mx="auto">
-                <Typography>
-                  {current} / {total}
-                </Typography>
+              {data?.paymentMethod === PaymentType.Cash && data?.status !== OrderStatus.Cancel && (
+                <Button
+                  variant="outlined"
+                  size="large"
+                  onClick={() => setConfirmPaymentOrder(PaymentType.Momo)}
+                >
+                  Thanh toán Momo
+                </Button>
+              )}
+              {data?.paymentMethod === PaymentType.Cash && data?.status !== OrderStatus.Cancel && (
+                <Button
+                  variant="outlined"
+                  size="large"
+                  onClick={() => setConfirmPaymentOrder(PaymentType.CreditPayment)}
+                >
+                  Chuyển khoản
+                </Button>
+              )}
+            </Stack>
+            <Stack
+              paddingTop={-10}
+              py={2}
+              px={1}
+              direction="row"
+              spacing={2}
+              justifyContent="space-between"
+            >
+              <ConfirmDialog
+                title={
+                  confirmPaymentOrder === PaymentType.Momo
+                    ? `Xác nhận thanh toán bằng Momo`
+                    : `Xác nhận thanh toán bằng Chuyển khoản`
+                }
+                onClose={() => setConfirmPaymentOrder(null)}
+                onOk={() => handleUpdatePaymentTypeOrder(confirmPaymentOrder ?? PaymentType.Cash)}
+                open={Boolean(confirmPaymentOrder)}
+              />
+
+              <Box>
+                <Button
+                  endIcon={<ClearIcon />}
+                  variant="outlined"
+                  size="large"
+                  onClick={() => setConfirmStatusOrder(OrderStatus.Cancel)}
+                  color="error"
+                >
+                  Hủy đơn
+                </Button>
               </Box>
-              <Button onClick={onPrevious} color="inherit">
-                Tiếp theo
-              </Button>
+              <Box>
+                {data?.status === OrderStatus.New ? (
+                  <Button
+                    endIcon={<ArrowForwardIcon />}
+                    variant="contained"
+                    size="large"
+                    onClick={() => setConfirmStatusOrder(OrderStatus.Assigned)}
+                  >
+                    Nhận đơn
+                  </Button>
+                ) : data?.status === OrderStatus.Assigned ? (
+                  <Button
+                    endIcon={<ArrowForwardIcon />}
+                    variant="contained"
+                    size="large"
+                    onClick={() => setConfirmStatusOrder(OrderStatus.PickedUp)}
+                  >
+                    Lấy hàng
+                  </Button>
+                ) : data?.status === OrderStatus.PickedUp ? (
+                  <Button
+                    endIcon={<CheckIcon />}
+                    variant="contained"
+                    size="large"
+                    onClick={() => setConfirmStatusOrder(OrderStatus.Delivered)}
+                  >
+                    Hoàn thành
+                  </Button>
+                ) : (
+                  <Box />
+                )}
+                <ConfirmDialog
+                  title={
+                    confirmStatusOrder === OrderStatus.Assigned
+                      ? `Xác nhận tiếp nhận đơn hàng`
+                      : confirmStatusOrder === OrderStatus.PickedUp
+                      ? `Xác nhận lấy hàng từ nơi bán`
+                      : confirmStatusOrder === OrderStatus.Delivered
+                      ? `Xác nhận lấy hàng từ nơi bán`
+                      : `Xác nhận hủy đơn hàng`
+                  }
+                  onClose={() => setConfirmStatusOrder(null)}
+                  onOk={() => handleUpdateOrder(confirmStatusOrder ?? OrderStatus.New)}
+                  open={Boolean(confirmStatusOrder)}
+                />
+              </Box>
             </Stack>
           </Stack>
         </Box>
       </Box>
-    </Dialog>
+    </Container>
   );
 };
 
-export default OrderDetailDialog;
+export default OrderDetailPage;

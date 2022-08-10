@@ -60,7 +60,7 @@ export type Customer = {
 
 export enum OrderStatus {
   New = 0,
-  Assigend = 1,
+  Assigned = 1,
   Removed = 2,
   PickedUp = 3,
   Delivered = 4,
@@ -115,7 +115,8 @@ export interface OrderDetail {
 export enum PaymentType {
   Cash = 1,
   CreditPayment = 2, //tra bang xu
-  Momo = 3
+  Momo = 3,
+  Paid = 4
 }
 export type ProductsList = {
   master_product: number;
@@ -169,3 +170,35 @@ export const statusList = [
     value: ``,
   }
 ]
+
+export const ORDER_STATUS_OPTIONS = [
+  {
+    label: 'Tất cả',
+    value: OrderStatus.All,
+  },
+  {
+    label: 'Mới',
+    value: OrderStatus.New,
+    color: 'warning',
+  },
+  {
+    label: 'Đã Nhận đơn',
+    value: OrderStatus.Assigned,
+    color: 'warning',
+  },
+  {
+    label: 'Đã lấy đơn',
+    value: OrderStatus.PickedUp,
+    color: 'warning',
+  },
+  {
+    label: 'Hoàn thành',
+    value: OrderStatus.Delivered,
+    color: 'success',
+  },
+  {
+    label: 'Đã Huỷ',
+    value: OrderStatus.Cancel,
+    color: 'warning',
+  },
+];
