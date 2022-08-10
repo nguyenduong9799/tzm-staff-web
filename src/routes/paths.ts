@@ -37,6 +37,8 @@ export const PATH_DASHBOARD = {
   beaner: {
     orders: {
       root: path(ROOTS_DASHBOARD, '/beaner/orders'),
+      orderDetail: (orderId: number) =>
+        path(ROOTS_DASHBOARD, `/beaner/orders/${orderId}/detail`),
     },
     gift: {
       root: path(ROOTS_DASHBOARD, '/beaner/gift'),

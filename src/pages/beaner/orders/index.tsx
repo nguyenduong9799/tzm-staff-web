@@ -1,8 +1,5 @@
-import { CloseFullscreen, FilterList, Replay } from '@mui/icons-material';
-import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-import PhoneAndroidOutlinedIcon from '@mui/icons-material/PhoneAndroidOutlined';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { FilterList, Replay } from '@mui/icons-material';
+
 import {
   Box,
   Button,
@@ -24,6 +21,8 @@ import { useSnackbar } from 'notistack';
 import { useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
+import { useNavigate } from 'react-router';
+import { PATH_DASHBOARD } from 'routes/paths';
 import OrderDetailDialog from 'sections/beaner/OrderDetailDialog';
 import { Order, OrderResponse, OrderStatus, PaymentType } from 'types/order';
 import { Store } from 'types/store';
@@ -39,6 +38,7 @@ const BeanerOrderList = (props: Props) => {
   const [showCOnfirmModal, setShowCOnfirmModal] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const store: Store = getAreaStorage() ?? {};
+  const navigate = useNavigate();
   const storeId = store.id;
   const [isConfirmed, updateConfirm] = useConfirmOrder();
   const [openFilter, setOpenFilter] = useState(false);
@@ -111,12 +111,20 @@ const BeanerOrderList = (props: Props) => {
             isCancled ? theme.palette.background.neutral : theme.palette.background.paper,
         }}
       >
-        <CardActionArea onClick={() => setSelectedOrderId(order.id)}>
-          <Box sx={{ px: 2, pt: 1 }}>
+        <CardActionArea
+          onClick={() => navigate(PATH_DASHBOARD.beaner.orders.orderDetail(order.id))}
+        >
+          <Box sx={{ px: 1, pt: 1 }}>
             <Stack spacing={2} direction="row">
               <Typography variant="h5">{order.orderCode}</Typography>
               {order.status === OrderStatus.Delivered && (
                 <Chip color="success" size="small" label={'Hoàn thành'} />
+              )}
+              {order.status === OrderStatus.Assigned && (
+                <Chip color="info" size="small" label={'Đã nhận đơn'} />
+              )}
+              {order.status === OrderStatus.PickedUp && (
+                <Chip color="primary" size="small" label={'Đã lấy hàng'} />
               )}
               {order.status === OrderStatus.New && (
                 <Chip color="warning" label={'Mới'} size="small" />
@@ -133,7 +141,13 @@ const BeanerOrderList = (props: Props) => {
           </Box>
         </CardActionArea>
         <CardActions>
-          <Button onClick={() => setSelectedOrderId(order.id)} size="small" color="primary">
+          <Button
+            onClick={() => {
+              navigate(PATH_DASHBOARD.beaner.orders.orderDetail(order.id));
+            }}
+            size="small"
+            color="primary"
+          >
             Chi tiết
           </Button>
         </CardActions>
@@ -158,11 +172,11 @@ const BeanerOrderList = (props: Props) => {
       });
   const handleDeleteOrder = () =>
     request
-      .put(`/stores/${storeId}/orders/${confirmOrderIdc}`, 4)
+      .put(`/orders/${confirmOrderIdc}`, { status: OrderStatus.Cancel })
       .then(() => {
         setConfirmOrderIdc(null);
         setSelectedOrderId(null);
-        enqueueSnackbar('Cancel thành công', { variant: 'success' });
+        enqueueSnackbar('Hủy đơn thành công', { variant: 'success' });
         fetchOrders();
         return true;
       })
@@ -173,8 +187,20 @@ const BeanerOrderList = (props: Props) => {
       });
 
   const today = new Date();
-  const totalOrder = orders?.length;
-  const totalOrder1 = orders?.length;
+  const totalOrder = orders?.filter(
+    (item: Order) => item.createdAt.substring(0, 10) === today.toJSON().substring(0, 10)
+  ).length;
+  const totalOrderPaid = orders?.filter(
+    (item: Order) =>
+      item.createdAt.substring(0, 10) === today.toJSON().substring(0, 10) &&
+      item.paymentMethod === PaymentType.Paid
+  ).length;
+
+  const totalOrderCOD = orders?.filter(
+    (item: Order) =>
+      item.createdAt.substring(0, 10) === today.toJSON().substring(0, 10) &&
+      item.paymentMethod !== PaymentType.Paid
+  ).length;
 
   // const totalFinalAmount = (
   //   orders?.filter((e) => e.paymentMethod === PaymentType.Cash) ?? []
@@ -194,7 +220,7 @@ const BeanerOrderList = (props: Props) => {
   // );
 
   const filterOrderStatus = (status?: OrderStatus) => {
-    filterForm.setValue('Status', status ?? OrderStatus.All);
+    filterForm.setValue('Status', status!);
   };
 
   const countTotalFilter = Object.values(filters).filter((v) => v != null).length;
@@ -224,15 +250,14 @@ const BeanerOrderList = (props: Props) => {
 
   return (
     <Page title="Danh sách đơn hàng">
-      {renderConfirmButton()}
       <ConfirmOrderModal
         onConfirm={confirmCheckedOrder}
         open={showCOnfirmModal}
         onClose={() => setShowCOnfirmModal(false)}
       />
       <Container>
-        <Box textAlign="center" mb={4}>
-          <Typography mb={2} variant="h4">
+        <Box textAlign="center" mb={1}>
+          <Typography variant="h4">
             Danh sách đơn hàng
             {/* {`: Từ ${transformdatefilter['from-date']} Đến ${transformdatefilter['to-date']}`} */}
           </Typography>
@@ -243,10 +268,14 @@ const BeanerOrderList = (props: Props) => {
                   <Typography variant="body1">Tổng đơn:</Typography>
                   <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
                 </Stack>
-                {/* <Stack direction="row" justifyContent="space-between" spacing={1}>
-                  <Typography variant="body1">Tổng phần:</Typography>
-                  <Typography fontWeight="bold">{totalProduct ?? 0} </Typography>
-                </Stack> */}
+                <Stack direction="row" justifyContent="space-between" spacing={1}>
+                  <Typography variant="body1">Đơn đã thanh toán :</Typography>
+                  <Typography fontWeight="bold">{totalOrderPaid ?? 0} </Typography>
+                </Stack>
+                <Stack direction="row" justifyContent="space-between" spacing={1}>
+                  <Typography variant="body1">Đơn COD :</Typography>
+                  <Typography fontWeight="bold">{totalOrderCOD ?? 0} </Typography>
+                </Stack>
               </Stack>
             </Card>
             {/* <Card sx={{ p: 1, width: '60%', mx: 'auto', textAlign: 'left' }}>
@@ -285,12 +314,29 @@ const BeanerOrderList = (props: Props) => {
             onOk={handleDeleteOrder}
             open={Boolean(confirmOrderIdc)}
           />
-          <Stack direction="row" spacing={1} mb={2} justifyContent="space-between">
+          <Stack direction="column" spacing={1} mb={1} justifyContent="space-between">
             <Stack direction="row" spacing={1}>
+              <Chip
+                label="Tất cả"
+                variant={filters.Status === OrderStatus.All ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus(OrderStatus.All)}
+              />
               <Chip
                 label="Mới"
                 variant={filters.Status === OrderStatus.New ? 'filled' : 'outlined'}
                 onClick={() => filterOrderStatus(OrderStatus.New)}
+              />
+              <Chip
+                label="Đã nhận đơn"
+                variant={filters.Status === OrderStatus.Assigned ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus(OrderStatus.Assigned)}
+              />
+            </Stack>
+            <Stack direction="row" spacing={1}>
+              <Chip
+                label="Đã lấy hàng"
+                variant={filters.Status === OrderStatus.PickedUp ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus(OrderStatus.PickedUp)}
               />
               <Chip
                 label="Hoàn thành"
@@ -299,13 +345,8 @@ const BeanerOrderList = (props: Props) => {
               />
               <Chip
                 label="Đã huỷ"
-                variant={filters.Status === OrderStatus.Removed ? 'filled' : 'outlined'}
-                onClick={() => filterOrderStatus(OrderStatus.Removed)}
-              />
-              <Chip
-                label="Tất cả"
-                variant={filters.Status === OrderStatus.All ? 'filled' : 'outlined'}
-                onClick={() => filterOrderStatus()}
+                variant={filters.Status === OrderStatus.Cancel ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus(OrderStatus.Cancel)}
               />
             </Stack>
 
@@ -339,13 +380,13 @@ const BeanerOrderList = (props: Props) => {
                   onClose={() => setSelectedOrderId(null)}
                   onDelete={() => setConfirmOrderIdc(selectedOrderId)}
                   current={currentIdx! + 1}
-                  total={totalOrder1}
+                  total={totalOrder}
                   onNext={() => {
                     console.log('orders[currentIdx - 1]', orders![currentIdx! - 1]);
                     if (currentIdx! > 0) setSelectedOrderId(orders![currentIdx! - 1].id);
                   }}
                   onPrevious={() => {
-                    if (currentIdx! < totalOrder1! - 1) {
+                    if (currentIdx! < totalOrder! - 1) {
                       setSelectedOrderId(orders![currentIdx! + 1].id);
                     }
                   }}
