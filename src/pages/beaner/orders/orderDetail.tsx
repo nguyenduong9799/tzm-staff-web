@@ -193,7 +193,7 @@ const OrderDetailPage = () => {
       ),
     },
     {
-      title: 'Tên người nhận',
+      title: 'Người nhận',
       dataIndex: 'customerName',
       span: 2,
       render: (_, { customerName }) => (
@@ -203,16 +203,16 @@ const OrderDetailPage = () => {
       ),
     },
     {
-      title: 'SDT người nhận',
+      title: 'SDT',
       dataIndex: 'customerPhone',
       render: (phone) => <a href={`tel: ${phone}`}>{phone}</a>,
       span: 2,
     },
-    {
-      title: 'Email',
-      dataIndex: 'customerEmail',
-      span: 2,
-    },
+    // {
+    //   title: 'Email',
+    //   dataIndex: 'customerEmail',
+    //   span: 2,
+    // },
   ];
   // const orders = sortBy(data?.data.list_order_details ?? [], (o) => o.supplier_id);
   // const suppliers = uniq(orders.map((order) => order.supplier_store_name));
@@ -236,7 +236,7 @@ const OrderDetailPage = () => {
 
   const handleUpdatePaymentTypeOrder = (paymentType: PaymentType) =>
     request
-      .put(`/orders/${orderId}/payment`, { payment_type: paymentType })
+      .put(`/orders/${orderId}/status`, { paymentMethod: paymentType })
       .then(() => {
         enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
         setConfirmPaymentOrder(null);
@@ -264,8 +264,8 @@ const OrderDetailPage = () => {
 
   // @ts-ignore
   return (
-    <Container>
-      <Toolbar>
+    <Page title={'Chi tiết đơn hàng'}>
+      <Stack paddingTop={-2} spacing={1} sx={{ px: 2 }} alignItems="center" direction="row">
         <IconButton
           edge="start"
           color="inherit"
@@ -274,14 +274,17 @@ const OrderDetailPage = () => {
         >
           <ArrowBackIcon />
         </IconButton>
+        <Typography sx={{ px: 1 }} variant="h5">
+          {data?.orderCode}
+        </Typography>
         {data?.paymentMethod === PaymentType.Paid ? (
           <Chip color={'primary'} variant={'outlined'} label={'Đã Thanh toán'} />
         ) : (
           <Chip color={'primary'} variant={'outlined'} label={'Thanh toán khi nhận hàng'} />
         )}
-      </Toolbar>
+      </Stack>
 
-      <Box>
+      <Box sx={{ px: 2 }}>
         {isLoading && (
           <Box p={4} textAlign="center">
             <CircularProgress />
@@ -362,42 +365,62 @@ const OrderDetailPage = () => {
             left: 0,
             bottom: 0,
             borderTop: '1px solid #cccccc6f',
-            textAlign: 'right',
+            textAlign: 'center',
             zIndex: 10,
             bgcolor: theme.palette.background.default,
           }}
         >
-          <Stack>
-            <Stack
-              py={2}
-              px={1}
-              direction="row"
-              spacing={2}
-              alignItems="center"
-              justifyContent="space-between"
-              paddingTop={-10}
-            >
-              {data?.paymentMethod === PaymentType.Cash && data?.status !== OrderStatus.Cancel && (
+          <Typography variant="subtitle1" sx={{ alignSelf: 'start', px: 1, pt: 1 }}>
+            Phương thức thanh toán
+          </Typography>
+          <Stack
+            py={1}
+            px={1}
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            {data?.paymentMethod !== PaymentType.Momo && data?.status !== OrderStatus.Cancel && (
+              <Button
+                variant="outlined"
+                size="medium"
+                onClick={() => setConfirmPaymentOrder(PaymentType.Momo)}
+              >
+                Momo
+              </Button>
+            )}
+            {data?.paymentMethod !== PaymentType.CreditPayment &&
+              data?.status !== OrderStatus.Cancel && (
                 <Button
                   variant="outlined"
-                  size="large"
-                  onClick={() => setConfirmPaymentOrder(PaymentType.Momo)}
-                >
-                  Thanh toán Momo
-                </Button>
-              )}
-              {data?.paymentMethod === PaymentType.Cash && data?.status !== OrderStatus.Cancel && (
-                <Button
-                  variant="outlined"
-                  size="large"
+                  size="medium"
                   onClick={() => setConfirmPaymentOrder(PaymentType.CreditPayment)}
                 >
                   Chuyển khoản
                 </Button>
               )}
-            </Stack>
+            {data?.paymentMethod !== PaymentType.Cash && data?.status !== OrderStatus.Cancel && (
+              <Button
+                variant="outlined"
+                size="medium"
+                onClick={() => setConfirmPaymentOrder(PaymentType.Cash)}
+              >
+                Tiền mặt
+              </Button>
+            )}
+          </Stack>
+          <Box
+            sx={{
+              left: 0,
+              bottom: 0,
+              borderTop: '1px solid #cccccc6f',
+              textAlign: 'center',
+              bgcolor: theme.palette.background.default,
+            }}
+          >
             <Stack
-              paddingTop={-10}
+              paddingTop={-5}
               py={2}
               px={1}
               direction="row"
@@ -473,10 +496,10 @@ const OrderDetailPage = () => {
                 />
               </Box>
             </Stack>
-          </Stack>
+          </Box>
         </Box>
       </Box>
-    </Container>
+    </Page>
   );
 };
 

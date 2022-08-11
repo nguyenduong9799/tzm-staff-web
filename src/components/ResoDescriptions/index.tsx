@@ -127,7 +127,7 @@ const ResoDescriptions = ({
   );
 
   return (
-    <Box>
+    <Box pb={1}>
       <Stack spacing={1} pb={1}>
         {descriptionTitle}
         {extra}
