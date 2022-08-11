@@ -13,8 +13,6 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import ConfirmDialog from 'components/confirm-dialog/ConfirmDialog';
-import ConfirmOrderModal from 'components/confirmBeforeOrder';
 import OrderFilter from 'components/filter';
 import useConfirmOrder from 'hooks/useConfirmOrder';
 import { useSnackbar } from 'notistack';
@@ -23,20 +21,14 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useQuery } from 'react-query';
 import { useNavigate } from 'react-router';
 import { PATH_DASHBOARD } from 'routes/paths';
-import OrderDetailDialog from 'sections/beaner/OrderDetailDialog';
 import { Order, OrderResponse, OrderStatus, PaymentType } from 'types/order';
 import { Store } from 'types/store';
 import request from 'utils/axios';
-import { formatCurrency, getAreaStorage } from 'utils/utils';
+import { getAreaStorage } from 'utils/utils';
 import Page from '../../../components/Page';
 type Props = {};
 
 const BeanerOrderList = (props: Props) => {
-  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-  const [confirmOrderId, setConfirmOrderId] = useState<number | null>(null);
-  const [confirmOrderIdc, setConfirmOrderIdc] = useState<number | null>(null);
-  const [showCOnfirmModal, setShowCOnfirmModal] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
   const store: Store = getAreaStorage() ?? {};
   const navigate = useNavigate();
   const storeId = store.id;
@@ -77,25 +69,6 @@ const BeanerOrderList = (props: Props) => {
     () => (data !== undefined || data !== null ? getListOrder(orderResponse) : null),
     [orderResponse, data]
   );
-
-  console.log('orders :>> ', orders);
-  const currentIdx = selectedOrderId ? orders?.findIndex((o) => o.id === selectedOrderId) : -1;
-
-  const confirmCheckedOrder = async (isNotify?: boolean) => {
-    let success = true;
-    if (isNotify) {
-      await request.get(`/stores/${storeId}/orders/notification`).catch(() => {
-        success = false;
-      });
-    }
-    if (success) {
-      enqueueSnackbar('Xác nhận thành công', {
-        variant: 'success',
-      });
-      updateConfirm();
-      setShowCOnfirmModal(false);
-    }
-  };
 
   const renderOrder = (order: Order) => {
     const isCancled = order.status === OrderStatus.Removed;
@@ -155,37 +128,6 @@ const BeanerOrderList = (props: Props) => {
     );
   };
 
-  const handleUpdateOrder = () =>
-    request
-      .put(`/orders/${confirmOrderId}/status`, { status: OrderStatus.Delivered })
-      .then(() => {
-        setConfirmOrderId(null);
-        setSelectedOrderId(null);
-        enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
-        fetchOrders();
-        return true;
-      })
-      .catch((error) => {
-        setConfirmOrderId(null);
-        enqueueSnackbar(error?.message ?? 'Có lỗi xảy ra! Vui lòng thử lại.', { variant: 'error' });
-        return false;
-      });
-  const handleDeleteOrder = () =>
-    request
-      .put(`/orders/${confirmOrderIdc}`, { status: OrderStatus.Cancel })
-      .then(() => {
-        setConfirmOrderIdc(null);
-        setSelectedOrderId(null);
-        enqueueSnackbar('Hủy đơn thành công', { variant: 'success' });
-        fetchOrders();
-        return true;
-      })
-      .catch((error) => {
-        setConfirmOrderIdc(null);
-        enqueueSnackbar(error?.message ?? 'Có lỗi xảy ra! Vui lòng thử lại.', { variant: 'error' });
-        return false;
-      });
-
   const today = new Date();
   const totalOrder = orders?.filter(
     (item: Order) => item.createdAt.substring(0, 10) === today.toJSON().substring(0, 10)
@@ -202,59 +144,35 @@ const BeanerOrderList = (props: Props) => {
       item.paymentMethod !== PaymentType.Paid
   ).length;
 
-  // const totalFinalAmount = (
-  //   orders?.filter((e) => e.paymentMethod === PaymentType.Cash) ?? []
-  // ).reduce((total, order) => total + order.final_amount, 0);
-
-  // const totalFinalAmountMomo = (
-  //   orders?.filter((e) => e.paymentMethod === PaymentType.Momo) ?? []
-  // ).reduce((total, order) => total + order.final_amount, 0);
-
-  // const totalFinalAmountCoin = (
-  //   orders?.filter((e) => e.paymentMethod === PaymentType.CreditPayment) ?? []
-  // ).reduce((total, order) => total + order.final_amount, 0);
-
-  // const totalProduct = (orders ?? []).reduce(
-  //   (total, order) => total + order.master_product_quantity,
-  //   0
-  // );
+  const totalNewOrder = orders?.filter(
+    (item: Order) =>
+      item.createdAt.substring(0, 10) === today.toJSON().substring(0, 10) &&
+      item.status === OrderStatus.New
+  ).length;
+  const totalAssignedOrder = orders?.filter(
+    (item: Order) =>
+      item.createdAt.substring(0, 10) === today.toJSON().substring(0, 10) &&
+      item.status === OrderStatus.Assigned
+  ).length;
+  const totalPickedUpOrder = orders?.filter(
+    (item: Order) =>
+      item.createdAt.substring(0, 10) === today.toJSON().substring(0, 10) &&
+      item.status === OrderStatus.PickedUp
+  ).length;
+  const totalDeliveredOrder = orders?.filter(
+    (item: Order) =>
+      item.createdAt.substring(0, 10) === today.toJSON().substring(0, 10) &&
+      item.status === OrderStatus.Delivered
+  ).length;
 
   const filterOrderStatus = (status?: OrderStatus) => {
     filterForm.setValue('Status', status!);
   };
 
   const countTotalFilter = Object.values(filters).filter((v) => v != null).length;
-  const renderConfirmButton = () => {
-    if (totalOrder === 0 || isConfirmed) {
-      return null;
-    }
-
-    return (
-      <Box
-        sx={{
-          bgcolor: (theme) => theme.palette.background.default,
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          p: 1,
-          width: '100%',
-          zIndex: (theme) => theme.zIndex.appBar,
-        }}
-      >
-        <Button onClick={() => setShowCOnfirmModal(true)} variant="outlined" fullWidth>
-          Xác nhận bắt đầu giao
-        </Button>
-      </Box>
-    );
-  };
 
   return (
     <Page title="Danh sách đơn hàng">
-      <ConfirmOrderModal
-        onConfirm={confirmCheckedOrder}
-        open={showCOnfirmModal}
-        onClose={() => setShowCOnfirmModal(false)}
-      />
       <Container>
         <Box textAlign="center" mb={1}>
           <Typography variant="h4">
@@ -262,14 +180,14 @@ const BeanerOrderList = (props: Props) => {
             {/* {`: Từ ${transformdatefilter['from-date']} Đến ${transformdatefilter['to-date']}`} */}
           </Typography>
           <Stack direction="row" spacing={1}>
-            <Card sx={{ p: 1, mx: 'auto', textAlign: 'left' }}>
+            <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
               <Stack direction="column" justifyContent="space-between">
                 <Stack direction="row" justifyContent="space-between" spacing={1}>
                   <Typography variant="body1">Tổng đơn:</Typography>
                   <Typography fontWeight="bold">{totalOrder ?? 0} </Typography>
                 </Stack>
                 <Stack direction="row" justifyContent="space-between" spacing={1}>
-                  <Typography variant="body1">Đơn đã thanh toán :</Typography>
+                  <Typography variant="body1">Đã thanh toán :</Typography>
                   <Typography fontWeight="bold">{totalOrderPaid ?? 0} </Typography>
                 </Stack>
                 <Stack direction="row" justifyContent="space-between" spacing={1}>
@@ -278,49 +196,31 @@ const BeanerOrderList = (props: Props) => {
                 </Stack>
               </Stack>
             </Card>
-            {/* <Card sx={{ p: 1, width: '60%', mx: 'auto', textAlign: 'left' }}>
+            <Card sx={{ p: 1, width: '50%', mx: 'auto', textAlign: 'left' }}>
               <Stack direction="column" justifyContent="space-between">
                 <Stack direction="row" justifyContent="space-between" spacing={2}>
-                  <Typography variant="body2">Tổng tiền mặt:</Typography>
-                  <Typography fontWeight="bold">{formatCurrency(totalFinalAmount)} </Typography>
+                  <Typography variant="body2">Đơn mới:</Typography>
+                  <Typography fontWeight="bold">{totalNewOrder} </Typography>
                 </Stack>
                 <Stack direction="row" justifyContent="space-between" spacing={2}>
-                  <Typography variant="body2">Tổng Momo:</Typography>
-                  <Typography fontWeight="bold">{formatCurrency(totalFinalAmountMomo)}</Typography>
+                  <Typography variant="body2">Đơn đã nhận:</Typography>
+                  <Typography fontWeight="bold">{totalAssignedOrder}</Typography>
                 </Stack>
                 <Stack direction="row" justifyContent="space-between" spacing={2}>
-                  <Typography variant="body2">Tổng xu:</Typography>
-                  <Typography fontWeight="bold">{totalFinalAmountCoin} xu</Typography>
+                  <Typography variant="body2">Đơn đã lấy:</Typography>
+                  <Typography fontWeight="bold">{totalPickedUpOrder}</Typography>
+                </Stack>
+                <Stack direction="row" justifyContent="space-between" spacing={2}>
+                  <Typography variant="body2">Đơn đã giao:</Typography>
+                  <Typography fontWeight="bold">{totalDeliveredOrder}</Typography>
                 </Stack>
               </Stack>
-            </Card> */}
+            </Card>
           </Stack>
         </Box>
         <Box>
-          <ConfirmDialog
-            title={`Xác nhận hoàn thành đơn hàng`}
-            onClose={() => {
-              setSelectedOrderId(null);
-              setConfirmOrderId(null);
-            }}
-            onOk={handleUpdateOrder}
-            open={Boolean(confirmOrderId)}
-          />
-          <ConfirmDialog
-            title={`Xác nhận hủy đơn hàng`}
-            onClose={() => {
-              setConfirmOrderIdc(null);
-            }}
-            onOk={handleDeleteOrder}
-            open={Boolean(confirmOrderIdc)}
-          />
           <Stack direction="column" spacing={1} mb={1} justifyContent="space-between">
             <Stack direction="row" spacing={1}>
-              <Chip
-                label="Tất cả"
-                variant={filters.Status === OrderStatus.All ? 'filled' : 'outlined'}
-                onClick={() => filterOrderStatus(OrderStatus.All)}
-              />
               <Chip
                 label="Mới"
                 variant={filters.Status === OrderStatus.New ? 'filled' : 'outlined'}
@@ -331,13 +231,13 @@ const BeanerOrderList = (props: Props) => {
                 variant={filters.Status === OrderStatus.Assigned ? 'filled' : 'outlined'}
                 onClick={() => filterOrderStatus(OrderStatus.Assigned)}
               />
-            </Stack>
-            <Stack direction="row" spacing={1}>
               <Chip
                 label="Đã lấy hàng"
                 variant={filters.Status === OrderStatus.PickedUp ? 'filled' : 'outlined'}
                 onClick={() => filterOrderStatus(OrderStatus.PickedUp)}
               />
+            </Stack>
+            <Stack direction="row" spacing={1}>
               <Chip
                 label="Hoàn thành"
                 variant={filters.Status === OrderStatus.Delivered ? 'filled' : 'outlined'}
@@ -348,6 +248,11 @@ const BeanerOrderList = (props: Props) => {
                 variant={filters.Status === OrderStatus.Cancel ? 'filled' : 'outlined'}
                 onClick={() => filterOrderStatus(OrderStatus.Cancel)}
               />
+              {/* <Chip
+                label="Tất cả"
+                variant={filters.Status === OrderStatus.All ? 'filled' : 'outlined'}
+                onClick={() => filterOrderStatus(OrderStatus.All)}
+              /> */}
             </Stack>
 
             <FormProvider {...filterForm}>
@@ -361,40 +266,8 @@ const BeanerOrderList = (props: Props) => {
                 onClose={() => setOpenFilter(false)}
               />
             </FormProvider>
-            <Box>
-              {!isFetching && (
-                <Box>
-                  <IconButton onClick={() => fetchOrders()}>
-                    <Replay />
-                  </IconButton>
-                </Box>
-              )}
-              {isFetching ? (
-                <Box textAlign="center">
-                  <CircularProgress />
-                </Box>
-              ) : (
-                <OrderDetailDialog
-                  onUpdate={() => setConfirmOrderId(selectedOrderId)}
-                  orderId={selectedOrderId}
-                  onClose={() => setSelectedOrderId(null)}
-                  onDelete={() => setConfirmOrderIdc(selectedOrderId)}
-                  current={currentIdx! + 1}
-                  total={totalOrder}
-                  onNext={() => {
-                    console.log('orders[currentIdx - 1]', orders![currentIdx! - 1]);
-                    if (currentIdx! > 0) setSelectedOrderId(orders![currentIdx! - 1].id);
-                  }}
-                  onPrevious={() => {
-                    if (currentIdx! < totalOrder! - 1) {
-                      setSelectedOrderId(orders![currentIdx! + 1].id);
-                    }
-                  }}
-                />
-              )}
-            </Box>
           </Stack>
-          <Stack direction="row" justifyContent="start">
+          <Stack direction="row" justifyContent="space-between">
             <Button
               color="inherit"
               sx={{ mb: 2 }}
@@ -406,6 +279,19 @@ const BeanerOrderList = (props: Props) => {
                 <Chip sx={{ height: 24, ml: 1 }} label={countTotalFilter} color="primary" />
               )}
             </Button>
+            <Box>
+              {isFetching ? (
+                <Box textAlign="center">
+                  <CircularProgress />
+                </Box>
+              ) : (
+                <Box>
+                  <IconButton size="large" color="primary" onClick={() => fetchOrders()}>
+                    <Replay />
+                  </IconButton>
+                </Box>
+              )}
+            </Box>
           </Stack>
         </Box>
 

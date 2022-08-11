@@ -1,109 +1,57 @@
-import CloseIcon from '@mui/icons-material/Close';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {
-  AppBar,
   Box,
   Button,
-  Card,
   Chip,
   CircularProgress,
-  Collapse,
-  Container,
-  Dialog,
-  DialogContent,
-  DialogContentText,
-  Divider,
   IconButton,
   Stack,
-  Toolbar,
   Typography,
   useTheme,
 } from '@mui/material';
-import Slide from '@mui/material/Slide';
-import { TransitionProps } from '@mui/material/transitions';
 import ConfirmDialog from 'components/confirm-dialog/ConfirmDialog';
 import Page from 'components/Page';
 import ResoDescriptions, { ResoDescriptionColumnType } from 'components/ResoDescriptions';
-import { sortBy, uniq } from 'lodash';
 import { useSnackbar } from 'notistack';
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useNavigate, useParams } from 'react-router';
-import { Order, OrderDetail, OrderStatus, PaymentType } from 'types/order';
-import { Store } from 'types/store';
+import {
+  Order,
+  OrderStatus,
+  ORDER_STATUS_OPTIONS,
+  PaymentType,
+  PAYMENT_TYPE_OPTIONS,
+} from 'types/order';
 import request from 'utils/axios';
-import { formatCurrency, getAreaStorage } from 'utils/utils';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { formatCurrency } from 'utils/utils';
 
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { PATH_DASHBOARD } from 'routes/paths';
-export const ORDER_STATUS_OPTIONS = [
-  {
-    label: 'Tất cả',
-    value: OrderStatus.All,
-  },
-  {
-    label: 'Mới',
-    value: OrderStatus.New,
-    color: 'warning',
-  },
-  {
-    label: 'Đã Nhận đơn',
-    value: OrderStatus.Assigned,
-    color: 'warning',
-  },
-  {
-    label: 'Đã lấy đơn',
-    value: OrderStatus.PickedUp,
-    color: 'warning',
-  },
-  {
-    label: 'Hoàn thành',
-    value: OrderStatus.Delivered,
-    color: 'success',
-  },
-  {
-    label: 'Đã Huỷ',
-    value: OrderStatus.Cancel,
-    color: 'warning',
-  },
-];
-export const PAYMENT_TYPE_OPTIONS = [
-  {
-    label: 'Tiền mặt',
-    value: PaymentType.Cash,
-    color: 'success',
-  },
-  {
-    label: 'Chuyển khoản ngân hàng',
-    value: PaymentType.CreditPayment,
-    color: 'success',
-  },
-  {
-    label: 'Momo',
-    value: PaymentType.Momo,
-    color: 'success',
-  },
-  {
-    label: 'Đã thanh toán trước',
-    value: PaymentType.Paid,
-    color: 'success',
-  },
-];
+import { FormProvider, useForm } from 'react-hook-form';
+import InputDialog from 'components/input-dialog/InputDialog';
 
 const OrderDetailPage = () => {
   const [confirmPaymentOrder, setConfirmPaymentOrder] = useState<PaymentType | null>(null);
   const [confirmStatusOrder, setConfirmStatusOrder] = useState<OrderStatus | null>(null);
+  const [openCancelDialog, setOpenCancelDialog] = useState<boolean>(false);
   const nav = useNavigate();
   const { orderId } = useParams();
 
   const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
+
+  const cancelForm = useForm({
+    defaultValues: {
+      Status: OrderStatus.Cancel,
+      cancelReason: '',
+    },
+  });
+  const cancel = cancelForm.watch();
+  console.log('cancel', cancel);
   const { data, isLoading, refetch } = useQuery(
     ['orders', orderId],
     () => request.get<Order>(`/orders/${orderId}`).then((res) => res.data),
@@ -208,31 +156,7 @@ const OrderDetailPage = () => {
       render: (phone) => <a href={`tel: ${phone}`}>{phone}</a>,
       span: 2,
     },
-    // {
-    //   title: 'Email',
-    //   dataIndex: 'customerEmail',
-    //   span: 2,
-    // },
   ];
-  // const orders = sortBy(data?.data.list_order_details ?? [], (o) => o.supplier_id);
-  // const suppliers = uniq(orders.map((order) => order.supplier_store_name));
-  // const [openCollapse, setOpenCollapse] = useState<string[]>([]);
-  // const getNoteOfSupplier = (storeName: string) => {
-  //   const values = orders.find((e) => e.supplier_store_name === storeName);
-  //   return values?.supplier_notes![0]?.content;
-  // };
-
-  // const getOrdersOfSupplier = (storeName: string) =>
-  //   orders.filter((e) => e.supplier_store_name === storeName);
-
-  // const handlerExpand = (key: string) => {
-  //   let idx = openCollapse?.findIndex((e) => e === key);
-  //   if (idx != null && idx >= 0) {
-  //     let state = [...openCollapse];
-  //     state?.splice(idx, 1);
-  //     setOpenCollapse(state ?? []);
-  //   } else setOpenCollapse([...openCollapse, key]);
-  // };
 
   const handleUpdatePaymentTypeOrder = (paymentType: PaymentType) =>
     request
@@ -261,11 +185,24 @@ const OrderDetailPage = () => {
         enqueueSnackbar(error?.message ?? 'Có lỗi xảy ra! Vui lòng thử lại.', { variant: 'error' });
         return false;
       });
+  const handleCancleOrder = (value: any) =>
+    request
+      .put(`/orders/${orderId}/status`, value)
+      .then(() => {
+        enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
+        setConfirmStatusOrder(null);
+        refetch();
+        return true;
+      })
+      .catch((error) => {
+        enqueueSnackbar(error?.message ?? 'Có lỗi xảy ra! Vui lòng thử lại.', { variant: 'error' });
+        return false;
+      });
 
   // @ts-ignore
   return (
     <Page title={'Chi tiết đơn hàng'}>
-      <Stack paddingTop={-2} spacing={1} sx={{ px: 2 }} alignItems="center" direction="row">
+      <Stack spacing={1} sx={{ px: 2 }} alignItems="center" direction="row">
         <IconButton
           edge="start"
           color="inherit"
@@ -304,58 +241,15 @@ const OrderDetailPage = () => {
               labelProps={{ fontWeight: 'bold' }}
               columns={fromStationColumns as any}
               datasource={data}
-              column={2}
+              column={1}
             />
             <ResoDescriptions
               title="Thông tin giao hàng"
               labelProps={{ fontWeight: 'bold' }}
               columns={customerColumns as any}
               datasource={data}
-              column={2}
+              column={1}
             />
-            {/* <Box sx={{ pt: 2, pb: 10 }}>
-                <Stack spacing={1} direction="column">
-                  {suppliers.map((s) => (
-                    <Stack key={s}>
-                      <Card
-                        variant="elevation"
-                        onClick={() => handlerExpand(s)}
-                        aria-controls="example-collapse-text"
-                        sx={{
-                          p: 1.5,
-                          bgcolor: (theme) => theme.palette.background.paper,
-                        }}
-                      >
-                        <Box>
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            justifyContent="space-between"
-                            alignItems="center"
-                          >
-                            <Typography variant="h6">Đơn hàng cho {s}</Typography>
-                            <KeyboardArrowDownIcon
-                              style={{
-                                transform: Boolean(openCollapse?.find((e) => e === s))
-                                  ? 'rotate(00deg)'
-                                  : 'rotate(180deg)',
-                              }}
-                            />
-                          </Stack>
-                        </Box>
-                        <Collapse in={!Boolean(openCollapse?.find((e) => e === s))}>
-                          <Box sx={{ mb: 1 }} id="example-collapse-text">
-                            <Typography variant="subtitle1">
-                              Ghi chú : {getNoteOfSupplier(s)}
-                            </Typography>
-                            <OrderListItem orderList={getOrdersOfSupplier(s)} />
-                          </Box>
-                        </Collapse>
-                      </Card>
-                    </Stack>
-                  ))}
-                </Stack>
-              </Box> */}
           </Box>
         )}
         <Box
@@ -370,46 +264,50 @@ const OrderDetailPage = () => {
             bgcolor: theme.palette.background.default,
           }}
         >
-          <Typography variant="subtitle1" sx={{ alignSelf: 'start', px: 1, pt: 1 }}>
-            Phương thức thanh toán
-          </Typography>
-          <Stack
-            py={1}
-            px={1}
-            direction="row"
-            spacing={2}
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            {data?.paymentMethod !== PaymentType.Momo && data?.status !== OrderStatus.Cancel && (
-              <Button
-                variant="outlined"
-                size="medium"
-                onClick={() => setConfirmPaymentOrder(PaymentType.Momo)}
+          {data?.paymentMethod !== PaymentType.Paid && data?.status !== OrderStatus.Cancel && (
+            <Box>
+              <Typography variant="subtitle1" sx={{ alignSelf: 'start', px: 1, pt: 1 }}>
+                Phương thức thanh toán
+              </Typography>
+              <Stack
+                py={1}
+                px={1}
+                direction="row"
+                spacing={2}
+                alignItems="center"
+                justifyContent="space-between"
               >
-                Momo
-              </Button>
-            )}
-            {data?.paymentMethod !== PaymentType.CreditPayment &&
-              data?.status !== OrderStatus.Cancel && (
-                <Button
-                  variant="outlined"
-                  size="medium"
-                  onClick={() => setConfirmPaymentOrder(PaymentType.CreditPayment)}
-                >
-                  Chuyển khoản
-                </Button>
-              )}
-            {data?.paymentMethod !== PaymentType.Cash && data?.status !== OrderStatus.Cancel && (
-              <Button
-                variant="outlined"
-                size="medium"
-                onClick={() => setConfirmPaymentOrder(PaymentType.Cash)}
-              >
-                Tiền mặt
-              </Button>
-            )}
-          </Stack>
+                {data?.paymentMethod !== PaymentType.Momo && data?.status !== OrderStatus.Cancel && (
+                  <Button
+                    variant="outlined"
+                    size="medium"
+                    onClick={() => setConfirmPaymentOrder(PaymentType.Momo)}
+                  >
+                    Momo
+                  </Button>
+                )}
+                {data?.paymentMethod !== PaymentType.CreditPayment &&
+                  data?.status !== OrderStatus.Cancel && (
+                    <Button
+                      variant="outlined"
+                      size="medium"
+                      onClick={() => setConfirmPaymentOrder(PaymentType.CreditPayment)}
+                    >
+                      Chuyển khoản
+                    </Button>
+                  )}
+                {data?.paymentMethod !== PaymentType.Cash && data?.status !== OrderStatus.Cancel && (
+                  <Button
+                    variant="outlined"
+                    size="medium"
+                    onClick={() => setConfirmPaymentOrder(PaymentType.Cash)}
+                  >
+                    Tiền mặt
+                  </Button>
+                )}
+              </Stack>
+            </Box>
+          )}
           <Box
             sx={{
               left: 0,
@@ -431,26 +329,30 @@ const OrderDetailPage = () => {
                 title={
                   confirmPaymentOrder === PaymentType.Momo
                     ? `Xác nhận thanh toán bằng Momo`
-                    : `Xác nhận thanh toán bằng Chuyển khoản`
+                    : confirmPaymentOrder === PaymentType.CreditPayment
+                    ? `Xác nhận thanh toán bằng Chuyển khoản`
+                    : `Xác nhận thanh toán bằng Tiền Mặt`
                 }
                 onClose={() => setConfirmPaymentOrder(null)}
                 onOk={() => handleUpdatePaymentTypeOrder(confirmPaymentOrder ?? PaymentType.Cash)}
                 open={Boolean(confirmPaymentOrder)}
               />
+              {data?.status !== OrderStatus.Cancel && (
+                <Box>
+                  <Button
+                    endIcon={<ClearIcon />}
+                    variant="outlined"
+                    size="large"
+                    onClick={() => setOpenCancelDialog(true)}
+                    color="error"
+                  >
+                    Hủy đơn
+                  </Button>
+                </Box>
+              )}
 
               <Box>
-                <Button
-                  endIcon={<ClearIcon />}
-                  variant="outlined"
-                  size="large"
-                  onClick={() => setConfirmStatusOrder(OrderStatus.Cancel)}
-                  color="error"
-                >
-                  Hủy đơn
-                </Button>
-              </Box>
-              <Box>
-                {data?.status === OrderStatus.New ? (
+                {data?.status === OrderStatus.New || data?.status === OrderStatus.Cancel ? (
                   <Button
                     endIcon={<ArrowForwardIcon />}
                     variant="contained"
@@ -494,6 +396,21 @@ const OrderDetailPage = () => {
                   onOk={() => handleUpdateOrder(confirmStatusOrder ?? OrderStatus.New)}
                   open={Boolean(confirmStatusOrder)}
                 />
+                <FormProvider {...cancelForm}>
+                  <InputDialog
+                    onReset={() =>
+                      cancelForm.reset({
+                        cancelReason: '',
+                      })
+                    }
+                    open={openCancelDialog}
+                    onClose={() => setOpenCancelDialog(false)}
+                    onOk={() => cancelForm.handleSubmit(handleCancleOrder)()}
+                    title={'Xác nhận hủy đơn hàng'}
+                    name={'cancelReason'}
+                    content={'Lý do hủy đơn'}
+                  />
+                </FormProvider>
               </Box>
             </Stack>
           </Box>

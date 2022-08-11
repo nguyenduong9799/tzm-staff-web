@@ -1,13 +1,10 @@
 import { Button, Divider, Drawer, IconButton, Stack, Typography } from '@mui/material';
-import { RHFRadioGroup, RHFSelect } from 'components/hook-form';
+import { RHFSelect } from 'components/hook-form';
 import RHFDateRangePickerField from 'components/hook-form/RHFDateRangePickerField';
 import Iconify from 'components/Iconify';
 import Scrollbar from 'components/Scrollbar';
-import { useQuery } from 'react-query';
-import { Location } from 'types/location';
-import { paymentList, statusList } from 'types/order';
-import { Store, TimeSlot } from 'types/store';
-import request from 'utils/axios';
+import { ORDER_STATUS_OPTIONS, PAYMENT_TYPE_OPTIONS } from 'types/order';
+import { Store } from 'types/store';
 import { getAreaStorage } from 'utils/utils';
 
 type Props = {
@@ -18,7 +15,6 @@ type Props = {
 
 const OrderFilter = ({ open, onClose, onReset }: Props) => {
   const store: Store = getAreaStorage() ?? {};
-  const storeId = store.id;
   // const { data: destinations } = useQuery(['stores', 'destinations'], () =>
   //   request.get<{ data: Location[] }>(`/stores/${storeId}/locations`).then((res) => res.data.data)
   // );
@@ -50,10 +46,10 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
             </Stack>
             <RHFDateRangePickerField name="from-date" />
             <Stack spacing={1.5}>
-              <Typography variant="h5">Trạng Thái</Typography>
+              <Typography variant="h6">Trạng Thái đơn hàng</Typography>
             </Stack>
             <RHFSelect name="order-status" placeholder="Trạng Thái">
-              {statusList.map((option) => (
+              {ORDER_STATUS_OPTIONS.map((option) => (
                 <option key={option.label} value={option.value}>
                   {option.label}
                 </option>
@@ -63,13 +59,13 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
               <Typography variant="h5">Phuơng thức thanh toán</Typography>
             </Stack>
             <RHFSelect name="payment-type" placeholder="Phương Thức Thanh Toán">
-              {paymentList.map((option) => (
+              {PAYMENT_TYPE_OPTIONS.map((option) => (
                 <option key={option.label} value={option.value}>
                   {option.label}
                 </option>
               ))}
             </RHFSelect>
-            <Stack spacing={1.5}>
+            {/* <Stack spacing={1.5}>
               <Typography variant="h5">Khung giờ</Typography>
             </Stack>
             <RHFSelect name="time-slot" placeholder="Khung giờ">
@@ -79,10 +75,10 @@ const OrderFilter = ({ open, onClose, onReset }: Props) => {
                   {option.from.toString()} - {option.to.toString()}
                 </option>
               ))}
-            </RHFSelect>
-            <Stack spacing={1.5}>
+            </RHFSelect> */}
+            {/* <Stack spacing={1.5}>
               <Typography variant="h5">Địa điểm giao</Typography>
-            </Stack>
+            </Stack> */}
             {/* {destinations?.map((d: Location) => (
               <Stack key={d.destination_id}>
                 <Typography variant="subtitle2">{d.address}</Typography>

@@ -202,3 +202,26 @@ export const ORDER_STATUS_OPTIONS = [
     color: 'warning',
   },
 ];
+
+export const PAYMENT_TYPE_OPTIONS = [
+  {
+    label: 'Tiền mặt',
+    value: PaymentType.Cash,
+    color: 'success',
+  },
+  {
+    label: 'Chuyển khoản ngân hàng',
+    value: PaymentType.CreditPayment,
+    color: 'success',
+  },
+  {
+    label: 'Momo',
+    value: PaymentType.Momo,
+    color: 'success',
+  },
+  {
+    label: 'Đã thanh toán trước',
+    value: PaymentType.Paid,
+    color: 'success',
+  },
+];
